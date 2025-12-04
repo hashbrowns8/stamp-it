@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -21,3 +22,13 @@ dependencyResolutionManagement {
 
 rootProject.name = "StampIt"
 include(":app")
+include(":core:data")
+include(":core:firestore")
+include(":core:database")
+include(":core:ui")
+include(":core:domain")
+include(":feature:home")
+include(":feature:main")
+include(":feature:stamp-board")
+include(":feature:profile")
+include(":feature:missions")

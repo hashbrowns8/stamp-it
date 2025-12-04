@@ -4,6 +4,10 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 android {
     namespace = "it.stamp"
     compileSdk {
@@ -28,9 +32,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-    }
-    kotlin {
-        jvmToolchain(17)
     }
     buildFeatures {
         compose = true
