@@ -19,6 +19,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "StampIt"
 include(":app")
@@ -32,3 +33,5 @@ include(":feature:main")
 include(":feature:stamp-board")
 include(":feature:profile")
 include(":feature:missions")
+include(":core:designsystem")
+include(":core:model")

@@ -4,9 +4,9 @@ plugins {
 }
 
 android {
-    namespace = "it.stamp.ui"
+    namespace = "it.stamp.designsystem"
 }
 
 dependencies {
-    api(projects.core.designsystem)
+    api(libs.compose.material3)
 }
