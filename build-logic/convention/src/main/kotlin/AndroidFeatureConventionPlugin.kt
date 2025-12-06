@@ -21,11 +21,22 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                     "implementation"(project(":core:domain"))
                     "implementation"(project(":core:ui"))
                     "implementation"(project(":core:designsystem"))
-
+                    "implementation"(platform(findLibrary("compose-bom")))
+                    "implementation"(findLibrary("compose-ui"))
+                    "implementation"(findLibrary("compose-ui-graphics"))
+                    "implementation"(findLibrary("compose-ui-tooling-preview"))
+                    "implementation"(findLibrary("compose-material3"))
                     "implementation"(findLibrary("androidx-lifecycle-runtime-compose"))
                     "implementation"(findLibrary("androidx-hilt-lifecycle-viewmodel-compose"))
                     "implementation"(findLibrary("androidx-navigation3-runtime"))
                     "implementation"(findLibrary("kotlinx-serialization-json"))
+                    "testImplementation"(findLibrary("junit"))
+                    "androidTestImplementation"(findLibrary("androidx-junit"))
+                    "androidTestImplementation"(findLibrary("androidx-espresso-core"))
+                    "androidTestImplementation"(platform(findLibrary("compose-bom")))
+                    "androidTestImplementation"(findLibrary("compose-ui-test-junit4"))
+                    "debugImplementation"(findLibrary("compose-ui-tooling"))
+                    "debugImplementation"(findLibrary("compose-ui-test-manifest"))
                 }
             }
         }

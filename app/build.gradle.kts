@@ -1,23 +1,12 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
-}
-
-kotlin {
-    jvmToolchain(17)
+    alias(libs.plugins.stampit.android.application)
+    alias(libs.plugins.stampit.android.compose)
 }
 
 android {
     namespace = "it.stamp"
-    compileSdk {
-        version = release(36)
-    }
 
     defaultConfig {
-        applicationId = "it.stamp"
-        minSdk = 29
-        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -33,12 +22,21 @@ android {
             )
         }
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
+    implementation(projects.feature.home)
+    implementation(projects.feature.login)
+    implementation(projects.feature.main)
+    implementation(projects.feature.memberManagement)
+    implementation(projects.feature.missionAssignment)
+    implementation(projects.feature.missions)
+    implementation(projects.feature.myPage)
+    implementation(projects.feature.notifications)
+    implementation(projects.feature.onboarding)
+    implementation(projects.feature.profile)
+    implementation(projects.feature.stampBoard)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.compose.bom))
