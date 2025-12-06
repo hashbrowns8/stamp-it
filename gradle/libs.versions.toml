@@ -8,7 +8,7 @@ androidx-test-espresso = "3.7.0"
 androidx-lifecycle = "2.10.0"
 androidx-activity-compose = "1.12.1"
 androidx-navigation3 = "1.0.0"
-compose-bom = "2025.11.01"
+compose-bom = "2025.12.00"
 coil = "3.3.0"
 datastore = "1.2.0"
 ksp = "2.3.3"
@@ -21,8 +21,6 @@ lottie-compose = "6.7.1"
 room = "2.8.4"
 google-services = "4.4.4"
 firebase-bom = "34.6.0"
-appcompat = "1.6.1"
-material = "1.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
@@ -72,9 +70,6 @@ lottie-android = { group = "com.airbnb.android", name = "lottie-compose", versio
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
-
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 gradle-plugin-android = { group = "com.android.tools.build", name = "gradle", version.ref = "android-gradle-plugin" }
 gradle-plugin-kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
