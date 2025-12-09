@@ -1,11 +1,14 @@
 package it.stamp.model.stamp
 
-import it.stamp.model.ids.GroupId
+import it.stamp.model.ids.MembershipId
+import it.stamp.model.ids.MissionId
 import it.stamp.model.ids.StampId
-import it.stamp.model.ids.UserId
+import kotlin.time.Instant
 
 data class Stamp(
     val id: StampId,
-    val groupId: GroupId,
-    val userId: UserId,
+    val membershipId: MembershipId,
+    val missionId: MissionId,
+    val color: StampColor,
+    val createdAt: Instant,
 )

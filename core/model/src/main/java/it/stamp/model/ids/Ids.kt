@@ -22,6 +22,13 @@ value class MissionId(val value: String) {
 }
 
 @JvmInline
+value class MembershipId(val value: String) {
+    init {
+        require(value.isNotBlank())
+    }
+}
+
+@JvmInline
 value class StampId(val value: String) {
     init {
         require(value.isNotBlank())
