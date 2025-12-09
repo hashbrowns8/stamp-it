@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun StampItTheme(
-    typography: Typography = StampItTypography,
+    typography: Typography = Typography,
     content: @Composable () -> Unit
 ) {
     MaterialTheme(typography = typography, content = content)

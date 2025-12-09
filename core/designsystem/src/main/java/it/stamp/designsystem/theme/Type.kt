@@ -21,7 +21,7 @@ private val Pretendard = FontFamily(
     Font(R.font.pretendard_black, weight = FontWeight.Black),
 )
 
-internal val StampItTypography = Typography(
+internal val Typography = Typography(
     labelSmall = TextStyle(
         fontFamily = Pretendard,
         fontWeight = FontWeight.SemiBold,
