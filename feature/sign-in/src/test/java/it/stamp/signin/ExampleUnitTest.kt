@@ -1,4 +1,4 @@
-package it.stamp.login
+package it.stamp.signin
 
 import org.junit.Test
 

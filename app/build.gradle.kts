@@ -26,7 +26,6 @@ android {
 
 dependencies {
     implementation(projects.feature.home)
-    implementation(projects.feature.login)
     implementation(projects.feature.main)
     implementation(projects.feature.memberManagement)
     implementation(projects.feature.missionAssignment)
@@ -35,6 +34,7 @@ dependencies {
     implementation(projects.feature.notifications)
     implementation(projects.feature.onboarding)
     implementation(projects.feature.profile)
+    implementation(projects.feature.signIn)
     implementation(projects.feature.stampBoard)
 
     implementation(libs.androidx.core.ktx)

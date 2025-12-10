@@ -1,4 +1,4 @@
-package it.stamp.login
+package it.stamp.signin
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
