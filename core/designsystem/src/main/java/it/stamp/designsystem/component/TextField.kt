@@ -164,7 +164,13 @@ fun TextField(
             modifier = modifier
                 .clip(shape)
                 .background(backgroundColor)
-                .defaultMinSize(minHeight = 72.dp)
+                .then(
+                    if (label != null) {
+                        Modifier.defaultMinSize(minHeight = 72.dp)
+                    } else {
+                        Modifier
+                    }
+                )
                 .then(borderStroke?.let { Modifier.border(it, shape) } ?: Modifier),
             enabled,
             readOnly,
@@ -278,7 +284,10 @@ private fun TextFieldPreview() {
                 lineLimits = TextFieldLineLimits.SingleLine,
             )
 
-            TextField(state = rememberTextFieldState(), modifier = Modifier.fillMaxWidth())
+            TextField(
+                state = rememberTextFieldState(),
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }
