@@ -37,6 +37,8 @@ dependencies {
     implementation(projects.feature.profile)
     implementation(projects.feature.stampBoard)
 
+    implementation(projects.core.designsystem)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.compose.bom))

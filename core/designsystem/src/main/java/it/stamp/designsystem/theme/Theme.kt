@@ -1,0 +1,13 @@
+package it.stamp.designsystem.theme
+
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
+import androidx.compose.runtime.Composable
+
+@Composable
+fun StampItTheme(
+    typography: Typography = Typography,
+    content: @Composable () -> Unit
+) {
+    MaterialTheme(typography = typography, content = content)
+}
