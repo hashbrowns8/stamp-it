@@ -1,7 +1,8 @@
 
 import com.android.build.api.dsl.LibraryExtension
 import it.stamp.configureAndroidLibrary
-import it.stamp.findLibrary
+import it.stamp.library
+import it.stamp.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -18,7 +19,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             extensions.configure<LibraryExtension>(::configureAndroidLibrary)
 
             dependencies {
-                "implementation"(findLibrary("timber"))
+                "implementation"(libs.library("timber"))
             }
         }
     }
