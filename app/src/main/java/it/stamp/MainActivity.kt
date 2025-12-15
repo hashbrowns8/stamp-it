@@ -11,16 +11,13 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dagger.hilt.android.AndroidEntryPoint
 import it.stamp.designsystem.theme.StampItTheme
-import it.stamp.navigation.Navigator
+import it.stamp.main.navigation.Main
+import it.stamp.main.navigation.mainScreenEntry
 import it.stamp.signin.navigation.SignIn
 import it.stamp.signin.navigation.signInScreenEntry
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    @Inject
-    lateinit var navigator: Navigator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +36,12 @@ class MainActivity : ComponentActivity() {
                     entryProvider = entryProvider {
                         signInScreenEntry(
                             onSignInSuccess = {
+                                backStack.clear()
+                                backStack.add(Main)
                             },
                         )
+
+                        mainScreenEntry()
                     },
                 )
             }

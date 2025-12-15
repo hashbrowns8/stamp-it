@@ -5,7 +5,7 @@ import androidx.navigation3.runtime.NavKey
 import it.stamp.main.MainScreen
 
 fun EntryProviderScope<NavKey>.mainScreenEntry() {
-    entry<MainNavigationKey> {
+    entry<Main> {
         MainScreen()
     }
 }
