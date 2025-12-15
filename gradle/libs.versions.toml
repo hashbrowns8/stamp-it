@@ -1,5 +1,7 @@
 [versions]
 android-gradle-plugin = "8.13.1"
+androidx-credentials = "1.5.0"
+googleid = "1.1.1"
 kotlin = "2.2.21"
 androidx-core = "1.17.0"
 junit = "4.13.2"
@@ -20,11 +22,14 @@ kotlinx-serialization = "1.9.0"
 lottie-compose = "6.7.1"
 room = "2.8.4"
 google-services = "4.4.4"
-firebase-bom = "34.6.0"
+firebase-bom = "34.7.0"
 timber = "5.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "androidx-credentials" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "androidx-credentials" }
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test-espresso" }
@@ -60,6 +65,7 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 
 javax-inject = { module = "javax.inject:javax.inject", version = "1" }
+hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 androidx-hilt-lifecycle-viewmodel-compose = { group = "androidx.hilt", name = "hilt-lifecycle-viewmodel-compose", version.ref = "androidx-hilt" }
@@ -100,3 +106,4 @@ stampit-android-library = { id = "stampit.android.library" }
 stampit-android-hilt = { id = "stampit.android.hilt" }
 stampit-android-room = { id = "stampit.android.room" }
 stampit-jvm-library = { id = "stampit.jvm.library" }
+stampit-firebase = { id = "stampit.firebase" }
