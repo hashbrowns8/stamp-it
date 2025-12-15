@@ -6,7 +6,7 @@ import kotlin.time.Instant
 data class Group(
     val id: GroupId,
     val name: String,
-    val invitationCode: String,
+    val inviteCode: InviteCode,
     val createdAt: Instant,
     val updatedAt: Instant? = null,
 )
