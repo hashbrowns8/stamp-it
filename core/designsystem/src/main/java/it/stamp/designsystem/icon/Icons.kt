@@ -22,3 +22,23 @@ val Icons.LogoInversed: ImageVector
 val Icons.LogoOutlined: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.logo_outlined)
+
+val Icons.ArrowLeft: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.icon_arrow_left)
+
+val Icons.Plus: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.icon_plus)
+
+val Icons.FirstRank: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.rank_first)
+
+val Icons.SecondRank: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.rank_second)
+
+val Icons.ThirdRank: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.rank_third)
