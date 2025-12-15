@@ -13,8 +13,8 @@ import org.gradle.kotlin.dsl.getByType
 internal val Project.libs: VersionCatalog
     get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
-internal fun Project.findLibrary(alias: String): Provider<MinimalExternalModuleDependency> =
-    libs.findLibrary(alias).get()
+internal fun VersionCatalog.library(alias: String): Provider<MinimalExternalModuleDependency> =
+    findLibrary(alias).get()
 
 internal val Project.androidExtension: CommonExtension<*, *, *, *, *, *>
     get() = runCatching {

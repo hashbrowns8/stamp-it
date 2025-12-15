@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tagline">미션으로 함께하는 집안일</string>
+    <string name="sign_in_with_apple">Apple로 로그인</string>
+    <string name="sign_in_with_google">Google로 로그인</string>
+    <string name="sign_in_with_kakao">카카오로 로그인</string>
+</resources>

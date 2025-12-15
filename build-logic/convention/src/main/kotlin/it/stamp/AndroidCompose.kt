@@ -12,9 +12,9 @@ internal fun Project.configureAndroidCompose(
     }
 
     dependencies {
-        "implementation"(platform(findLibrary("compose-bom")))
-        "androidTestImplementation"(platform(findLibrary("compose-bom")))
-        "implementation"(findLibrary("compose-ui-tooling-preview"))
-        "debugImplementation"(findLibrary("compose-ui-tooling"))
+        "implementation"(platform(libs.library("compose-bom")))
+        "androidTestImplementation"(platform(libs.library("compose-bom")))
+        "implementation"(libs.library("compose-ui-tooling-preview"))
+        "debugImplementation"(libs.library("compose-ui-tooling"))
     }
 }

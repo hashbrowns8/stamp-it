@@ -53,5 +53,9 @@ gradlePlugin {
             id = libs.plugins.stampit.android.room.get().pluginId
             implementationClass = "AndroidRoomConventionPlugin"
         }
+        register("firebase") {
+            id = libs.plugins.stampit.firebase.get().pluginId
+            implementationClass = "FirebaseConventionPlugin"
+        }
     }
 }

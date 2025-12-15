@@ -1,5 +1,6 @@
 
-import it.stamp.findLibrary
+import it.stamp.library
+import it.stamp.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
@@ -13,8 +14,8 @@ class AndroidHiltConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                "implementation"(findLibrary("hilt-android"))
-                "ksp"(findLibrary("hilt-compiler"))
+                "implementation"(libs.library("hilt-android"))
+                "ksp"(libs.library("hilt-compiler"))
             }
         }
     }

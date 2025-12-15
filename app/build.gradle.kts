@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.stampit.android.application)
     alias(libs.plugins.stampit.android.compose)
+    alias(libs.plugins.stampit.android.hilt)
+    alias(libs.plugins.stampit.firebase)
 }
 
 android {
@@ -26,7 +28,6 @@ android {
 
 dependencies {
     implementation(projects.feature.home)
-    implementation(projects.feature.login)
     implementation(projects.feature.main)
     implementation(projects.feature.memberManagement)
     implementation(projects.feature.missionAssignment)
@@ -35,17 +36,22 @@ dependencies {
     implementation(projects.feature.notifications)
     implementation(projects.feature.onboarding)
     implementation(projects.feature.profile)
+    implementation(projects.feature.signIn)
     implementation(projects.feature.stampBoard)
-
+    implementation(projects.core.data)
     implementation(projects.core.designsystem)
-
+    implementation(projects.core.domain)
+    implementation(projects.core.model)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.graphics)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
+    implementation(libs.firebase.analytics)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
