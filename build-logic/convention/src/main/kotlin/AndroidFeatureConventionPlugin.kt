@@ -27,6 +27,8 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 "implementation"(libs.library("androidx-lifecycle-runtime-compose"))
                 "implementation"(libs.library("androidx-hilt-lifecycle-viewmodel-compose"))
                 "implementation"(libs.library("androidx-navigation3-runtime"))
+                "implementation"(libs.library("coil-compose"))
+                "implementation"(libs.library("coil-network-okhttp"))
                 "implementation"(libs.library("kotlinx-serialization-json"))
                 "implementation"(libs.library("timber"))
                 "testImplementation"(libs.library("junit"))
