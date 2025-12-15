@@ -16,7 +16,10 @@ internal inline fun <reified T: KotlinBaseExtension> Project.configureKotlin() =
         is KotlinAndroidProjectExtension -> compilerOptions
         else -> throw Exception()
     }.apply {
-        optIn.addAll("kotlin.time.ExperimentalTime")
+        optIn.addAll(
+            "kotlin.time.ExperimentalTime",
+            "kotlin.uuid.ExperimentalUuidApi",
+        )
     }
 }
 
