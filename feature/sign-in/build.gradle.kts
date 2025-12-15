@@ -1,15 +1,26 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.stampit.android.feature)
 }
 
 android.namespace = "it.stamp.signin"
 
+val localProperties = Properties().apply {
+    rootProject.file("local.properties").inputStream().use {
+        load(it)
+    }
+}
+
 android {
+    defaultConfig {
+        buildConfigField("String", "GOOGLE_SERVER_CLIENT_ID", "\"${localProperties.getProperty("GOOGLE_SERVER_CLIENT_ID")}\"")
+    }
     buildFeatures.buildConfig = true
 }
 
 dependencies {
-    implementation("androidx.credentials:credentials:1.3.0")
-    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 }

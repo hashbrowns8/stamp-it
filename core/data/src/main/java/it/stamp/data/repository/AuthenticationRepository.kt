@@ -1,25 +1,64 @@
 package it.stamp.data.repository
 
-import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.auth
-import it.stamp.data.source.GoogleCredentialDataSource
+import com.google.firebase.firestore.FirebaseFirestore
+import it.stamp.data.model.toDomainUser
+import it.stamp.data.util.user
 import it.stamp.domain.repository.AuthenticationRepository
+import it.stamp.model.authentication.AuthenticationResult
 import it.stamp.model.user.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class FirebaseAuthenticationRepository(
-    private val googleCredentialDataSource: GoogleCredentialDataSource,
+class FirebaseAuthenticationRepository @Inject constructor(
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
 ) : AuthenticationRepository {
 
-    override suspend fun signInWithGoogle(): Result<User> {
-        val idToken = googleCredentialDataSource.getGoogleIdToken()
+    override val user: Flow<User?> = callbackFlow {
+        val listener = FirebaseAuth.AuthStateListener {
+            trySend(auth.currentUser)
+        }
 
+        auth.addAuthStateListener(listener)
+
+        trySend(auth.currentUser)
+
+        awaitClose {
+            auth.removeAuthStateListener(listener)
+        }
+    }.map { user ->
+        user
+            ?.uid
+            ?.let { id -> firestore.user(id) }
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun signInWithGoogle(idToken: String): AuthenticationResult = runCatching {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
 
-        val result = Firebase.auth.signInWithCredential(credential).await()
+        val result = auth.signInWithCredential(credential).await()
 
-        result.user
-        TODO("Not yet implemented")
+        val userFirebase = result.user ?: throw IllegalStateException("Firebase User is Null :-(")
+
+        val userFirestore = firestore.user(userFirebase.uid)
+
+        val user = userFirestore ?: userFirebase.toDomainUser()
+
+        val isNewUser = userFirestore == null // needs Bootstrap
+
+        AuthenticationResult.Authenticated(user, isNewUser)
+    }.getOrElse { throwable ->
+        AuthenticationResult.Failure(throwable)
+    }
+
+    override fun signOut(): Result<Unit> = runCatching {
+        auth.signOut()
     }
 }
