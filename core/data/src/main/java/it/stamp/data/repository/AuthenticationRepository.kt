@@ -35,9 +35,9 @@ class FirebaseAuthenticationRepository @Inject constructor(
             auth.removeAuthStateListener(listener)
         }
     }.map { user ->
-        user
-            ?.uid
-            ?.let { id -> firestore.user(id) }
+        if (user == null) return@map null
+
+        firestore.user(user.uid) ?: user.toDomainUser()
     }.flowOn(Dispatchers.IO)
 
     override suspend fun signInWithGoogle(idToken: String): AuthenticationResult = runCatching {

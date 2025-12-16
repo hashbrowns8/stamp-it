@@ -28,6 +28,9 @@ data class Mission(
     val remainingDays: Int
         get() = Clock.System.todayIn(TimeZone.currentSystemDefault()).daysUntil(dueDate)
 
+    val isCompleted: Boolean
+        get() = status == MissionStatus.COMPLETED
+
     fun complete(): Mission = copy(status = MissionStatus.COMPLETED)
 
     fun fail(): Mission = copy(status = MissionStatus.FAILED)

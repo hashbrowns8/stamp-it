@@ -1,6 +1,7 @@
 package it.stamp.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,8 +28,9 @@ import it.stamp.designsystem.icon.Icons
 import it.stamp.designsystem.icon.SecondRank
 import it.stamp.designsystem.icon.ThirdRank
 import it.stamp.designsystem.theme.Black
+import it.stamp.designsystem.theme.Gray200
+import it.stamp.designsystem.theme.Gray25
 import it.stamp.designsystem.theme.Gray300
-import it.stamp.designsystem.theme.Gray400
 import it.stamp.designsystem.theme.StampItTheme
 import it.stamp.designsystem.theme.bodyExtraSmall
 import it.stamp.model.ids.UserId
@@ -76,7 +78,8 @@ private fun Item(
                 modifier = Modifier
                     .size(60.dp)
                     .clip(CircleShape)
-                    .border(1.dp, Gray400, CircleShape),
+                    .background(Gray25) // TODO
+                    .border(1.dp, Gray200, CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
                 // TODO

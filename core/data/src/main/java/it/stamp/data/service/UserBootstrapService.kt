@@ -1,4 +1,4 @@
-package it.stamp.data.bootstrap
+package it.stamp.data.service
 
 import com.google.firebase.firestore.FirebaseFirestore
 import it.stamp.data.model.toFirestoreGroup

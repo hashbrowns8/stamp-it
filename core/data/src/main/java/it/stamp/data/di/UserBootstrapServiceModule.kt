@@ -4,7 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import it.stamp.data.bootstrap.FirestoreUserBootstrapService
+import it.stamp.data.service.FirestoreUserBootstrapService
 import it.stamp.domain.service.UserBootstrapService
 import javax.inject.Singleton
 

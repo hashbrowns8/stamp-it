@@ -5,10 +5,10 @@ import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.UserId
 
 data class FirestoreUser(
-    val userId: String,
-    val groupId: String,
-    val nickname: String,
-    val profileImage: String,
+    val userId: String = String(),
+    val groupId: String = String(),
+    val nickname: String = String(),
+    val profileImage: String = String(),
     val nicknameChangedAt: Timestamp = Timestamp.now(),
     val createdAt: Timestamp = Timestamp.now(),
 ) {

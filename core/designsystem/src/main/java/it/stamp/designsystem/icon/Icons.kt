@@ -1,7 +1,9 @@
 package it.stamp.designsystem.icon
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import it.stamp.designsystem.R
 
@@ -42,3 +44,27 @@ val Icons.SecondRank: ImageVector
 val Icons.ThirdRank: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.rank_third)
+
+val Icons.ChevronRight: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.icon_chevron_right)
+
+val MissionChore: Painter
+    @Composable
+    get() = painterResource(R.drawable.mission_chore)
+
+val MissionCommunication: Painter
+    @Composable
+    get() = painterResource(R.drawable.mission_communication)
+
+val MissionCustom: Painter
+    @Composable
+    get() = painterResource(R.drawable.mission_custom)
+
+val MissionHealth: Painter
+    @Composable
+    get() = painterResource(R.drawable.mission_health)
+
+val MissionLearning: Painter
+    @Composable
+    get() = painterResource(R.drawable.mission_learning)

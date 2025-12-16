@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="view_all">더보기</string>
+    <string name="my_missions_title">내 미션</string>
+    <string name="my_missions_description">이번 주 %1$s님에게 부여된 미션이에요</string>
+    <string name="complete_mission">미션 완료하기</string>
+</resources>

@@ -6,12 +6,12 @@ import it.stamp.model.ids.MembershipId
 import it.stamp.model.ids.UserId
 
 data class FirestoreMembership(
-    val membershipId: String,
-    val groupId: String,
-    val userId: String,
-    val isLeader: Boolean,
-    val nickname: String,
-    val profileImage: String,
+    val membershipId: String = String(),
+    val groupId: String = String(),
+    val userId: String = String(),
+    val isLeader: Boolean = false,
+    val nickname: String = String(),
+    val profileImage: String = String(),
     val joinedAt: Timestamp = Timestamp.now(),
     val updatedAt: Timestamp = Timestamp.now(),
 ) {
