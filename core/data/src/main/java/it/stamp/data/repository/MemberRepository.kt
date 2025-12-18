@@ -1,9 +1,9 @@
 package it.stamp.data.repository
 
-import it.stamp.domain.repository.AuthenticationRepository
 import it.stamp.domain.repository.MemberRepository
 import it.stamp.domain.repository.MembershipRepository
 import it.stamp.domain.repository.UserRepository
+import it.stamp.domain.service.AuthenticationService
 import it.stamp.model.ids.GroupId
 import it.stamp.model.membership.Member
 import kotlinx.coroutines.Dispatchers
@@ -14,12 +14,12 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class FirebaseMemberService @Inject constructor(
-    authenticationRepository: AuthenticationRepository,
+    authenticationService: AuthenticationService,
     private val membershipRepository: MembershipRepository,
     private val userRepository: UserRepository,
 ) : MemberRepository {
 
-    override val members: Flow<List<Member>> = authenticationRepository.user
+    override val members: Flow<List<Member>> = authenticationService.user
         .map { user ->
             if (user == null) return@map emptyList()
 
