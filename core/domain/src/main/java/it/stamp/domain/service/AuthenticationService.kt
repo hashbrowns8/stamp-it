@@ -9,5 +9,5 @@ interface AuthenticationService {
 
     suspend fun signInWithGoogle(idToken: String): AuthenticationResult
 
-    fun signOut(): Result<Unit>
+    fun signOut()
 }
