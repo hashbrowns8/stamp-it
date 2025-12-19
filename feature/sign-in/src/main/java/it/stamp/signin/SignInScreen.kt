@@ -27,11 +27,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.credentials.CredentialManager
-import androidx.credentials.CustomCredential
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import it.stamp.designsystem.icon.Icons
 import it.stamp.designsystem.icon.Logo
 import it.stamp.designsystem.theme.Black
@@ -46,7 +44,7 @@ internal fun SignInScreen(
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.kUiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState) {
         when (val uiState = uiState) {
@@ -62,30 +60,21 @@ internal fun SignInScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val credentialManager = remember {
-        CredentialManager.create(context)
+    val idTokenProvider: IdTokenProvider = remember(context) {
+        GoogleIdTokenProvider(CredentialManager.create(context))
     }
 
     SignInScreen(
         onSignInWithAppleClick = {},
         onSignInWithGoogleClick = {
             coroutineScope.launch {
-                runCatching {
-                    val request = buildGetCredentialRequest()
-
-                    val response = credentialManager.getCredential(context, request)
-
-                    val credential = response.credential as? CustomCredential
-                        ?: throw IllegalStateException("Invalid Credential Type :(")
-
-                    val idToken = GoogleIdTokenCredential.createFrom(credential.data).idToken
-
-                    viewModel.signInWithGoogle(idToken)
-                }.onFailure { throwable ->
-                    if (throwable !is GetCredentialCancellationException) {
-
+                idTokenProvider.getIdToken(context)
+                    .onSuccess { idToken ->
+                        viewModel.signInWithGoogle(idToken)
                     }
-                }
+                    .onFailure { throwable ->
+                        if (throwable is GetCredentialCancellationException) return@onFailure
+                    }
             }
         },
         onSignInWithKakaoClick = {},
