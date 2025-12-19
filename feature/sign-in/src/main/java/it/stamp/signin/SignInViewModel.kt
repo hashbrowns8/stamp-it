@@ -18,10 +18,8 @@ class SignInViewModel @Inject constructor(
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
     private val bootstrapNewUserUseCase: BootstrapNewUserUseCase,
 ) : ViewModel() {
-
-    private val uiState = MutableStateFlow<SignInUiState>(SignInUiState.Nothing)
-
-    val kUiState: StateFlow<SignInUiState> = uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<SignInUiState>(SignInUiState.Nothing)
+    val uiState: StateFlow<SignInUiState> = _uiState.asStateFlow()
 
     fun signInWithGoogle(idToken: String) {
         viewModelScope.launch {
@@ -30,17 +28,17 @@ class SignInViewModel @Inject constructor(
                     if (isNewUser) {
                         bootstrapNewUserUseCase(user)
                             .onSuccess { user ->
-                                uiState.value = SignInUiState.Authenticated(user, isNewUser = true)
+                                _uiState.value = SignInUiState.Authenticated(user, isNewUser = true)
                             }
                             .onFailure {
-                                uiState.value = SignInUiState.Failure(errorMessage = "로그인에 실패하였습니다. :-/") // TODO
+                                _uiState.value = SignInUiState.Failure(errorMessage = "로그인에 실패하였습니다. :-/") // TODO
                             }
                     } else {
-                        uiState.value = SignInUiState.Authenticated(user, isNewUser = false)
+                        _uiState.value = SignInUiState.Authenticated(user, isNewUser = false)
                     }
                 }
                 is AuthenticationResult.Failure -> with(result) {
-                    uiState.value = SignInUiState.Failure(errorMessage = "로그인에 실패하였습니다. 다시 시도해주세요.")
+                    _uiState.value = SignInUiState.Failure(errorMessage = "로그인에 실패하였습니다. 다시 시도해주세요.")
                 }
             }
         }
