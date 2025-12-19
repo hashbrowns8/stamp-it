@@ -22,5 +22,3 @@ object FirebaseModule {
     @Singleton
     fun provideFirebaseFirestore(): FirebaseFirestore = Firebase.firestore
 }
-
-// TODO : Repository - DataSource - Firebase 분리

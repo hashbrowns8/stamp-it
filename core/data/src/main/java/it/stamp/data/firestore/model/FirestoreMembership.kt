@@ -1,0 +1,14 @@
+package it.stamp.data.firestore.model
+
+import com.google.firebase.Timestamp
+
+data class FirestoreMembership(
+    val membershipId: String = String(),
+    val groupId: String = String(),
+    val userId: String = String(),
+    val isLeader: Boolean = false,
+    val nickname: String = String(),
+    val profileImage: String = String(),
+    val joinedAt: Timestamp = Timestamp.now(),
+    val updatedAt: Timestamp = Timestamp.now(),
+)
