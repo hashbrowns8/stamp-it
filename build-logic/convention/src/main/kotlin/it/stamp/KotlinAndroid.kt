@@ -19,6 +19,7 @@ internal inline fun <reified T: KotlinBaseExtension> Project.configureKotlin() =
         optIn.addAll(
             "kotlin.time.ExperimentalTime",
             "kotlin.uuid.ExperimentalUuidApi",
+            "kotlinx.coroutines.ExperimentalCoroutinesApi"
         )
     }
 }
