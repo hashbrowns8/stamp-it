@@ -4,10 +4,14 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import it.stamp.data.service.FirebaseAuthenticationService
-import it.stamp.data.repository.FirebaseMembershipRepository
-import it.stamp.domain.service.AuthenticationService
+import it.stamp.data.repository.MembershipDataRepository
+import it.stamp.data.repository.MissionDataRepository
+import it.stamp.data.repository.StampDataRepository
+import it.stamp.data.repository.UserDataRepository
 import it.stamp.domain.repository.MembershipRepository
+import it.stamp.domain.repository.MissionRepository
+import it.stamp.domain.repository.StampRepository
+import it.stamp.domain.repository.UserRepository
 import javax.inject.Singleton
 
 @Module
@@ -15,13 +19,17 @@ import javax.inject.Singleton
 abstract class RepositoryModule {
     @Binds
     @Singleton
-    abstract fun bindAuthenticationRepository(
-        repository: FirebaseAuthenticationService
-    ): AuthenticationService
+    abstract fun bindMembershipRepository(repository: MembershipDataRepository): MembershipRepository
 
     @Binds
     @Singleton
-    abstract fun bindMembershipRepository(
-        repository: FirebaseMembershipRepository
-    ): MembershipRepository
+    abstract fun bindMissionRepository(repository: MissionDataRepository): MissionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindStampRepository(repository: StampDataRepository): StampRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRepository(repository: UserDataRepository): UserRepository
 }
