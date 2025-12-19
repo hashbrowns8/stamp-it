@@ -34,14 +34,7 @@ import it.stamp.designsystem.theme.Gray300
 import it.stamp.designsystem.theme.StampItTheme
 import it.stamp.designsystem.theme.bodyExtraSmall
 import it.stamp.model.ids.UserId
-
-data class LeaderboardMember(
-    val id: UserId,
-    val displayName: String,
-    val avatar: String?,
-    val rank: Int,
-    val stamps: Int,
-)
+import it.stamp.model.stamp.LeaderboardMember
 
 @Composable
 fun Leaderboard(
@@ -124,28 +117,28 @@ private fun LeaderboardPreview() {
                 LeaderboardMember(
                     id = UserId("1"),
                     displayName = "엄마",
-                    avatar = null,
+                    avatar = String(),
                     rank = 1,
                     stamps = 22,
                 ),
                 LeaderboardMember(
                     id = UserId("2"),
                     displayName = "유진",
-                    avatar = null,
+                    avatar = String(),
                     rank = 2,
                     stamps = 20,
                 ),
                 LeaderboardMember(
                     id = UserId("3"),
                     displayName = "파덜",
-                    avatar = null,
+                    avatar = String(),
                     rank = 3,
                     stamps = 12,
                 ),
                 LeaderboardMember(
                     id = UserId("4"),
                     displayName = "나",
-                    avatar = null,
+                    avatar = String(),
                     rank = 4,
                     stamps = 8,
                 ),
