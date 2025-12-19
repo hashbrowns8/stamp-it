@@ -15,4 +15,5 @@ android {
 
 dependencies {
     api(projects.core.designsystem)
+    implementation(libs.coil.compose)
 }
