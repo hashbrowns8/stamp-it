@@ -12,9 +12,11 @@ import it.stamp.model.user.User
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Singleton
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
+@Singleton
 class BootstrapNewUserUseCase @Inject constructor(
     private val bootstrapService: UserBootstrapService,
 ) {

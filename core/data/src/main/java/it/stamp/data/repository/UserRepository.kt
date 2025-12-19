@@ -1,21 +1,16 @@
 package it.stamp.data.repository
 
-import com.google.firebase.firestore.FirebaseFirestore
-import it.stamp.data.model.FirestoreUser
-import it.stamp.data.util.user
-import it.stamp.data.util.userDocument
+import it.stamp.data.firestore.mapper.UserMapper
+import it.stamp.data.firestore.source.UserFirestoreDataSource
 import it.stamp.domain.repository.UserRepository
 import it.stamp.model.ids.UserId
 import it.stamp.model.user.User
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirebaseUserRepository @Inject constructor(
-    private val firestore: FirebaseFirestore
+class UserDataRepository @Inject constructor(
+    private val dataSource: UserFirestoreDataSource,
 ) : UserRepository {
 
-    override suspend fun getUser(id: UserId): User =
-        firestore.userDocument(id.value)
-            .get()
-            .await()
+    override suspend fun findUserById(id: UserId): User? =
+        dataSource.read(id.value)?.let(UserMapper::toDomainModel)
 }

@@ -4,5 +4,5 @@ import it.stamp.model.ids.UserId
 import it.stamp.model.user.User
 
 interface UserRepository {
-    suspend fun getUser(id: UserId): User
+    suspend fun findUserById(id: UserId): User?
 }

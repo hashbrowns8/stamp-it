@@ -1,34 +1,38 @@
 package it.stamp.data.repository
 
-import com.google.firebase.firestore.FirebaseFirestore
-import it.stamp.data.model.FirestoreMembership
-import it.stamp.data.model.toDomainMembership
-import it.stamp.data.util.groupMembershipDocuments
-import it.stamp.data.util.userMembershipDocument
+import it.stamp.data.firestore.mapper.MembershipMapper
+import it.stamp.data.firestore.source.MembershipFirestoreDataSource
 import it.stamp.domain.repository.MembershipRepository
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.UserId
 import it.stamp.model.membership.Membership
-import timber.log.Timber
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class FirebaseMembershipRepository @Inject constructor(
-    private val firestore: FirebaseFirestore
+class MembershipDataRepository @Inject constructor(
+    private val dataSource: MembershipFirestoreDataSource,
 ) : MembershipRepository {
 
-    override suspend fun getGroupMemberships(groupId: GroupId): List<Membership> =
-        firestore.groupMembershipDocuments(groupId)
-            .mapNotNull { snapshot ->
-                runCatching {
-                    snapshot.toObject(FirestoreMembership::class.java)
-                }.onFailure {
-                    Timber.d(it) // TODO : Crashlytics
-                }.getOrNull()
-                    ?.toDomainMembership()
+    override fun observeGroupMemberships(groupId: GroupId): Flow<List<Membership>> =
+        dataSource
+            .observeGroupMemberships(groupId)
+            .map { memberships ->
+                memberships.map(MembershipMapper::toDomainModel)
             }
 
+    override suspend fun getGroupMemberships(groupId: GroupId): List<Membership> =
+        dataSource
+            .getGroupMemberships(groupId)
+            .map(MembershipMapper::toDomainModel)
+
+    override fun observeUserMembership(userId: UserId): Flow<Membership> =
+        dataSource
+            .observeUserMembership(userId)
+            .map(MembershipMapper::toDomainModel)
+
     override suspend fun getUserMembership(userId: UserId): Membership =
-        firestore.userMembershipDocument(userId)
-            .toObject(FirestoreMembership::class.java)
-            .toDomainMembership()
+        dataSource
+            .getUserMembership(userId)
+            .let(MembershipMapper::toDomainModel)
 }

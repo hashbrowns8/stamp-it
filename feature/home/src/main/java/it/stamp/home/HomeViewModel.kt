@@ -1,8 +1,15 @@
 package it.stamp.home
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import it.stamp.domain.usecase.GetGroupLeaderboardUseCase
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val getGroupLeaderboardUseCase: GetGroupLeaderboardUseCase,
+) : ViewModel() {
+
 }
 
 data class HomeUiState(

@@ -5,7 +5,9 @@ import it.stamp.model.authentication.AuthenticationResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class SignInWithGoogleUseCase @Inject constructor(
     private val repository: AuthenticationService,
 ) {

@@ -8,7 +8,7 @@ data class Member(
     val id: UserId,
     val groupId: GroupId,
     val displayName: String,
-    val avatar: String?,
+    val avatar: String,
     val role: Role,
     val joinedAt: Instant,
 )
