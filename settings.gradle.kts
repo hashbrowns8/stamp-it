@@ -24,7 +24,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "StampIt"
 include(":app")
 include(":core:data")
-include(":core:firestore")
 include(":core:database")
 include(":core:ui")
 include(":core:domain")
