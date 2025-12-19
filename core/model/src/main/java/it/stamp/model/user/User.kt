@@ -5,5 +5,5 @@ import it.stamp.model.ids.UserId
 data class User(
     val id: UserId,
     val displayName: String,
-    val avatar: String?,
+    val avatar: String,
 )
