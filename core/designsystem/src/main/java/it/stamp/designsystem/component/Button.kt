@@ -173,7 +173,7 @@ private fun Button(
 
 @Preview
 @Composable
-private fun ButtonPreview() {
+private fun PrimaryButtonPreview() {
     StampItTheme {
         Column(
             modifier = Modifier
@@ -190,7 +190,22 @@ private fun ButtonPreview() {
                 ) {
                     Text("버튼")
                 }
+            }
+        }
+    }
+}
 
+@Preview
+@Composable
+private fun OutlinedButtonPreview() {
+    StampItTheme {
+        Column(
+            modifier = Modifier
+                .background(White)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            listOf(true, false).forEach { enabled ->
                 OutlinedButton(
                     onClick = {},
                     modifier = Modifier.fillMaxWidth(),
@@ -199,7 +214,22 @@ private fun ButtonPreview() {
                 ) {
                     Text("버튼")
                 }
+            }
+        }
+    }
+}
 
+@Preview
+@Composable
+private fun SecondaryButtonPreview() {
+    StampItTheme {
+        Column(
+            modifier = Modifier
+                .background(White)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            listOf(true, false).forEach { enabled ->
                 SecondaryButton(
                     onClick = {},
                     modifier = Modifier.fillMaxWidth(),

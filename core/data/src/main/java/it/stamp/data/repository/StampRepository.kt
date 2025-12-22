@@ -12,16 +12,20 @@ import javax.inject.Inject
 class StampDataRepository @Inject constructor(
     private val dataSource: StampFirestoreDataSource
 ) : StampRepository {
-    override suspend fun getMonthlyGroupStamps(
+    override suspend fun getMonthlyStampsByGroup(
         groupId: GroupId,
         yearMonth: YearMonth
-    ): List<Stamp> = dataSource
-        .getMonthlyGroupStamps(groupId, yearMonth)
-        .map(StampMapper::toDomainModel)
+    ): Result<List<Stamp>> = runCatching {
+        dataSource
+            .getMonthlyGroupStamps(groupId, yearMonth)
+            .map(StampMapper::toDomainModel)
+    }
 
-    override suspend fun getMonthlyMemberStampCount(
+    override suspend fun getMonthlyStampCountByMember(
         groupId: GroupId,
-        userId: UserId,
-        yearMonth: YearMonth
-    ): Int = dataSource.getMonthlyMemberStampCount(groupId, userId, yearMonth)
+        yearMonth: YearMonth,
+        userId: UserId
+    ): Result<Int> = runCatching {
+        dataSource.getMonthlyMemberStampCount(groupId, yearMonth, userId)
+    }
 }

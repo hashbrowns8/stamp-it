@@ -1,8 +1,8 @@
 package it.stamp.data.service
 
-import it.stamp.domain.service.MemberService
 import it.stamp.domain.repository.StampRepository
 import it.stamp.domain.service.LeaderboardService
+import it.stamp.domain.service.MemberService
 import it.stamp.model.ids.GroupId
 import it.stamp.model.stamp.LeaderboardMember
 import kotlinx.coroutines.async
@@ -18,34 +18,33 @@ class FirestoreLeaderboardService @Inject constructor(
     private val memberService: MemberService,
     private val stampRepository: StampRepository
 ) : LeaderboardService {
-    override suspend fun getGroupLeaderboard(
-        groupId: GroupId
-    ): List<LeaderboardMember> = coroutineScope {
-        val members = memberService.getGroupMembers(groupId)
+    override suspend fun getGroupLeaderboard(groupId: GroupId): Result<List<LeaderboardMember>> =
+        coroutineScope {
+            runCatching {
+                val members = memberService.getMembersByGroup(groupId)
+                    .getOrThrow()
 
-        val yearMonth = Clock.System
-            .todayIn(TimeZone.currentSystemDefault())
-            .yearMonth
+                val yearMonth = Clock.System
+                    .todayIn(TimeZone.currentSystemDefault())
+                    .yearMonth
 
-        members.map { member ->
-            async {
-                val stampCount =
-                    stampRepository.getMonthlyMemberStampCount(groupId, member.id, yearMonth)
+                members.map { member ->
+                    async {
+                        val stampCount = stampRepository
+                            .getMonthlyStampCountByMember(groupId, yearMonth, member.id)
+                            .getOrDefault(0)
 
-                with(member) {
-                    LeaderboardMember(
-                        id = id,
-                        displayName = displayName,
-                        avatar = avatar,
-                        rank = 0,
-                        stamps = stampCount
-                    )
-                }
+                        LeaderboardMember(
+                            member,
+                            rank = 0,
+                            stamps = stampCount
+                        )
+                    }
+                }.awaitAll()
+                    .sortedByDescending { it.stamps }
+                    .mapIndexed { index, leaderboardMember ->
+                        leaderboardMember.copy(rank = index + 1)
+                    }
             }
-        }.awaitAll()
-            .sortedByDescending { it.stamps }
-            .mapIndexed { index, leaderboardMember ->
-                leaderboardMember.copy(rank = index + 1)
-            }
-    }
+        }
 }

@@ -17,15 +17,13 @@ class FirebaseAuthenticationService @Inject constructor(
     private val userDataSource: UserFirestoreDataSource,
 ) : AuthenticationService {
 
-    override val user: Flow<User?> = authenticationProvider.user
+    override val me: Flow<User?> = authenticationProvider.user
         .flatMapLatest { userFirebase ->
             if (userFirebase == null) return@flatMapLatest flowOf(null)
 
             userDataSource.observe(userFirebase.uid)
                 .map { userFirestore ->
-                    userFirestore
-                        ?.let(UserMapper::toDomainModel)
-                        ?: UserMapper.toDomainModel(userFirebase)
+                    userFirestore?.let(UserMapper::toDomainModel)
                 }
         }
 

@@ -1,8 +1,8 @@
 package it.stamp.domain.usecase
 
+import it.stamp.domain.generator.DisplayNameGenerator
+import it.stamp.domain.generator.InviteCodeGenerator
 import it.stamp.domain.service.UserBootstrapService
-import it.stamp.domain.util.DisplayNameGenerator
-import it.stamp.domain.util.InviteCodeGenerator
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.MembershipId
 import it.stamp.model.membership.Group
@@ -10,8 +10,6 @@ import it.stamp.model.membership.Membership
 import it.stamp.model.membership.Role
 import it.stamp.model.user.User
 import jakarta.inject.Inject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Singleton
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
@@ -20,7 +18,7 @@ import kotlin.uuid.Uuid
 class BootstrapNewUserUseCase @Inject constructor(
     private val bootstrapService: UserBootstrapService,
 ) {
-    suspend operator fun invoke(user: User) = withContext(Dispatchers.IO) {
+    suspend operator fun invoke(user: User): Result<Unit> {
         val displayName = DisplayNameGenerator.generate(user.id.value)
 
         val user = user.copy(displayName = displayName)
@@ -42,6 +40,6 @@ class BootstrapNewUserUseCase @Inject constructor(
             joinedAt = Clock.System.now(),
         )
 
-        bootstrapService.bootstrap(user, group, membership)
+        return bootstrapService.bootstrap(user, group, membership)
     }
 }

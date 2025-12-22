@@ -11,4 +11,7 @@ data class Member(
     val avatar: String,
     val role: Role,
     val joinedAt: Instant,
-)
+)  {
+    val isLeader: Boolean
+        get() = role == Role.LEADER
+}

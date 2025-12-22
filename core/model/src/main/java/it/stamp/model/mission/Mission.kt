@@ -23,7 +23,7 @@ data class Mission(
     val updatedAt: Instant? = null,
 ) {
     val isOverdue: Boolean
-        get() = status.isInProgress && Clock.System.todayIn(TimeZone.currentSystemDefault()) > dueDate
+        get() = !isCompleted && Clock.System.todayIn(TimeZone.currentSystemDefault()) > dueDate
 
     val remainingDays: Int
         get() = Clock.System.todayIn(TimeZone.currentSystemDefault()).daysUntil(dueDate)

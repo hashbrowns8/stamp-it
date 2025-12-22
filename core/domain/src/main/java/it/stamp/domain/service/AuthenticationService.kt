@@ -5,7 +5,7 @@ import it.stamp.model.user.User
 import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationService {
-    val user: Flow<User?>
+    val me: Flow<User?>
 
     suspend fun signInWithGoogle(idToken: String): AuthenticationResult
 

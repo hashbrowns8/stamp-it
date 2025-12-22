@@ -6,7 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import it.stamp.domain.usecase.BootstrapNewUserUseCase
 import it.stamp.domain.usecase.SignInWithGoogleUseCase
 import it.stamp.model.authentication.AuthenticationResult
-import it.stamp.model.user.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +17,7 @@ class SignInViewModel @Inject constructor(
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
     private val bootstrapNewUserUseCase: BootstrapNewUserUseCase,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<SignInUiState>(SignInUiState.Nothing)
+    private val _uiState = MutableStateFlow<SignInUiState>(SignInUiState.NotAuthenticated)
     val uiState: StateFlow<SignInUiState> = _uiState.asStateFlow()
 
     fun signInWithGoogle(idToken: String) {
@@ -27,14 +26,14 @@ class SignInViewModel @Inject constructor(
                 is AuthenticationResult.Authenticated -> with(result) {
                     if (isNewUser) {
                         bootstrapNewUserUseCase(user)
-                            .onSuccess { user ->
-                                _uiState.value = SignInUiState.Authenticated(user, isNewUser = true)
+                            .onSuccess {
+                                _uiState.value = SignInUiState.Authenticated
                             }
                             .onFailure {
                                 _uiState.value = SignInUiState.Failure(errorMessage = "로그인에 실패하였습니다. :-/") // TODO
                             }
                     } else {
-                        _uiState.value = SignInUiState.Authenticated(user, isNewUser = false)
+                        _uiState.value = SignInUiState.Authenticated
                     }
                 }
                 is AuthenticationResult.Failure -> with(result) {
@@ -46,7 +45,7 @@ class SignInViewModel @Inject constructor(
 }
 
 sealed interface SignInUiState {
-    data object Nothing : SignInUiState
-    data class Authenticated(val user: User, val isNewUser: Boolean) : SignInUiState
+    data object NotAuthenticated : SignInUiState
+    data object Authenticated : SignInUiState
     data class Failure(val errorMessage: String) : SignInUiState
 }

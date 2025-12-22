@@ -1,4 +1,4 @@
-package it.stamp.domain.util
+package it.stamp.domain.generator
 
 import java.security.MessageDigest
 

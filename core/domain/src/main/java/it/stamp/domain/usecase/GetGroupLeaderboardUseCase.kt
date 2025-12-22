@@ -10,6 +10,6 @@ import javax.inject.Singleton
 class GetGroupLeaderboardUseCase @Inject constructor(
     private val leaderboardService: LeaderboardService
 ) {
-    suspend operator fun invoke(groupId: GroupId): List<LeaderboardMember> =
+    suspend operator fun invoke(groupId: GroupId): Result<List<LeaderboardMember>> =
         leaderboardService.getGroupLeaderboard(groupId)
 }

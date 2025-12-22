@@ -1,4 +1,4 @@
-package it.stamp.domain.util
+package it.stamp.domain.generator
 
 import it.stamp.model.membership.InviteCode
 import kotlin.uuid.Uuid

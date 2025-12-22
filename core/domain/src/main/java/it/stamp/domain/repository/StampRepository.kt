@@ -6,11 +6,14 @@ import it.stamp.model.stamp.Stamp
 import kotlinx.datetime.YearMonth
 
 interface StampRepository {
-    suspend fun getMonthlyGroupStamps(groupId: GroupId, yearMonth: YearMonth): List<Stamp>
-
-    suspend fun getMonthlyMemberStampCount(
+    suspend fun getMonthlyStampsByGroup(
         groupId: GroupId,
-        userId: UserId,
         yearMonth: YearMonth,
-    ): Int
+    ): Result<List<Stamp>>
+
+    suspend fun getMonthlyStampCountByMember(
+        groupId: GroupId,
+        yearMonth: YearMonth,
+        userId: UserId,
+    ): Result<Int>
 }

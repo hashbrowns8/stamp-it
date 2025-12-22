@@ -30,7 +30,7 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import it.stamp.designsystem.icon.Icons
+import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.icon.Logo
 import it.stamp.designsystem.theme.Black
 import it.stamp.designsystem.theme.Gray400
@@ -52,7 +52,7 @@ internal fun SignInScreen(
             is SignInUiState.Failure -> {
 
             }
-            SignInUiState.Nothing -> {}
+            SignInUiState.NotAuthenticated -> {}
         }
     }
 
@@ -102,7 +102,7 @@ private fun SignInScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Image(
-                    imageVector = Icons.Logo,
+                    imageVector = Drawables.Logo,
                     contentDescription = null,
                     modifier = Modifier.height(56.dp),
                     contentScale = ContentScale.FillHeight,

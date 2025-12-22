@@ -1,4 +1,4 @@
-package it.stamp.home
+package it.stamp.home.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -22,17 +21,18 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import it.stamp.designsystem.icon.ChevronRight
-import it.stamp.designsystem.icon.Icons
+import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Gray500
 import it.stamp.designsystem.theme.Gray800
 import it.stamp.designsystem.theme.StampItTheme
 import it.stamp.designsystem.theme.White
+import it.stamp.home.R
 
 @Composable
 fun SectionHeader(
     title: String,
     description: String,
-    onViewAllClick: () -> Unit,
+    onViewMoreClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -55,7 +55,7 @@ fun SectionHeader(
                 modifier = Modifier
                     .wrapContentWidth()
                     .height(32.dp)
-                    .clickable(onClick = onViewAllClick),
+                    .clickable(onClick = onViewMoreClick),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
@@ -65,7 +65,7 @@ fun SectionHeader(
                 )
 
                 Icon(
-                    imageVector = Icons.ChevronRight,
+                    imageVector = Drawables.ChevronRight,
                     contentDescription = null,
                 )
             }
@@ -80,10 +80,8 @@ private fun SectionHeaderPreview() {
         SectionHeader(
             title = "내 미션",
             description = "이번 주 용감한 호랑이님에게 부여된 미션이에요",
-            onViewAllClick = {},
-            modifier = Modifier
-                .background(White)
-                .padding(16.dp),
+            onViewMoreClick = {},
+            modifier = Modifier.background(White),
         )
     }
 }

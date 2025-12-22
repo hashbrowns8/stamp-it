@@ -1,4 +1,4 @@
-package it.stamp.home
+package it.stamp.home.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,23 +8,26 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.icon.FirstRank
-import it.stamp.designsystem.icon.Icons
 import it.stamp.designsystem.icon.SecondRank
 import it.stamp.designsystem.icon.ThirdRank
 import it.stamp.designsystem.theme.Black
@@ -33,21 +36,29 @@ import it.stamp.designsystem.theme.Gray25
 import it.stamp.designsystem.theme.Gray300
 import it.stamp.designsystem.theme.StampItTheme
 import it.stamp.designsystem.theme.bodyExtraSmall
-import it.stamp.model.ids.UserId
+import it.stamp.home.R
+import it.stamp.home.sampleMe
+import it.stamp.home.sampleRankings
+import it.stamp.model.membership.Member
 import it.stamp.model.stamp.LeaderboardMember
 
 @Composable
 fun Leaderboard(
+    user: Member,
     members: List<LeaderboardMember>,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
         LazyRow(
+            modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(members) { member ->
-                Item(member)
+                Item(
+                    member,
+                    isMe = member.member.id == user.id,
+                )
             }
         }
     }
@@ -56,6 +67,7 @@ fun Leaderboard(
 @Composable
 private fun Item(
     member: LeaderboardMember,
+    isMe: Boolean,
     modifier: Modifier = Modifier,
 ) = with(member) {
     Column(
@@ -80,9 +92,9 @@ private fun Item(
 
             if (member.rank in 1..3) {
                 val imageVector = when (member.rank) {
-                    1 -> Icons.FirstRank
-                    2 -> Icons.SecondRank
-                    else -> Icons.ThirdRank
+                    1 -> Drawables.FirstRank
+                    2 -> Drawables.SecondRank
+                    else -> Drawables.ThirdRank
                 }
                 Image(
                     imageVector,
@@ -95,8 +107,15 @@ private fun Item(
         Spacer(Modifier.height(4.dp))
 
         Text(
-            text = displayName,
+            text = if (isMe) {
+                stringResource(R.string.me)
+            } else {
+                this@with.member.displayName
+            },
+            modifier = Modifier.widthIn(max = 60.dp),
             color = Black,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
             style = MaterialTheme.typography.bodySmall,
         )
 
@@ -112,39 +131,6 @@ private fun Item(
 @Composable
 private fun LeaderboardPreview() {
     StampItTheme {
-        val members = remember {
-            listOf(
-                LeaderboardMember(
-                    id = UserId("1"),
-                    displayName = "엄마",
-                    avatar = String(),
-                    rank = 1,
-                    stamps = 22,
-                ),
-                LeaderboardMember(
-                    id = UserId("2"),
-                    displayName = "유진",
-                    avatar = String(),
-                    rank = 2,
-                    stamps = 20,
-                ),
-                LeaderboardMember(
-                    id = UserId("3"),
-                    displayName = "파덜",
-                    avatar = String(),
-                    rank = 3,
-                    stamps = 12,
-                ),
-                LeaderboardMember(
-                    id = UserId("4"),
-                    displayName = "나",
-                    avatar = String(),
-                    rank = 4,
-                    stamps = 8,
-                ),
-            )
-        }
-
-        Leaderboard(members)
+        Leaderboard(sampleMe, sampleRankings)
     }
 }

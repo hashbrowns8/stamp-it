@@ -30,6 +30,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 "implementation"(libs.library("coil-compose"))
                 "implementation"(libs.library("coil-network-okhttp"))
                 "implementation"(libs.library("kotlinx-serialization-json"))
+                "implementation"(libs.library("kotlinx-collections-immutable"))
                 "implementation"(libs.library("timber"))
                 "testImplementation"(libs.library("junit"))
                 "androidTestImplementation"(libs.library("androidx-junit"))

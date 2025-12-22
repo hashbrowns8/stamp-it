@@ -1,6 +1,7 @@
 package it.stamp.data.firestore.mapper
 
 import it.stamp.data.firestore.model.FirestoreStamp
+import it.stamp.data.firestore.util.toKotlinInstant
 import it.stamp.model.ids.MissionId
 import it.stamp.model.ids.StampId
 import it.stamp.model.stamp.Stamp
