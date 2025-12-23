@@ -32,7 +32,7 @@ import it.stamp.designsystem.theme.Gray50
 import it.stamp.designsystem.theme.Gray500
 import it.stamp.designsystem.theme.Red400
 import it.stamp.designsystem.theme.Red50
-import it.stamp.designsystem.theme.StampItTheme
+import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 
 enum class ButtonSize {
@@ -174,7 +174,7 @@ private fun Button(
 @Preview
 @Composable
 private fun PrimaryButtonPreview() {
-    StampItTheme {
+    StampTheme {
         Column(
             modifier = Modifier
                 .background(White)
@@ -198,7 +198,7 @@ private fun PrimaryButtonPreview() {
 @Preview
 @Composable
 private fun OutlinedButtonPreview() {
-    StampItTheme {
+    StampTheme {
         Column(
             modifier = Modifier
                 .background(White)
@@ -222,7 +222,7 @@ private fun OutlinedButtonPreview() {
 @Preview
 @Composable
 private fun SecondaryButtonPreview() {
-    StampItTheme {
+    StampTheme {
         Column(
             modifier = Modifier
                 .background(White)

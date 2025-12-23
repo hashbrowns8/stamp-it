@@ -24,7 +24,7 @@ import it.stamp.designsystem.icon.ChevronRight
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Gray500
 import it.stamp.designsystem.theme.Gray800
-import it.stamp.designsystem.theme.StampItTheme
+import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.home.R
 
@@ -76,7 +76,7 @@ fun SectionHeader(
 @Preview
 @Composable
 private fun SectionHeaderPreview() {
-    StampItTheme {
+    StampTheme {
         SectionHeader(
             title = "내 미션",
             description = "이번 주 용감한 호랑이님에게 부여된 미션이에요",

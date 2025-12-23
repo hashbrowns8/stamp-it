@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import it.stamp.designsystem.theme.Gray50
-import it.stamp.designsystem.theme.StampItTheme
+import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.home.R
 import it.stamp.home.sampleGroup
@@ -140,7 +140,7 @@ fun MembersMissions(
 @Preview
 @Composable
 private fun MembersMissionsPreview() {
-    StampItTheme {
+    StampTheme {
         MembersMissions(
             userDisplayName = sampleMe.displayName,
             groupName = sampleGroup.name,
@@ -156,7 +156,7 @@ private fun MembersMissionsPreview() {
 @Preview
 @Composable
 private fun MembersMissionsEmptyPreview() {
-    StampItTheme {
+    StampTheme {
         MembersMissions(
             userDisplayName = sampleMe.displayName,
             groupName = sampleGroup.name,

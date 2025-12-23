@@ -1,6 +1,7 @@
 package it.stamp.home
 
 import it.stamp.model.ids.GroupId
+import it.stamp.model.ids.MissionId
 import it.stamp.model.ids.UserId
 
 sealed interface HomeUiAction {
@@ -10,6 +11,7 @@ sealed interface HomeUiAction {
     data object OnRequestNewMissionClick : HomeUiAction
     data class OnViewMemberMissionsMoreClick(val groupId: GroupId) : HomeUiAction
     data class OnAssignNewMissionClick(val assigneeId: UserId?) : HomeUiAction
+    data class OnCompleteMissionClick(val missionId: MissionId) : HomeUiAction
 }
 
 typealias OnUiAction = (HomeUiAction) -> Unit

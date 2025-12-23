@@ -11,7 +11,11 @@ import it.stamp.model.mission.Mission
 import it.stamp.model.mission.MissionCategory
 import it.stamp.model.mission.MissionStatus
 import it.stamp.model.stamp.LeaderboardMember
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.todayIn
 import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
@@ -69,6 +73,32 @@ val sampleMyMissions = listOf(
         assignee = sampleMe.id,
         assigner = UserId("4"),
         dueDate = LocalDate(2025, 12, 22),
+        status = MissionStatus.ASSIGNED,
+        createdAt = Clock.System.now(),
+    ),
+    Mission(
+        id = MissionId("2"),
+        groupId = sampleGroup.id,
+        category = MissionCategory.CHORE,
+        title = "이불 빨고 말리기",
+        assignee = sampleMe.id,
+        assigner = UserId("4"),
+        dueDate = Clock.System
+            .todayIn(TimeZone.currentSystemDefault())
+            .plus(5, DateTimeUnit.DAY),
+        status = MissionStatus.ASSIGNED,
+        createdAt = Clock.System.now(),
+    ),
+    Mission(
+        id = MissionId("3"),
+        groupId = sampleGroup.id,
+        category = MissionCategory.HEALTH,
+        title = "건강한 수면 환경 함께 조성하기",
+        assignee = sampleMe.id,
+        assigner = UserId("4"),
+        dueDate = Clock.System
+            .todayIn(TimeZone.currentSystemDefault())
+            .plus(7, DateTimeUnit.DAY),
         status = MissionStatus.ASSIGNED,
         createdAt = Clock.System.now(),
     ),

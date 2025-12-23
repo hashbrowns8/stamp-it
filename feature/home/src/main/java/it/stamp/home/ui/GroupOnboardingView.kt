@@ -22,7 +22,7 @@ import it.stamp.designsystem.icon.CharacterRed
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Gray800
 import it.stamp.designsystem.theme.Red50
-import it.stamp.designsystem.theme.StampItTheme
+import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.home.R
 
@@ -60,7 +60,7 @@ fun GroupOnboardingView(
 @Preview
 @Composable
 private fun GroupOnboardingViewPreview() {
-    StampItTheme {
+    StampTheme {
         GroupOnboardingView(
             onClick = {
             },

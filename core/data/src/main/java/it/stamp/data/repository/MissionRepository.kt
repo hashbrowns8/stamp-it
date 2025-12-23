@@ -4,8 +4,10 @@ import it.stamp.data.firestore.mapper.MissionMapper
 import it.stamp.data.firestore.source.MissionFirestoreDataSource
 import it.stamp.domain.repository.MissionRepository
 import it.stamp.model.ids.GroupId
+import it.stamp.model.ids.MissionId
 import it.stamp.model.ids.UserId
 import it.stamp.model.mission.Mission
+import it.stamp.model.mission.MissionStatus
 import javax.inject.Inject
 
 class MissionDataRepository @Inject constructor(
@@ -27,5 +29,14 @@ class MissionDataRepository @Inject constructor(
         dataSource
             .getMissionsByAssigneeThisWeek(assigneeId, groupId)
             .map(MissionMapper::toDomainModel)
+    }
+
+    override suspend fun updateMissionStatus(
+        missionId: MissionId,
+        status: MissionStatus
+    ): Result<Mission> = runCatching {
+        dataSource
+            .updateMissionStatus(missionId, status)
+            .let(MissionMapper::toDomainModel)
     }
 }

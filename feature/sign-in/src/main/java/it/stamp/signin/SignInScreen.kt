@@ -34,7 +34,7 @@ import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.icon.Logo
 import it.stamp.designsystem.theme.Black
 import it.stamp.designsystem.theme.Gray400
-import it.stamp.designsystem.theme.StampItTheme
+import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import kotlinx.coroutines.launch
 
@@ -156,7 +156,7 @@ private fun SignInScreen(
 @Preview
 @Composable
 private fun SignInScreenPreview() {
-    StampItTheme {
+    StampTheme {
         SignInScreen(
             onSignInWithAppleClick = {},
             onSignInWithGoogleClick = {},

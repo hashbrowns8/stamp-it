@@ -34,7 +34,7 @@ import it.stamp.designsystem.theme.Black
 import it.stamp.designsystem.theme.Gray200
 import it.stamp.designsystem.theme.Gray25
 import it.stamp.designsystem.theme.Gray300
-import it.stamp.designsystem.theme.StampItTheme
+import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.bodyExtraSmall
 import it.stamp.home.R
 import it.stamp.home.sampleMe
@@ -130,7 +130,7 @@ private fun Item(
 @Preview(showBackground = true)
 @Composable
 private fun LeaderboardPreview() {
-    StampItTheme {
+    StampTheme {
         Leaderboard(sampleMe, sampleRankings)
     }
 }

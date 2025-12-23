@@ -29,7 +29,7 @@ import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.icon.Plus
 import it.stamp.designsystem.theme.Gray500
 import it.stamp.designsystem.theme.Gray800
-import it.stamp.designsystem.theme.StampItTheme
+import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 
 @Composable
@@ -92,7 +92,7 @@ object TopAppBarDefaults {
 @Preview
 @Composable
 private fun TopAppBarPreview() {
-    StampItTheme {
+    StampTheme {
         TopAppBar(
             title = {
                 Text("미션 전달하기")

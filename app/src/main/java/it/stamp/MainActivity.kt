@@ -19,7 +19,8 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dagger.hilt.android.AndroidEntryPoint
-import it.stamp.designsystem.theme.StampItTheme
+import it.stamp.designsystem.component.StampSnackbar
+import it.stamp.designsystem.theme.StampTheme
 import it.stamp.main.navigation.Main
 import it.stamp.main.navigation.mainScreenEntry
 import it.stamp.model.membership.Membership
@@ -38,7 +39,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            StampItTheme {
+            StampTheme {
                 val me: User? by viewModel.me.collectAsStateWithLifecycle()
 
                 val membership: Membership? by viewModel.membership.collectAsStateWithLifecycle()
@@ -56,7 +57,12 @@ class MainActivity : ComponentActivity() {
 
                     Scaffold(
                         snackbarHost = {
-                            SnackbarHost(snackbarHostState)
+                            SnackbarHost(
+                                hostState = snackbarHostState,
+                                snackbar = { snackbarData ->
+                                    StampSnackbar(snackbarData)
+                                },
+                            )
                         },
                     ) { _ : PaddingValues ->
                         NavDisplay(

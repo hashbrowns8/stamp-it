@@ -6,11 +6,13 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import it.stamp.domain.usecase.CompleteMissionUseCase
 import it.stamp.domain.usecase.GetGroupByIdUseCase
 import it.stamp.domain.usecase.GetGroupLeaderboardUseCase
 import it.stamp.domain.usecase.GetGroupMembersUseCase
 import it.stamp.domain.usecase.GetMembersMissionsUseCase
 import it.stamp.domain.usecase.GetMyMissionsThisWeekUseCase
+import it.stamp.model.ids.MissionId
 import it.stamp.model.membership.Group
 import it.stamp.model.membership.Member
 import it.stamp.model.membership.Membership
@@ -20,8 +22,11 @@ import it.stamp.model.user.User
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -35,8 +40,9 @@ class HomeViewModel @Inject constructor(
     private val getGroupByIdUseCase: GetGroupByIdUseCase,
     private val getGroupMembersUseCase: GetGroupMembersUseCase,
     private val getGroupLeaderboardUseCase: GetGroupLeaderboardUseCase,
-    private val getMyMissionsThisWeekUseCase: GetMyMissionsThisWeekUseCase,
+    private val getMyMissionsThisWeekUseCase: GetMyMissionsThisWeekUseCase, // TODO : ObserveMyMissions..
     private val getMembersMissionsUseCase: GetMembersMissionsUseCase,
+    private val completeMissionUseCase: CompleteMissionUseCase,
 ) : ViewModel() {
 
     private val user = MutableStateFlow<User?>(null)
@@ -95,6 +101,25 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             this@HomeViewModel.user.emit(me)
             this@HomeViewModel.membership.emit(membership)
+        }
+    }
+
+    private val _uiEvent = MutableSharedFlow<HomeUiEvent>()
+    val uiEvent: SharedFlow<HomeUiEvent> = _uiEvent.asSharedFlow()
+
+    fun completeMission(missionId: MissionId) {
+        viewModelScope.launch {
+            completeMissionUseCase(missionId)
+                .onSuccess { mission ->
+                    _uiEvent.emit(HomeUiEvent.MissionCompleted(mission))
+                }
+                .onFailure { throwable ->
+                    if (throwable is IOException) {
+                        _uiEvent.emit(HomeUiEvent.OperationFailed("네트워크 연결에 실패하였습니다"))
+                    } else {
+                        _uiEvent.emit(HomeUiEvent.OperationFailed("알 수 없는 오류가 발생하였습니다"))
+                    }
+                }
         }
     }
 }

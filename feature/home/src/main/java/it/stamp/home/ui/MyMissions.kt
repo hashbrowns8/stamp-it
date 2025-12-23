@@ -35,13 +35,12 @@ import it.stamp.designsystem.theme.Black
 import it.stamp.designsystem.theme.Gray25
 import it.stamp.designsystem.theme.Gray600
 import it.stamp.designsystem.theme.Gray800
-import it.stamp.designsystem.theme.StampItTheme
+import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.designsystem.theme.bodyExtraSmall
 import it.stamp.home.R
 import it.stamp.model.ids.MissionId
 import it.stamp.model.mission.MissionCategory
-import it.stamp.model.mission.MissionStatus
 import it.stamp.ui.backgroundColor
 import it.stamp.ui.image
 import kotlinx.datetime.LocalDate
@@ -53,7 +52,6 @@ data class MyMission(
     val title: String,
     val dueDate: LocalDate,
     val assignerName: String,
-    val status: MissionStatus,
 )
 
 @Composable
@@ -62,6 +60,7 @@ fun MyMissions(
     onViewMoreClick: () -> Unit,
     missions: List<MyMission>,
     onRequestNewMissionClick: () -> Unit,
+    onMissionCompleteClick: (MissionId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
@@ -90,7 +89,11 @@ fun MyMissions(
                 Spacer(Modifier)
 
                 missions.forEach { mission ->
-                    MyMissionCard(mission, modifier = Modifier.fillMaxHeight())
+                    MyMissionCard(
+                        mission,
+                        onCompleteClick = onMissionCompleteClick,
+                        modifier = Modifier.fillMaxHeight(),
+                    )
                 }
 
                 Spacer(Modifier)
@@ -104,6 +107,7 @@ fun MyMissions(
 @Composable
 fun MyMissionCard(
     mission: MyMission,
+    onCompleteClick: (MissionId) -> Unit,
     modifier: Modifier = Modifier,
 ) = with(mission) {
     Column(
@@ -131,7 +135,6 @@ fun MyMissionCard(
             ) {
                 Text(
                     text = "${dueDate.month.number}/${dueDate.day}",
-
                     color = Gray800,
                     style = MaterialTheme.typography.bodyExtraSmall,
                 )
@@ -175,7 +178,9 @@ fun MyMissionCard(
                 .height(40.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(White)
-                .clickable(onClick = {}),
+                .clickable {
+                    onCompleteClick(id)
+                },
             contentAlignment = Alignment.Center,
         ) {
             Text(
@@ -190,12 +195,13 @@ fun MyMissionCard(
 @Preview(showBackground = true)
 @Composable
 private fun MyMissionsEmptyPreview() {
-    StampItTheme {
+    StampTheme {
         MyMissions(
             userDisplayName = "즐거운 호랑이-4325df4",
             onViewMoreClick = {},
             missions = emptyList(),
             onRequestNewMissionClick = {},
+            onMissionCompleteClick = {},
         )
     }
 }
@@ -203,7 +209,7 @@ private fun MyMissionsEmptyPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun MyMissionsPreview() {
-    StampItTheme {
+    StampTheme {
         val myMissions = remember {
             listOf(
                 MyMission(
@@ -212,7 +218,6 @@ private fun MyMissionsPreview() {
                     title = "이불 빨고 말리기",
                     dueDate = LocalDate(2023, 12, 15),
                     assignerName = "즐거운 호랑이-AOSTEST",
-                    status = MissionStatus.ASSIGNED,
                 ),
                 MyMission(
                     id = MissionId("2"),
@@ -220,15 +225,16 @@ private fun MyMissionsPreview() {
                     title = "건강한 수면 환경 함께 조성하기",
                     dueDate = LocalDate(2023, 12, 18),
                     assignerName = "고나리",
-                    status = MissionStatus.ASSIGNED,
                 ),
             )
         }
+
         MyMissions(
             userDisplayName = "즐거운 호랑이-4325df4",
             onViewMoreClick = {},
             missions = myMissions,
             onRequestNewMissionClick = {},
+            onMissionCompleteClick = {},
         )
     }
 }

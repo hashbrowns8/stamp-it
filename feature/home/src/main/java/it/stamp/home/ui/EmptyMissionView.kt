@@ -19,7 +19,7 @@ import it.stamp.designsystem.component.ButtonSize
 import it.stamp.designsystem.component.SecondaryButton
 import it.stamp.designsystem.theme.Gray50
 import it.stamp.designsystem.theme.Gray800
-import it.stamp.designsystem.theme.StampItTheme
+import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.home.R
 
@@ -56,7 +56,7 @@ fun EmptyMissionView(
 @Preview
 @Composable
 private fun EmptyMissionViewPreview() {
-    StampItTheme {
+    StampTheme {
         EmptyMissionView(
             stringResource(R.string.no_mission_assigned_to_me),
             stringResource(R.string.request_new_mission),

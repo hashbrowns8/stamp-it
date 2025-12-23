@@ -25,6 +25,10 @@ val Drawables.Check: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.icon_check)
 
+val Drawables.CheckCircle: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.icon_check_circle)
+
 val Drawables.ChevronRight: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.icon_chevron_right)
