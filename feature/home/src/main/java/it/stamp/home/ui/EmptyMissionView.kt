@@ -1,5 +1,6 @@
 package it.stamp.home.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,11 +12,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import it.stamp.designsystem.component.ButtonSize
 import it.stamp.designsystem.component.SecondaryButton
 import it.stamp.designsystem.theme.Gray50
 import it.stamp.designsystem.theme.Gray800
+import it.stamp.designsystem.theme.StampItTheme
+import it.stamp.designsystem.theme.White
+import it.stamp.home.R
 
 @Composable
 fun EmptyMissionView(
@@ -44,5 +50,21 @@ fun EmptyMissionView(
         ) {
             Text(actionLabel)
         }
+    }
+}
+
+@Preview
+@Composable
+private fun EmptyMissionViewPreview() {
+    StampItTheme {
+        EmptyMissionView(
+            stringResource(R.string.no_mission_assigned_to_me),
+            stringResource(R.string.request_new_mission),
+            onActionClick = {
+            },
+            modifier = Modifier
+                .background(White)
+                .padding(24.dp)
+        )
     }
 }

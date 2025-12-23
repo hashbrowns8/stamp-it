@@ -63,6 +63,7 @@ internal fun HomeScreen(
         onUiAction = { uiAction ->
             when (uiAction) { // TODO
                 HomeUiAction.OnNotificationsClick -> {}
+                HomeUiAction.OnGroupOnboardingClick -> {}
                 HomeUiAction.OnViewMyMissionsMoreClick -> {}
                 HomeUiAction.OnRequestNewMissionClick -> {}
                 is HomeUiAction.OnViewMemberMissionsMoreClick -> {}
@@ -143,6 +144,7 @@ private fun Content(
             if (members.none { !it.isLeader }) {
                 GroupOnboardingView(
                     onClick = {
+                        onUiAction(HomeUiAction.OnGroupOnboardingClick)
                     },
                     modifier = Modifier.padding(16.dp),
                 )
@@ -197,10 +199,31 @@ private fun Content(
 @Composable
 private fun HomeScreenPreview() {
     StampItTheme {
+        HomeScreen(
+            HomeUiState.Success(
+                user = sampleMe,
+                group = sampleGroup,
+                members = sampleMembers,
+                rankings = sampleRankings,
+                myMissions = sampleMyMissions,
+                membersMissions = sampleMemberMissions,
+            ),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(White),
+            onUiAction = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeScreenOnlyMePreview() {
+    StampItTheme {
         Content(
             user = sampleMe,
             group = sampleGroup,
-            members = sampleMembers,
+            members = emptyList(),
             rankings = sampleRankings,
             myMissions = emptyList(),
             memberMissions = sampleMemberMissions,

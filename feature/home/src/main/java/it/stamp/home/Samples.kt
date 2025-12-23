@@ -53,7 +53,7 @@ val sampleMembers = listOf(
     Member(
         id = UserId("4"),
         groupId = sampleGroup.id,
-        displayName = "동생",
+        displayName = "행복한 호랑이-ABCDEFG",
         avatar = String(),
         role = Role.MEMBER,
         joinedAt = Clock.System.now(),
