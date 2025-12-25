@@ -43,9 +43,11 @@ dependencies {
     implementation(projects.feature.onboarding)
     implementation(projects.feature.profile)
     implementation(projects.feature.signIn)
+    implementation(projects.feature.splash)
     implementation(projects.feature.stampBoard)
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)

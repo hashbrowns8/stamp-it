@@ -10,10 +10,12 @@ import it.stamp.model.membership.Membership
 import it.stamp.model.user.User
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,15 +24,37 @@ class MainActivityViewModel @Inject constructor(
     observeMembershipByUserUseCase: ObserveMembershipByUserUseCase,
 ) : ViewModel() {
 
-    val me: StateFlow<User?> = observeAuthenticationStateUseCase()
-        .map {
-            (it as? AuthenticationState.Authenticated)?.user
+    val uiState: StateFlow<MainActivityUiState> = observeAuthenticationStateUseCase()
+        .flatMapLatest { state ->
+            (state as? AuthenticationState.Authenticated)
+                ?.user
+                ?.let { user ->
+                    observeMembershipByUserUseCase(user.id)
+                        .map { membership ->
+                            MainActivityUiState.Success(user, membership) as MainActivityUiState
+                        }
+                }
+                ?: flowOf(MainActivityUiState.Success() as MainActivityUiState)
         }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+        .catch { throwable ->
+            val message = if (throwable is IOException) {
+                "네트워크 연결에 실패하였습니다"
+            } else {
+                "오류가 발생하였습니다. 잠시후 다시 시도해주세요."
+            }
 
-    val membership: StateFlow<Membership?> = me.flatMapLatest { me ->
-        me?.id
-            ?.let(observeMembershipByUserUseCase::invoke)
-            ?: flowOf(null)
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+            emit(MainActivityUiState.Failure(message))
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, MainActivityUiState.Loading)
+}
+
+sealed interface MainActivityUiState {
+    data object Loading : MainActivityUiState
+
+    data class Success(
+        val user: User? = null,
+        val membership: Membership? = null,
+    ) : MainActivityUiState
+
+    data class Failure(val message: String) : MainActivityUiState
 }

@@ -64,20 +64,18 @@ fun StampSnackbar(
 
     SnackbarLayout(
         message = {
-            when (val visuals = visuals) {
-                is StampSnackbarVisuals.Default -> {
-                    Text(
-                        text = visuals.message,
-                        color = Gray800,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
-                }
-                is StampSnackbarVisuals.MissionCompletion -> with(visuals) {
-                    ProvideTextStyle(
-                        MaterialTheme.typography.labelSmall.merge(color = Gray800)
-                    ) {
+            ProvideTextStyle(
+                MaterialTheme.typography.labelSmall.merge(color = Gray800)
+            ) {
+                when (val visuals = visuals) {
+                    is StampSnackbarVisuals.Default -> {
+                        Text(
+                            text = visuals.message,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                        )
+                    }
+                    is StampSnackbarVisuals.MissionCompletion -> with(visuals) {
                         MissionCompletionMessage(missionTitle, message)
                     }
                 }
@@ -206,7 +204,7 @@ private fun StampSnackbarPreview() {
 
         LaunchedEffect(Unit) {
             snackbarHostState.showSnackbar(
-                StampSnackbarVisuals.Default("미션 조르기가 전달되지 않았어요. 다시 시도해주세요. 안녕하세요")
+                StampSnackbarVisuals.Default("미션 조르기가 전달되지 않았어요. 다시 시도해주세요.")
             )
         }
     }

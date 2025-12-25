@@ -7,7 +7,7 @@
     <string name="group_onboarding_message">현재 그룹 구성원이 없어요\n미션을 클리어할 수 있도록 그룹을 구성해보세요!</string>
     <string name="group_onboarding_action">그룹 구성하기</string>
     <string name="members_missions_title">멤버 미션</string>
-    <string name="members_mission_description">%1$s님이 %2$s 그룹 멤버들에게 전달한 미션이에요</string>
+    <string name="members_mission_description">%1$s님이 %2$s 멤버들에게 전달한 미션이에요</string>
     <string name="all">전체 보기</string>
     <string name="no_mission_assigned_to_me">아직 부여된 미션이 없어요!</string>
     <string name="no_mission_assigned_by_me">아직 전달한 미션이 없어요!</string>

@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class ObserveAuthenticationStateUseCase @Inject constructor(
     private val authenticationService: AuthenticationService,
 ) {
-    operator fun invoke(): Flow<AuthenticationState> = authenticationService.me
+    operator fun invoke(): Flow<AuthenticationState> = authenticationService.user
         .map { user ->
             if (user == null) {
                 AuthenticationState.NotAuthenticated

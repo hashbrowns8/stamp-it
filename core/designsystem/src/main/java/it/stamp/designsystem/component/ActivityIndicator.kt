@@ -58,7 +58,7 @@ fun ActivityIndicator(
         modifier,
         contentAlignment = Alignment.Center,
     ) {
-        Canvas(modifier = Modifier.size(48.dp)) {
+        Canvas(modifier = Modifier.size(32.dp)) {
             val itemWidth = size.width * (1 - innerRadius) / 2
 
             val itemHeight = size.height / spokeCount
