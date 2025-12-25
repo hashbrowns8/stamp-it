@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import it.stamp.designsystem.icon.ChevronRight
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Gray500
@@ -35,41 +36,43 @@ fun SectionHeader(
     onViewMoreClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(modifier, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        Column(Modifier.weight(1F)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = title,
+                modifier = Modifier.weight(1F),
                 color = Gray800,
+                lineHeight = 1.em,
                 style = MaterialTheme.typography.titleLarge,
             )
 
-            Text(
-                text = description,
-                color = Gray500,
-                style = MaterialTheme.typography.bodySmall.merge(lineBreak = LineBreak.Heading),
-            )
-        }
+            CompositionLocalProvider(LocalContentColor provides Gray500) {
+                Row(
+                    modifier = Modifier
+                        .height(32.dp)
+                        .clickable(onClick = onViewMoreClick)
+                        .padding(start = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(R.string.view_all),
+                        fontWeight = FontWeight.Medium,
+                        style = MaterialTheme.typography.labelSmall,
+                    )
 
-        CompositionLocalProvider(LocalContentColor provides Gray500) {
-            Row(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .height(32.dp)
-                    .clickable(onClick = onViewMoreClick),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(R.string.view_all),
-                    fontWeight = FontWeight.Medium,
-                    style = MaterialTheme.typography.labelSmall,
-                )
-
-                Icon(
-                    imageVector = Drawables.ChevronRight,
-                    contentDescription = null,
-                )
+                    Icon(
+                        imageVector = Drawables.ChevronRight,
+                        contentDescription = null,
+                    )
+                }
             }
         }
+
+        Text(
+            text = description,
+            color = Gray500,
+            style = MaterialTheme.typography.bodySmall.merge(lineBreak = LineBreak.Heading),
+        )
     }
 }
 
