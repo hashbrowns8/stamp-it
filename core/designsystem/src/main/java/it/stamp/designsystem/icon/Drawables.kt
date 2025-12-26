@@ -41,13 +41,13 @@ val Drawables.HomeFilled: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.icon_home_filled)
 
-val Drawables.Mission: ImageVector
+val Drawables.Flag: ImageVector
     @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_mission)
+    get() = ImageVector.vectorResource(R.drawable.icon_flag)
 
-val Drawables.MissionFilled: ImageVector
+val Drawables.FlagFilled: ImageVector
     @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_mission_filled)
+    get() = ImageVector.vectorResource(R.drawable.icon_flag_filled)
 
 val Drawables.MyPage: ImageVector
     @Composable

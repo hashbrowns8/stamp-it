@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import it.stamp.designsystem.component.ActivityIndicator
-import it.stamp.designsystem.component.StampSnackbarVisuals
+import it.stamp.designsystem.component.showMissionCompletionSnackbar
 import it.stamp.designsystem.icon.Bell
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.icon.Logo
@@ -50,16 +50,19 @@ import it.stamp.ui.TopAppBar
 
 @Composable
 internal fun HomeScreen(
+    onNotificationsClick: () -> Unit,
+    onGroupOnboardingClick: () -> Unit,
+    onViewMyMissionsMoreClick: () -> Unit,
+    onViewMembersMissionsMoreClick: () -> Unit,
+    onShowErrorSnackbar: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val user = LocalUser.current
-    val membership = LocalMembership.current
+    val user = LocalUser.current ?: return
+    val membership = LocalMembership.current ?: return
 
     LaunchedEffect(user, membership) {
-        if (user != null && membership != null) {
-            viewModel.setUserAndMembership(user, membership)
-        }
+        viewModel.setUserAndMembership(user, membership)
     }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -72,24 +75,18 @@ internal fun HomeScreen(
         viewModel.uiEvent.collect { uiEvent ->
             when (uiEvent) {
                 is HomeUiEvent.MissionCompleted -> with(uiEvent) {
-                    val missionTitle = mission.title
-
-                    val result = snackbarHostState.showSnackbar(
-                        StampSnackbarVisuals.MissionCompletion(
-                            missionTitle,
-                            message = context.getString(R.string.mission_completed),
-                            actionLabel = context.getString(R.string.cancel),
-                        )
+                    val result = snackbarHostState.showMissionCompletionSnackbar(
+                        mission.title,
+                        message = context.getString(R.string.mission_completed),
+                        actionLabel = context.getString(R.string.cancel),
                     )
 
                     if (result == SnackbarResult.ActionPerformed) {
-                        // cancel
+                        viewModel.cancelMissionCompletion(mission.id)
                     }
                 }
-                is HomeUiEvent.MissionCanceled -> {}
-                is HomeUiEvent.OperationFailed -> {
-
-                }
+                is HomeUiEvent.MissionCompletionCanceled -> {}
+                is HomeUiEvent.OperationFailed -> onShowErrorSnackbar(uiEvent.throwable)
             }
         }
     }
@@ -99,14 +96,17 @@ internal fun HomeScreen(
         modifier,
         onUiAction = { uiAction ->
             when (uiAction) { // TODO
-                HomeUiAction.OnNotificationsClick -> {}
-                HomeUiAction.OnGroupOnboardingClick -> {}
-                HomeUiAction.OnViewMyMissionsMoreClick -> {}
+                HomeUiAction.OnRetryClick -> {
+                    viewModel.retry()
+                }
+                HomeUiAction.OnNotificationsClick -> onNotificationsClick()
+                HomeUiAction.OnGroupOnboardingClick -> onGroupOnboardingClick()
+                HomeUiAction.OnViewMyMissionsMoreClick -> onViewMyMissionsMoreClick()
                 HomeUiAction.OnRequestNewMissionClick -> {}
                 is HomeUiAction.OnCompleteMissionClick -> with(uiAction) {
                     viewModel.completeMission(missionId)
                 }
-                is HomeUiAction.OnViewMemberMissionsMoreClick -> {}
+                is HomeUiAction.OnViewMembersMissionsMoreClick -> onViewMembersMissionsMoreClick()
                 is HomeUiAction.OnAssignNewMissionClick -> {}
             }
         },
@@ -137,7 +137,7 @@ private fun HomeScreen(
                 onUiAction,
             )
         }
-        is HomeUiState.Failure -> {
+        is HomeUiState.Failure -> with(uiState) { // TODO
         }
     }
 }

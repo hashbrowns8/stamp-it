@@ -27,9 +27,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import it.stamp.designsystem.component.StampSnackbar
 import it.stamp.designsystem.component.StampSnackbarVisuals
 import it.stamp.designsystem.theme.StampTheme
-import it.stamp.main.navigation.Main
+import it.stamp.main.navigation.MainNavKey
 import it.stamp.main.navigation.mainScreenEntry
-import it.stamp.signin.navigation.SignIn
+import it.stamp.signin.navigation.SignInNavKey
 import it.stamp.signin.navigation.signInScreenEntry
 import it.stamp.splash.SplashScreen
 import it.stamp.ui.LocalMembership
@@ -78,9 +78,9 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 StampNaivagionDisplay(
                                     startDestination = if (user == null) {
-                                        SignIn
+                                        SignInNavKey
                                     } else {
-                                        Main
+                                        MainNavKey
                                     },
                                 )
                             }
@@ -118,7 +118,7 @@ private fun <T : NavKey> StampNaivagionDisplay(
         entryProvider = entryProvider {
             signInScreenEntry(
                 onSignInSuccess = {
-                    backStack.clear(); backStack.add(Main)
+                    backStack.clear(); backStack.add(MainNavKey)
                 },
             )
 

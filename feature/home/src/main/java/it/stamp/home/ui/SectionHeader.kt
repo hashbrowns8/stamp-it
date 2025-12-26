@@ -17,12 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import it.stamp.designsystem.icon.ChevronRight
 import it.stamp.designsystem.icon.Drawables
+import it.stamp.designsystem.theme.Gray400
 import it.stamp.designsystem.theme.Gray500
 import it.stamp.designsystem.theme.Gray800
 import it.stamp.designsystem.theme.StampTheme
@@ -46,7 +46,7 @@ fun SectionHeader(
                 style = MaterialTheme.typography.titleLarge,
             )
 
-            CompositionLocalProvider(LocalContentColor provides Gray500) {
+            CompositionLocalProvider(LocalContentColor provides Gray400) {
                 Row(
                     modifier = Modifier
                         .height(32.dp)
@@ -71,7 +71,7 @@ fun SectionHeader(
         Text(
             text = description,
             color = Gray500,
-            style = MaterialTheme.typography.bodySmall.merge(lineBreak = LineBreak.Heading),
+            style = MaterialTheme.typography.bodySmall,
         )
     }
 }

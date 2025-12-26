@@ -6,10 +6,22 @@ import it.stamp.home.HomeScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object Home : NavKey
+data object HomeNavKey : NavKey
 
-fun EntryProviderScope<NavKey>.homeScreenEntry() {
-    entry<Home> {
-        HomeScreen()
+fun EntryProviderScope<NavKey>.homeScreenEntry(
+    onNotificationsClick: () -> Unit,
+    onGroupOnboardingClick: () -> Unit,
+    onViewMyMissionsMoreClick: () -> Unit,
+    onViewMembersMissionsMoreClick: () -> Unit,
+    onShowErrorSnackbar: (Throwable) -> Unit,
+) {
+    entry<HomeNavKey> {
+        HomeScreen(
+            onNotificationsClick,
+            onGroupOnboardingClick,
+            onViewMyMissionsMoreClick,
+            onViewMembersMissionsMoreClick,
+            onShowErrorSnackbar,
+        )
     }
 }

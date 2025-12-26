@@ -6,10 +6,10 @@ import it.stamp.signin.SignInScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-object SignIn : NavKey
+object SignInNavKey : NavKey
 
 fun EntryProviderScope<NavKey>.signInScreenEntry(onSignInSuccess: () -> Unit) {
-    entry<SignIn> {
+    entry<SignInNavKey> {
         SignInScreen(onSignInSuccess)
     }
 }

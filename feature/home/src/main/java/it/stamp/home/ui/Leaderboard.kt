@@ -1,7 +1,6 @@
 package it.stamp.home.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,13 +25,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import it.stamp.designsystem.icon.CharacterRed
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.icon.FirstRank
 import it.stamp.designsystem.icon.SecondRank
 import it.stamp.designsystem.icon.ThirdRank
 import it.stamp.designsystem.theme.Black
 import it.stamp.designsystem.theme.Gray200
-import it.stamp.designsystem.theme.Gray25
 import it.stamp.designsystem.theme.Gray300
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.bodyExtraSmall
@@ -45,7 +44,7 @@ import it.stamp.model.stamp.LeaderboardMember
 @Composable
 fun Leaderboard(
     user: Member,
-    members: List<LeaderboardMember>,
+    rankings: List<LeaderboardMember>,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
@@ -54,7 +53,7 @@ fun Leaderboard(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            items(members) { member ->
+            items(rankings) { member ->
                 Item(
                     member,
                     isMe = member.member.id == user.id,
@@ -83,11 +82,14 @@ private fun Item(
                 modifier = Modifier
                     .size(60.dp)
                     .clip(CircleShape)
-                    .background(Gray25) // TODO
                     .border(1.dp, Gray200, CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
-                // TODO
+                Image(
+                    Drawables.CharacterRed, // TODO
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                )
             }
 
             if (member.rank in 1..3) {

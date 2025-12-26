@@ -8,5 +8,7 @@ dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.missions)
     implementation(projects.feature.myPage)
+
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.androidx.navigation3.ui)
 }

@@ -3,6 +3,7 @@ package it.stamp.data.firestore.source
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query.Direction
+import com.google.firebase.firestore.snapshots
 import it.stamp.data.firestore.model.FirestoreMission
 import it.stamp.data.firestore.util.toTimestamp
 import it.stamp.domain.exception.MissionNotFoundException
@@ -10,6 +11,9 @@ import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.MissionId
 import it.stamp.model.ids.UserId
 import it.stamp.model.mission.MissionStatus
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.DateTimeUnit
@@ -40,23 +44,25 @@ class MissionFirestoreDataSource @Inject constructor(
             .toObjects(FirestoreMission::class.java)
     }
 
-    suspend fun getMissionsByAssigneeThisWeek(
+    fun observeMissionsByAssigneeThisWeek(
         assigneeId: UserId,
         groupId: GroupId
-    ): List<FirestoreMission> = withContext(dispatcher) {
+    ): Flow<List<FirestoreMission>> {
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
         val after7Days = today.plus(7, DateTimeUnit.DAY)
 
-        collection
+        return collection
             .whereEqualTo("groupId", groupId.value)
             .whereEqualTo("assignedTo", assigneeId.value)
             .whereLessThanOrEqualTo("dueDate", after7Days.toTimestamp())
             .whereGreaterThanOrEqualTo("dueDate", today.toTimestamp())
             .orderBy("dueDate")
-            .get()
-            .await()
-            .toObjects(FirestoreMission::class.java)
+            .snapshots()
+            .map { snapshot ->
+                snapshot.toObjects(FirestoreMission::class.java)
+            }
+            .flowOn(dispatcher)
     }
 
     suspend fun updateMissionStatus(

@@ -6,10 +6,10 @@ import it.stamp.main.MainScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object Main : NavKey
+data object MainNavKey : NavKey
 
 fun EntryProviderScope<NavKey>.mainScreenEntry() {
-    entry<Main> {
+    entry<MainNavKey> {
         MainScreen()
     }
 }

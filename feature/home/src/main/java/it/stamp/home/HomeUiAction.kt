@@ -5,11 +5,12 @@ import it.stamp.model.ids.MissionId
 import it.stamp.model.ids.UserId
 
 sealed interface HomeUiAction {
+    data object OnRetryClick : HomeUiAction
     data object OnNotificationsClick : HomeUiAction
     data object OnGroupOnboardingClick : HomeUiAction
     data object OnViewMyMissionsMoreClick : HomeUiAction
     data object OnRequestNewMissionClick : HomeUiAction
-    data class OnViewMemberMissionsMoreClick(val groupId: GroupId) : HomeUiAction
+    data class OnViewMembersMissionsMoreClick(val groupId: GroupId) : HomeUiAction
     data class OnAssignNewMissionClick(val assigneeId: UserId?) : HomeUiAction
     data class OnCompleteMissionClick(val missionId: MissionId) : HomeUiAction
 }

@@ -8,6 +8,8 @@ import it.stamp.model.ids.MissionId
 import it.stamp.model.ids.UserId
 import it.stamp.model.mission.Mission
 import it.stamp.model.mission.MissionStatus
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class MissionDataRepository @Inject constructor(
@@ -22,14 +24,14 @@ class MissionDataRepository @Inject constructor(
             .map(MissionMapper::toDomainModel)
     }
 
-    override suspend fun getMissionsByAssigneeThisWeek(
+    override fun observeMissionsByAssigneeThisWeek(
         assigneeId: UserId,
         groupId: GroupId
-    ): Result<List<Mission>> = runCatching {
-        dataSource
-            .getMissionsByAssigneeThisWeek(assigneeId, groupId)
-            .map(MissionMapper::toDomainModel)
-    }
+    ): Flow<List<Mission>> = dataSource
+        .observeMissionsByAssigneeThisWeek(assigneeId, groupId)
+        .map { missions ->
+            missions.map(MissionMapper::toDomainModel)
+        }
 
     override suspend fun updateMissionStatus(
         missionId: MissionId,
