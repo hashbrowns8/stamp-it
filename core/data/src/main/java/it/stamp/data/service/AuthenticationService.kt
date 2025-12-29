@@ -23,9 +23,7 @@ class FirebaseAuthenticationService @Inject constructor(
 
             userDataSource.observe(userFirebase.uid)
                 .map { userFirestore ->
-                    userFirestore
-                        ?.let(UserMapper::toDomainModel)
-                        ?: UserMapper.toDomainModel(userFirebase)
+                    userFirestore?.let(UserMapper::toDomainModel)
                 }
         }
 

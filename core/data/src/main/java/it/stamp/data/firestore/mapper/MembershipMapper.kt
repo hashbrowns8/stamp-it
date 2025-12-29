@@ -1,6 +1,7 @@
 package it.stamp.data.firestore.mapper
 
 import it.stamp.data.firestore.model.FirestoreMembership
+import it.stamp.data.firestore.util.toKotlinInstant
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.MembershipId
 import it.stamp.model.ids.UserId

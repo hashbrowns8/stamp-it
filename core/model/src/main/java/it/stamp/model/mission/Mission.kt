@@ -23,10 +23,13 @@ data class Mission(
     val updatedAt: Instant? = null,
 ) {
     val isOverdue: Boolean
-        get() = status.isInProgress && Clock.System.todayIn(TimeZone.currentSystemDefault()) > dueDate
+        get() = !isCompleted && Clock.System.todayIn(TimeZone.currentSystemDefault()) > dueDate
 
     val remainingDays: Int
         get() = Clock.System.todayIn(TimeZone.currentSystemDefault()).daysUntil(dueDate)
+
+    val isCompleted: Boolean
+        get() = status == MissionStatus.COMPLETED
 
     fun complete(): Mission = copy(status = MissionStatus.COMPLETED)
 

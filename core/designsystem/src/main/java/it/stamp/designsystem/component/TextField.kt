@@ -57,7 +57,7 @@ import it.stamp.designsystem.theme.Gray25
 import it.stamp.designsystem.theme.Gray300
 import it.stamp.designsystem.theme.Gray600
 import it.stamp.designsystem.theme.Gray800
-import it.stamp.designsystem.theme.StampItTheme
+import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import androidx.compose.material3.TextField as MaterialTextField
 import androidx.compose.material3.TextFieldDefaults as MaterialTextFieldDefaults
@@ -261,7 +261,7 @@ object TextFieldDefaults {
 @Preview
 @Composable
 private fun TextFieldPreview() {
-    StampItTheme {
+    StampTheme {
         val focusManager = LocalFocusManager.current
 
         Column(

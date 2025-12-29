@@ -47,3 +47,9 @@ val Blue600 = Color(0xFF2F4E83)
 val Blue700 = Color(0xFF22385E)
 val Blue800 = Color(0xFF142138)
 val Blue900 = Color(0xFF070B13)
+
+val Purple50 = Color(0xFFEFE8F7)
+val Purple100 = Color(0xFFE1D4F0)
+val Purple200 = Color(0xFFC7AFE4)
+
+val Green100 = Color(0xFFD7F4DC)

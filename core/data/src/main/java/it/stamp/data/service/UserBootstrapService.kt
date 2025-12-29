@@ -22,7 +22,7 @@ class FirestoreUserBootstrapService @Inject constructor(
         user: User,
         group: Group,
         membership: Membership
-    ): Result<User> = runCatching {
+    ): Result<Unit> = runCatching {
         firestore.runBatch { batch ->
             with(batch) {
                 val userFirestore = FirestoreUser(
@@ -57,8 +57,6 @@ class FirestoreUserBootstrapService @Inject constructor(
                 set(firestore.membershipDocument(membership.id.value), membershipFirestore)
             }
         }.await()
-
-        return@runCatching user
     }
 
     companion object {

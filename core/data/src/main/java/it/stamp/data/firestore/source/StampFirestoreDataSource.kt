@@ -34,13 +34,13 @@ class StampFirestoreDataSource @Inject constructor(
 
     suspend fun getMonthlyMemberStampCount(
         groupId: GroupId,
-        userId: UserId,
-        yearMonth: YearMonth
+        yearMonth: YearMonth,
+        userId: UserId
     ): Int = withContext(dispatcher) {
         val snapshot = collection
             .whereEqualTo("groupId", groupId.value)
-            .whereEqualTo("userId", userId.value)
             .whereEqualTo("month", yearMonth.toString())
+            .whereEqualTo("userId", userId.value)
             .count()
             .get(AggregateSource.SERVER)
             .await()

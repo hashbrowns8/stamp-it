@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     api(projects.core.model)
-    implementation(libs.coroutines.core)
+    api(libs.coroutines.core)
     implementation(libs.hilt.core)
     ksp(libs.hilt.compiler)
 }

@@ -27,6 +27,12 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.data)
+    implementation(projects.core.designsystem)
+    implementation(projects.core.domain)
+    implementation(projects.core.model)
+    implementation(projects.core.ui)
+
     implementation(projects.feature.home)
     implementation(projects.feature.main)
     implementation(projects.feature.memberManagement)
@@ -37,12 +43,11 @@ dependencies {
     implementation(projects.feature.onboarding)
     implementation(projects.feature.profile)
     implementation(projects.feature.signIn)
+    implementation(projects.feature.splash)
     implementation(projects.feature.stampBoard)
-    implementation(projects.core.data)
-    implementation(projects.core.designsystem)
-    implementation(projects.core.domain)
-    implementation(projects.core.model)
+
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)

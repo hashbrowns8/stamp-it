@@ -5,8 +5,16 @@ plugins {
 
 android {
     namespace = "it.stamp.ui"
+
+    kotlin {
+        compilerOptions {
+            optIn.addAll("androidx.compose.material3.ExperimentalMaterial3Api")
+        }
+    }
 }
 
 dependencies {
+    api(projects.core.domain)
     api(projects.core.designsystem)
+    implementation(libs.coil.compose)
 }

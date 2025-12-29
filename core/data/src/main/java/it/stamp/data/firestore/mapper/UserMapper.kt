@@ -2,6 +2,7 @@ package it.stamp.data.firestore.mapper
 
 import com.google.firebase.auth.FirebaseUser
 import it.stamp.data.firestore.model.FirestoreUser
+import it.stamp.data.firestore.util.toKotlinInstant
 import it.stamp.model.ids.UserId
 import it.stamp.model.user.User
 
@@ -19,6 +20,7 @@ object UserMapper {
             id = UserId(userId),
             displayName = nickname,
             avatar = profileImage,
+            createdAt = createdAt.toKotlinInstant(),
         )
     }
 }
