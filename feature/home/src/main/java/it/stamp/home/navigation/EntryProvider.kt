@@ -10,7 +10,8 @@ data object HomeNavKey : NavKey
 
 fun EntryProviderScope<NavKey>.homeScreenEntry(
     onNotificationsClick: () -> Unit,
-    onGroupOnboardingClick: () -> Unit,
+    onInviteGroupClick: () -> Unit,
+    onJoinGroupClick: () -> Unit,
     onViewMyMissionsMoreClick: () -> Unit,
     onViewMembersMissionsMoreClick: () -> Unit,
     onShowErrorSnackbar: (Throwable) -> Unit,
@@ -18,7 +19,8 @@ fun EntryProviderScope<NavKey>.homeScreenEntry(
     entry<HomeNavKey> {
         HomeScreen(
             onNotificationsClick,
-            onGroupOnboardingClick,
+            onInviteGroupClick,
+            onJoinGroupClick,
             onViewMyMissionsMoreClick,
             onViewMembersMissionsMoreClick,
             onShowErrorSnackbar,

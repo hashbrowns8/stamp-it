@@ -120,10 +120,11 @@ fun OutlinedButton(
     )
 }
 
+// TODO : Min / Max Size
 @Composable
 private fun Button(
     onClick: () -> Unit,
-    enabled: Boolean = true,
+    enabled: Boolean,
     size: ButtonSize,
     shape: Shape,
     colors: ButtonColors,

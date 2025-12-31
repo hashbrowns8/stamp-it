@@ -7,7 +7,8 @@ import it.stamp.model.ids.UserId
 sealed interface HomeUiAction {
     data object OnRetryClick : HomeUiAction
     data object OnNotificationsClick : HomeUiAction
-    data object OnGroupOnboardingClick : HomeUiAction
+    data object OnInviteGroupClick : HomeUiAction
+    data object OnJoinGroupClick : HomeUiAction
     data object OnViewMyMissionsMoreClick : HomeUiAction
     data object OnRequestNewMissionClick : HomeUiAction
     data class OnViewMembersMissionsMoreClick(val groupId: GroupId) : HomeUiAction

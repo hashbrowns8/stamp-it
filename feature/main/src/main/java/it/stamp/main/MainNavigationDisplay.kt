@@ -27,7 +27,8 @@ fun MainNavigationDisplay(
         entryProvider = entryProvider {
             homeScreenEntry( // TODO : Navigation
                 onNotificationsClick = {},
-                onGroupOnboardingClick = {},
+                onInviteGroupClick = {},
+                onJoinGroupClick = {},
                 onViewMyMissionsMoreClick = {},
                 onViewMembersMissionsMoreClick = {},
                 onShowErrorSnackbar = onShowErrorSnackbar,
