@@ -51,6 +51,7 @@ import it.stamp.ui.LocalMembership
 import it.stamp.ui.LocalSnackbarHostState
 import it.stamp.ui.LocalUser
 import it.stamp.ui.TopAppBar
+import timber.log.Timber
 
 @Composable
 internal fun HomeScreen(
@@ -144,6 +145,7 @@ private fun HomeScreen(
             )
         }
         is HomeUiState.Failure -> with(uiState) { // TODO
+            Timber.d(throwable)
         }
     }
 }
