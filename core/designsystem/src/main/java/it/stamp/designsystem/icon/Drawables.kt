@@ -33,6 +33,10 @@ val Drawables.ChevronRight: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.icon_chevron_right)
 
+val Drawables.Export: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.icon_export)
+
 val Drawables.Home: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.icon_home)

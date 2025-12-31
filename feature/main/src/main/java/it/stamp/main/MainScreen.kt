@@ -1,6 +1,6 @@
 package it.stamp.main
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -8,19 +8,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.navigation3.runtime.rememberNavBackStack
 import it.stamp.designsystem.component.StampSnackbar
-import it.stamp.designsystem.component.showStampSnackbar
+import it.stamp.designsystem.component.displaySnackbar
 import it.stamp.designsystem.theme.White
 import it.stamp.home.navigation.HomeNavKey
 import it.stamp.missions.navigation.MissionsNavKey
 import it.stamp.mypage.navigation.MyNavKey
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @Composable
 internal fun MainScreen(
+    onInviteGroupClick: () -> Unit,
     modifier: Modifier = Modifier,
     destinations: List<TopLevelDestination> = TopLevelDestination.all,
 ) {
@@ -34,16 +34,16 @@ internal fun MainScreen(
         SnackbarHostState()
     }
 
-    val context = LocalContext.current
+    val resources = LocalResources.current
+
     val coroutineScope = rememberCoroutineScope()
 
     val onShowErrorSnackbar: (Throwable) -> Unit = { throwable ->
         coroutineScope.launch {
             when (throwable) { // TODO
-                else -> context.getString(R.string.unknown_error_message)
+                else -> resources.getString(R.string.unknown_error_message)
             }.let { message ->
-                Timber.d("show snackbar ..")
-                snackbarHostState.showStampSnackbar(message)
+                snackbarHostState.displaySnackbar(message)
             }
         }
     }
@@ -53,9 +53,9 @@ internal fun MainScreen(
         bottomBar = {
             MainNavigationBar(
                 currentNavigationKey = backStack.last(),
-                onTabClick = {
-                    backStack.remove(it)
-                    backStack.add(it)
+                onTabClick = { navigationKey ->
+                    backStack.remove(navigationKey)
+                    backStack.add(navigationKey)
                 },
                 destinations = destinations,
             )
@@ -69,11 +69,19 @@ internal fun MainScreen(
             )
         },
         containerColor = White,
-    ) { paddingValues ->
+    ) { _ : PaddingValues ->
         MainNavigationDisplay(
             backStack,
+            onBack = {
+                backStack.remove(HomeNavKey)
+                backStack.add(HomeNavKey)
+            },
+            onNotificationsClick = {},
+            onInviteGroupClick = onInviteGroupClick,
+            onJoinGroupClick = {},
+            onViewMyMissionsMoreClick = {},
+            onViewMembersMissionsMoreClick = {},
             onShowErrorSnackbar,
-            modifier = Modifier.padding(paddingValues)
         )
     }
 }

@@ -33,7 +33,7 @@ import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 
 @Composable
-fun TopAppBar(
+fun StampTopAppBar(
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     navigationIcon: (@Composable () -> Unit)? = null,
@@ -91,9 +91,9 @@ object TopAppBarDefaults {
 
 @Preview
 @Composable
-private fun TopAppBarPreview() {
+private fun StampTopAppBarPreview() {
     StampTheme {
-        TopAppBar(
+        StampTopAppBar(
             title = {
                 Text("미션 전달하기")
             },

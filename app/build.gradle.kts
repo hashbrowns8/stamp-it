@@ -34,6 +34,7 @@ dependencies {
     implementation(projects.core.ui)
 
     implementation(projects.feature.home)
+    implementation(projects.feature.inviteGroup)
     implementation(projects.feature.main)
     implementation(projects.feature.memberManagement)
     implementation(projects.feature.missionAssignment)

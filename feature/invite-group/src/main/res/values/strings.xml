@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite">초대하기</string>
+    <string name="invite_code_description">초대할 멤버에게 아래 코드를 전달해주세요</string>
+    <string name="invite_code">초대코드</string>
+</resources>

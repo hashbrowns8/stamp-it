@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 object SignInNavKey : NavKey
 
-fun EntryProviderScope<NavKey>.signInScreenEntry(onSignInSuccess: () -> Unit) {
+fun EntryProviderScope<NavKey>.signInEntry(onSignInSuccess: () -> Unit) {
     entry<SignInNavKey> {
         SignInScreen(onSignInSuccess)
     }

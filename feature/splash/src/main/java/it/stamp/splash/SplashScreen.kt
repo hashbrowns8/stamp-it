@@ -18,6 +18,7 @@ import it.stamp.designsystem.icon.LogoInversed
 import it.stamp.designsystem.theme.Red400
 import it.stamp.designsystem.theme.White
 
+// TODO : SplashScreen 제거
 @Composable
 fun SplashScreen(modifier: Modifier = Modifier) {
     Box(

@@ -59,7 +59,7 @@ sealed interface StampSnackbarVisuals : SnackbarVisuals {
     ) : StampSnackbarVisuals
 }
 
-suspend fun SnackbarHostState.showStampSnackbar(
+suspend fun SnackbarHostState.displaySnackbar(
     title: String,
     description: String? = null,
     actionLabel: String? = null,
@@ -75,7 +75,7 @@ suspend fun SnackbarHostState.showStampSnackbar(
     )
 )
 
-suspend fun SnackbarHostState.showMissionCompletionSnackbar(
+suspend fun SnackbarHostState.displayMissionCompletion(
     mission: String,
     message: String,
     actionLabel: String,
