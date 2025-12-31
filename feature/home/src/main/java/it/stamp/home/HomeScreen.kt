@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -17,10 +18,12 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -34,7 +37,8 @@ import it.stamp.designsystem.theme.Gray25
 import it.stamp.designsystem.theme.Red400
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
-import it.stamp.home.ui.GroupOnboardingView
+import it.stamp.home.ui.EmptyGroupMemberView
+import it.stamp.home.ui.GroupOnboardingModalBottomSheet
 import it.stamp.home.ui.Leaderboard
 import it.stamp.home.ui.MembersMissions
 import it.stamp.home.ui.MyMission
@@ -47,11 +51,13 @@ import it.stamp.ui.LocalMembership
 import it.stamp.ui.LocalSnackbarHostState
 import it.stamp.ui.LocalUser
 import it.stamp.ui.TopAppBar
+import timber.log.Timber
 
 @Composable
 internal fun HomeScreen(
     onNotificationsClick: () -> Unit,
-    onGroupOnboardingClick: () -> Unit,
+    onInviteGroupClick: () -> Unit,
+    onJoinGroupClick: () -> Unit,
     onViewMyMissionsMoreClick: () -> Unit,
     onViewMembersMissionsMoreClick: () -> Unit,
     onShowErrorSnackbar: (Throwable) -> Unit,
@@ -69,16 +75,16 @@ internal fun HomeScreen(
 
     val snackbarHostState = LocalSnackbarHostState.current
 
-    val context = LocalContext.current
-
+    val resources = LocalResources.current
+    
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { uiEvent ->
             when (uiEvent) {
                 is HomeUiEvent.MissionCompleted -> with(uiEvent) {
                     val result = snackbarHostState.showMissionCompletionSnackbar(
                         mission.title,
-                        message = context.getString(R.string.mission_completed),
-                        actionLabel = context.getString(R.string.cancel),
+                        message = resources.getString(R.string.mission_completed),
+                        actionLabel = resources.getString(R.string.cancel),
                     )
 
                     if (result == SnackbarResult.ActionPerformed) {
@@ -100,7 +106,8 @@ internal fun HomeScreen(
                     viewModel.retry()
                 }
                 HomeUiAction.OnNotificationsClick -> onNotificationsClick()
-                HomeUiAction.OnGroupOnboardingClick -> onGroupOnboardingClick()
+                HomeUiAction.OnInviteGroupClick -> {}
+                HomeUiAction.OnJoinGroupClick -> {}
                 HomeUiAction.OnViewMyMissionsMoreClick -> onViewMyMissionsMoreClick()
                 HomeUiAction.OnRequestNewMissionClick -> {}
                 is HomeUiAction.OnCompleteMissionClick -> with(uiAction) {
@@ -138,6 +145,7 @@ private fun HomeScreen(
             )
         }
         is HomeUiState.Failure -> with(uiState) { // TODO
+            Timber.d(throwable)
         }
     }
 }
@@ -149,93 +157,114 @@ private fun Content(
     members: List<Member>,
     rankings: List<LeaderboardMember>,
     myMissions: List<Mission>,
-    memberMissions: List<Mission>,
+    membersMissions: List<Mission>,
     modifier: Modifier = Modifier,
     onUiAction: OnUiAction,
 ) {
-    Column(modifier) {
-        TopAppBar(
-            title = {
-                Image(
-                    imageVector = Drawables.Logo,
-                    contentDescription = null,
-                )
-            },
-            actions = {
-                IconButton(
-                    onClick = {
-                        onUiAction(HomeUiAction.OnNotificationsClick)
-                    }
-                ) {
-                    Icon(
-                        imageVector = Drawables.Bell,
-                        contentDescription = null,
-                        tint = Red400,
-                    )
-                }
-            },
-        )
+    Box(modifier) {
+        if (members.none { !it.isLeader }) {
+            var isOnboardingSheetOpen by remember {
+                mutableStateOf(false)
+            }
 
-        val scrollState = rememberScrollState()
+            EmptyGroupMemberView(
+                onClick = {
+                    isOnboardingSheetOpen = true
+                },
+                modifier = Modifier.padding(16.dp),
+            )
 
-        if (scrollState.canScrollBackward) HorizontalDivider(color = Gray25)
-
-        Column(
-            modifier = Modifier
-                .weight(1F)
-                .verticalScroll(scrollState)
-        ) {
-            if (members.none { !it.isLeader }) {
-                GroupOnboardingView(
-                    onClick = {
-                        onUiAction(HomeUiAction.OnGroupOnboardingClick)
+            if (isOnboardingSheetOpen) {
+                GroupOnboardingModalBottomSheet(
+                    onDismissRequest = {
+                        isOnboardingSheetOpen = false
                     },
-                    modifier = Modifier.padding(16.dp),
+                    onInviteGroupClick = {
+                        onUiAction(HomeUiAction.OnInviteGroupClick)
+                    },
+                    onJoinGroupClick = {
+                        onUiAction(HomeUiAction.OnJoinGroupClick)
+                    },
                 )
-            } else {
-                Leaderboard(user, rankings)
-
-                val myMissions = remember(myMissions, members) {
-                    myMissions.filter { !it.isCompleted }.map { mission ->
-                        with(mission) {
-                            val assignerName = members.first { it.id == assigner }.displayName
-
-                            MyMission(
-                                id = id,
-                                category = category,
-                                title = title,
-                                dueDate = dueDate,
-                                assignerName = assignerName,
+            }
+        } else {
+            Column {
+                TopAppBar(
+                    title = {
+                        Image(
+                            imageVector = Drawables.Logo,
+                            contentDescription = null,
+                        )
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = {
+                                onUiAction(HomeUiAction.OnNotificationsClick)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Drawables.Bell,
+                                contentDescription = null,
+                                tint = Red400,
                             )
                         }
+                    },
+                )
+
+                val scrollState = rememberScrollState()
+
+                if (scrollState.canScrollBackward) HorizontalDivider(color = Gray25)
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1F)
+                        .verticalScroll(scrollState)
+                ) {
+                    Leaderboard(user, rankings)
+
+                    val myMissions = remember(myMissions, members) {
+                        myMissions.filter { !it.isCompleted }.map { mission ->
+                            with(mission) {
+                                val assignerName = members.first { it.id == assigner }.displayName
+
+                                MyMission(
+                                    id = id,
+                                    category = category,
+                                    title = title,
+                                    dueDate = dueDate,
+                                    assignerName = assignerName,
+                                )
+                            }
+                        }
                     }
+
+                    MyMissions(
+                        userDisplayName = user.displayName,
+                        onViewMoreClick = {
+                            onUiAction(HomeUiAction.OnViewMyMissionsMoreClick)
+                        },
+                        missions = myMissions,
+                        onRequestNewMissionClick = {
+                            onUiAction(HomeUiAction.OnRequestNewMissionClick)
+                        },
+                        onMissionCompleteClick = { missionId ->
+                            onUiAction(HomeUiAction.OnCompleteMissionClick(missionId))
+                        }
+                    )
+
+                    MembersMissions(
+                        userDisplayName = user.displayName,
+                        groupName = group.name,
+                        members = members - user,
+                        membersMissions,
+                        onAssignNewMissionClick = {
+                            onUiAction(HomeUiAction.OnAssignNewMissionClick(it))
+                        },
+                    )
+
+                    Spacer(Modifier.height(24.dp))
                 }
-
-                MyMissions(
-                    userDisplayName = user.displayName,
-                    onViewMoreClick = {
-                        onUiAction(HomeUiAction.OnViewMyMissionsMoreClick)
-                    },
-                    missions = myMissions,
-                    onRequestNewMissionClick = {
-                        onUiAction(HomeUiAction.OnRequestNewMissionClick)
-                    },
-                    onMissionCompleteClick = { missionId ->
-                        onUiAction(HomeUiAction.OnCompleteMissionClick(missionId))
-                    }
-                )
-
-                MembersMissions(
-                    userDisplayName = user.displayName,
-                    groupName = group.name,
-                    members = members - user,
-                    memberMissions,
-                    onAssignNewMissionClick = {
-                        onUiAction(HomeUiAction.OnAssignNewMissionClick(it))
-                    },
-                )
-
-                Spacer(Modifier.height(24.dp))
             }
         }
     }
@@ -272,7 +301,7 @@ private fun HomeScreenOnlyMePreview() {
             members = emptyList(),
             rankings = sampleRankings,
             myMissions = emptyList(),
-            memberMissions = sampleMemberMissions,
+            membersMissions = sampleMemberMissions,
             modifier = Modifier
                 .fillMaxSize()
                 .background(White),

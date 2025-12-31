@@ -73,8 +73,6 @@ class HomeViewModel @Inject constructor(
             flow4 = observeMyMissionsThisWeekUseCase(assigneeId = user.id, membership.groupId),
             flow5 = flowOf(getMembersMissionsUseCase(assignerId = user.id, membership.groupId)),
         ) { group, members, rankings, myMissions, membersMissions ->
-            throw Exception() // TODO
-
             val group = group.getOrElse { throwable -> throw throwable }
             val members = members.getOrElse { throwable -> throw throwable }
             val me = members.first { member -> member.id == user.id }

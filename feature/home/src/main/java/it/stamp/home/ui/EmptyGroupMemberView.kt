@@ -27,7 +27,7 @@ import it.stamp.designsystem.theme.White
 import it.stamp.home.R
 
 @Composable
-fun GroupOnboardingView(
+fun EmptyGroupMemberView(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -45,23 +45,23 @@ fun GroupOnboardingView(
         )
 
         Text(
-            stringResource(R.string.group_onboarding_message),
+            text = stringResource(R.string.group_onboarding_message),
             color = Gray800,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
         )
 
         PrimaryButton(onClick, size = ButtonSize.Medium) {
-            Text(stringResource(R.string.group_onboarding_action))
+            Text(text = stringResource(R.string.group_onboarding_action))
         }
     }
 }
 
 @Preview
 @Composable
-private fun GroupOnboardingViewPreview() {
+private fun EmptyGroupMemberViewPreview() {
     StampTheme {
-        GroupOnboardingView(
+        EmptyGroupMemberView(
             onClick = {
             },
             modifier = Modifier
