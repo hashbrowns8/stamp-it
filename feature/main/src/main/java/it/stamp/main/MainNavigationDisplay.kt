@@ -1,5 +1,8 @@
 package it.stamp.main
 
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -14,20 +17,45 @@ import it.stamp.mypage.navigation.myScreenEntry
 @Composable
 fun MainNavigationDisplay(
     backStack: List<NavKey>,
+    onBack: () -> Unit,
+    onNotificationsClick: () -> Unit,
+    onInviteGroupClick: () -> Unit,
+    onJoinGroupClick: () -> Unit,
+    onViewMyMissionsMoreClick: () -> Unit,
+    onViewMembersMissionsMoreClick: () -> Unit,
     onShowErrorSnackbar: (Throwable) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     NavDisplay(
         backStack,
         modifier,
+        onBack = onBack,
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),
         ),
+        transitionSpec = {
+            ContentTransform(
+                EnterTransition.None,
+                ExitTransition.None,
+            )
+        },
+        popTransitionSpec = {
+            ContentTransform(
+                EnterTransition.None,
+                ExitTransition.None,
+            )
+        },
+        predictivePopTransitionSpec = {
+            ContentTransform(
+                EnterTransition.None,
+                ExitTransition.None,
+            )
+        },
         entryProvider = entryProvider {
-            homeScreenEntry( // TODO : Navigation
+            homeScreenEntry(
                 onNotificationsClick = {},
-                onInviteGroupClick = {},
+                onInviteGroupClick = onInviteGroupClick,
                 onJoinGroupClick = {},
                 onViewMyMissionsMoreClick = {},
                 onViewMembersMissionsMoreClick = {},

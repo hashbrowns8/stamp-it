@@ -5,7 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -25,13 +28,15 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dagger.hilt.android.AndroidEntryPoint
 import it.stamp.designsystem.component.StampSnackbar
-import it.stamp.designsystem.component.StampSnackbarVisuals
+import it.stamp.designsystem.component.displaySnackbar
 import it.stamp.designsystem.theme.StampTheme
+import it.stamp.designsystem.theme.White
+import it.stamp.invite.group.navigation.InviteGroupNavKey
+import it.stamp.invite.group.navigation.inviteGroupEntry
 import it.stamp.main.navigation.MainNavKey
-import it.stamp.main.navigation.mainScreenEntry
+import it.stamp.main.navigation.mainEntry
 import it.stamp.signin.navigation.SignInNavKey
-import it.stamp.signin.navigation.signInScreenEntry
-import it.stamp.splash.SplashScreen
+import it.stamp.signin.navigation.signInEntry
 import it.stamp.ui.LocalMembership
 import it.stamp.ui.LocalSnackbarHostState
 import it.stamp.ui.LocalUser
@@ -50,7 +55,7 @@ class MainActivity : ComponentActivity() {
             StampTheme {
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-                splashScreen.setKeepOnScreenCondition {
+                splashScreen.setKeepOnScreenCondition { // TODO : 최대 로딩 시간 기다리고 실패
                     uiState == MainActivityUiState.Loading
                 }
 
@@ -67,9 +72,9 @@ class MainActivity : ComponentActivity() {
                             },
                         )
                     },
-                ) { _ : PaddingValues ->
+                    containerColor = White,
+                ) { innerPadding ->
                     when (val uiState = uiState) {
-                        MainActivityUiState.Loading -> SplashScreen()
                         is MainActivityUiState.Success -> with(uiState) {
                             CompositionLocalProvider(
                                 LocalUser provides user,
@@ -82,6 +87,7 @@ class MainActivity : ComponentActivity() {
                                     } else {
                                         MainNavKey
                                     },
+                                    modifier = Modifier.padding(innerPadding),
                                 )
                             }
                         }
@@ -89,9 +95,10 @@ class MainActivity : ComponentActivity() {
                             val coroutineScope = rememberCoroutineScope()
 
                             coroutineScope.launch {
-                                snackbarHostState.showSnackbar(StampSnackbarVisuals.Default(message))
+                                snackbarHostState.displaySnackbar(message)
                             }
                         }
+                        else -> {}
                     }
                 }
             }
@@ -109,20 +116,46 @@ private fun <T : NavKey> StampNaivagionDisplay(
     NavDisplay(
         backStack,
         modifier,
-        onBack = {
-        },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),
         ),
+        transitionSpec = {
+            ContentTransform(
+                slideInHorizontally { it },
+                slideOutHorizontally(),
+            )
+        },
+        popTransitionSpec = {
+            ContentTransform(
+                slideInHorizontally(),
+                slideOutHorizontally { it },
+            )
+        },
+        predictivePopTransitionSpec = {
+            ContentTransform(
+                slideInHorizontally(),
+                slideOutHorizontally { it },
+            )
+        },
         entryProvider = entryProvider {
-            signInScreenEntry(
+            signInEntry(
                 onSignInSuccess = {
                     backStack.clear(); backStack.add(MainNavKey)
                 },
             )
 
-            mainScreenEntry()
+            mainEntry(
+                navigateToInviteGroup = {
+                    backStack.add(InviteGroupNavKey)
+                },
+            )
+
+            inviteGroupEntry(
+                onBackClick = {
+                    backStack.removeLast()
+                }
+            )
         },
     )
 }

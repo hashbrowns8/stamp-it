@@ -8,8 +8,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object MainNavKey : NavKey
 
-fun EntryProviderScope<NavKey>.mainScreenEntry() {
+fun EntryProviderScope<NavKey>.mainEntry(
+    navigateToInviteGroup: () -> Unit,
+) {
     entry<MainNavKey> {
-        MainScreen()
+        MainScreen(onInviteGroupClick = navigateToInviteGroup)
     }
 }

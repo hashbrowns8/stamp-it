@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import it.stamp.designsystem.component.ActivityIndicator
-import it.stamp.designsystem.component.showMissionCompletionSnackbar
+import it.stamp.designsystem.component.displayMissionCompletion
 import it.stamp.designsystem.icon.Bell
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.icon.Logo
@@ -50,7 +50,7 @@ import it.stamp.model.stamp.LeaderboardMember
 import it.stamp.ui.LocalMembership
 import it.stamp.ui.LocalSnackbarHostState
 import it.stamp.ui.LocalUser
-import it.stamp.ui.TopAppBar
+import it.stamp.ui.StampTopAppBar
 import timber.log.Timber
 
 @Composable
@@ -81,7 +81,7 @@ internal fun HomeScreen(
         viewModel.uiEvent.collect { uiEvent ->
             when (uiEvent) {
                 is HomeUiEvent.MissionCompleted -> with(uiEvent) {
-                    val result = snackbarHostState.showMissionCompletionSnackbar(
+                    val result = snackbarHostState.displayMissionCompletion(
                         mission.title,
                         message = resources.getString(R.string.mission_completed),
                         actionLabel = resources.getString(R.string.cancel),
@@ -106,8 +106,8 @@ internal fun HomeScreen(
                     viewModel.retry()
                 }
                 HomeUiAction.OnNotificationsClick -> onNotificationsClick()
-                HomeUiAction.OnInviteGroupClick -> {}
-                HomeUiAction.OnJoinGroupClick -> {}
+                HomeUiAction.OnInviteGroupClick -> onInviteGroupClick()
+                HomeUiAction.OnJoinGroupClick -> onJoinGroupClick()
                 HomeUiAction.OnViewMyMissionsMoreClick -> onViewMyMissionsMoreClick()
                 HomeUiAction.OnRequestNewMissionClick -> {}
                 is HomeUiAction.OnCompleteMissionClick -> with(uiAction) {
@@ -161,110 +161,110 @@ private fun Content(
     modifier: Modifier = Modifier,
     onUiAction: OnUiAction,
 ) {
-    Box(modifier) {
-        if (members.none { !it.isLeader }) {
-            var isOnboardingSheetOpen by remember {
-                mutableStateOf(false)
-            }
-
-            EmptyGroupMemberView(
-                onClick = {
-                    isOnboardingSheetOpen = true
-                },
-                modifier = Modifier.padding(16.dp),
-            )
-
-            if (isOnboardingSheetOpen) {
-                GroupOnboardingModalBottomSheet(
-                    onDismissRequest = {
-                        isOnboardingSheetOpen = false
-                    },
-                    onInviteGroupClick = {
-                        onUiAction(HomeUiAction.OnInviteGroupClick)
-                    },
-                    onJoinGroupClick = {
-                        onUiAction(HomeUiAction.OnJoinGroupClick)
-                    },
+    Column(modifier) {
+        StampTopAppBar(
+            title = {
+                Image(
+                    imageVector = Drawables.Logo,
+                    contentDescription = null,
                 )
+            },
+            actions = {
+                IconButton(
+                    onClick = {
+                        onUiAction(HomeUiAction.OnNotificationsClick)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Drawables.Bell,
+                        contentDescription = null,
+                        tint = Red400,
+                    )
+                }
+            },
+        )
+
+        if (members.none { !it.isLeader }) {
+            Box {
+                var isOnboardingSheetOpen by remember {
+                    mutableStateOf(false)
+                }
+
+                EmptyGroupMemberView(
+                    onClick = {
+                        isOnboardingSheetOpen = true
+                    },
+                    modifier = Modifier.padding(16.dp),
+                )
+
+                if (isOnboardingSheetOpen) {
+                    GroupOnboardingModalBottomSheet(
+                        onDismissRequest = {
+                            isOnboardingSheetOpen = false
+                        },
+                        onInviteGroupClick = {
+                            onUiAction(HomeUiAction.OnInviteGroupClick)
+                        },
+                        onJoinGroupClick = {
+                            onUiAction(HomeUiAction.OnJoinGroupClick)
+                        },
+                    )
+                }
             }
         } else {
-            Column {
-                TopAppBar(
-                    title = {
-                        Image(
-                            imageVector = Drawables.Logo,
-                            contentDescription = null,
-                        )
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = {
-                                onUiAction(HomeUiAction.OnNotificationsClick)
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Drawables.Bell,
-                                contentDescription = null,
-                                tint = Red400,
+            val scrollState = rememberScrollState()
+
+            if (scrollState.canScrollBackward) HorizontalDivider(color = Gray25)
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1F)
+                    .verticalScroll(scrollState)
+            ) {
+                Leaderboard(user, rankings)
+
+                val myMissions = remember(myMissions, members) {
+                    myMissions.filter { !it.isCompleted }.map { mission ->
+                        with(mission) {
+                            val assignerName = members.first { it.id == assigner }.displayName
+
+                            MyMission(
+                                id = id,
+                                category = category,
+                                title = title,
+                                dueDate = dueDate,
+                                assignerName = assignerName,
                             )
                         }
+                    }
+                }
+
+                MyMissions(
+                    userDisplayName = user.displayName,
+                    onViewMoreClick = {
+                        onUiAction(HomeUiAction.OnViewMyMissionsMoreClick)
+                    },
+                    missions = myMissions,
+                    onRequestNewMissionClick = {
+                        onUiAction(HomeUiAction.OnRequestNewMissionClick)
+                    },
+                    onMissionCompleteClick = { missionId ->
+                        onUiAction(HomeUiAction.OnCompleteMissionClick(missionId))
+                    }
+                )
+
+                MembersMissions(
+                    userDisplayName = user.displayName,
+                    groupName = group.name,
+                    members = members - user,
+                    membersMissions,
+                    onAssignNewMissionClick = {
+                        onUiAction(HomeUiAction.OnAssignNewMissionClick(it))
                     },
                 )
 
-                val scrollState = rememberScrollState()
-
-                if (scrollState.canScrollBackward) HorizontalDivider(color = Gray25)
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1F)
-                        .verticalScroll(scrollState)
-                ) {
-                    Leaderboard(user, rankings)
-
-                    val myMissions = remember(myMissions, members) {
-                        myMissions.filter { !it.isCompleted }.map { mission ->
-                            with(mission) {
-                                val assignerName = members.first { it.id == assigner }.displayName
-
-                                MyMission(
-                                    id = id,
-                                    category = category,
-                                    title = title,
-                                    dueDate = dueDate,
-                                    assignerName = assignerName,
-                                )
-                            }
-                        }
-                    }
-
-                    MyMissions(
-                        userDisplayName = user.displayName,
-                        onViewMoreClick = {
-                            onUiAction(HomeUiAction.OnViewMyMissionsMoreClick)
-                        },
-                        missions = myMissions,
-                        onRequestNewMissionClick = {
-                            onUiAction(HomeUiAction.OnRequestNewMissionClick)
-                        },
-                        onMissionCompleteClick = { missionId ->
-                            onUiAction(HomeUiAction.OnCompleteMissionClick(missionId))
-                        }
-                    )
-
-                    MembersMissions(
-                        userDisplayName = user.displayName,
-                        groupName = group.name,
-                        members = members - user,
-                        membersMissions,
-                        onAssignNewMissionClick = {
-                            onUiAction(HomeUiAction.OnAssignNewMissionClick(it))
-                        },
-                    )
-
-                    Spacer(Modifier.height(24.dp))
-                }
+                Spacer(Modifier.height(24.dp))
             }
         }
     }
