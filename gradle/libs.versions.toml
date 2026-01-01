@@ -109,9 +109,9 @@ android-library = { id = "com.android.library", version.ref = "android-gradle-pl
 
 stampit-android-application = { id = "stampit.android.application" }
 stampit-android-compose = { id = "stampit.android.compose" }
-stampit-android-feature = { id = "stampit.android.feature" }
+stampit-android-feature-core = { id = "stampit.android.feature.core" }
+stampit-android-feature-api = { id = "stampit.android.feature.api" }
 stampit-android-library = { id = "stampit.android.library" }
 stampit-android-hilt = { id = "stampit.android.hilt" }
 stampit-android-room = { id = "stampit.android.room" }
 stampit-jvm-library = { id = "stampit.jvm.library" }
-stampit-firebase = { id = "stampit.firebase" }

@@ -33,9 +33,13 @@ gradlePlugin {
             id = libs.plugins.stampit.android.library.get().pluginId
             implementationClass = "AndroidLibraryConventionPlugin"
         }
-        register("android-feature") {
-            id = libs.plugins.stampit.android.feature.get().pluginId
-            implementationClass = "AndroidFeatureConventionPlugin"
+        register("android-feature-api") {
+            id = libs.plugins.stampit.android.feature.api.get().pluginId
+            implementationClass = "AndroidFeatureApiConventionPlugin"
+        }
+        register("android-feature-core") {
+            id = libs.plugins.stampit.android.feature.core.get().pluginId
+            implementationClass = "AndroidFeatureCoreConventionPlugin"
         }
         register("android-compose") {
             id = libs.plugins.stampit.android.compose.get().pluginId
@@ -52,10 +56,6 @@ gradlePlugin {
         register("android-room") {
             id = libs.plugins.stampit.android.room.get().pluginId
             implementationClass = "AndroidRoomConventionPlugin"
-        }
-        register("firebase") {
-            id = libs.plugins.stampit.firebase.get().pluginId
-            implementationClass = "FirebaseConventionPlugin"
         }
     }
 }
