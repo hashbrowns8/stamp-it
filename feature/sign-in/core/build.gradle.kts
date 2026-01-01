@@ -21,6 +21,7 @@ android {
 
 dependencies {
     implementation(projects.feature.signIn.api)
+    implementation(projects.feature.main.api)
 
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)

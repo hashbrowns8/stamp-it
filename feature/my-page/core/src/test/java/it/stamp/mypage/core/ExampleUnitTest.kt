@@ -1,4 +1,4 @@
-package it.stamp.mypage.impl
+package it.stamp.mypage.core
 
 import org.junit.Test
 

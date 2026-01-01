@@ -1,4 +1,4 @@
-package it.stamp.mypage.impl
+package it.stamp.mypage.core
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

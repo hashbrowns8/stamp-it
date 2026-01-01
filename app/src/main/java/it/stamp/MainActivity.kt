@@ -16,23 +16,33 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.entryProvider
 import dagger.hilt.android.AndroidEntryPoint
 import it.stamp.designsystem.component.StampSnackbar
 import it.stamp.designsystem.component.displaySnackbar
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.main.MainNavKey
+import it.stamp.navigation.EntryProviderInstaller
+import it.stamp.navigation.Navigator
 import it.stamp.signin.SignInNavKey
 import it.stamp.ui.LocalMembership
 import it.stamp.ui.LocalSnackbarHostState
 import it.stamp.ui.LocalUser
 import kotlinx.coroutines.flow.filterIsInstance
 import java.io.IOException
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
+
+    @Inject
+    lateinit var navigator: Navigator
+
+    @Inject
+    lateinit var entryProviderScopes: Set<@JvmSuppressWildcards EntryProviderInstaller>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen() // TODO : Vector Drawable 로 변경
@@ -81,13 +91,22 @@ class MainActivity : ComponentActivity() {
                                 LocalMembership provides membership,
                                 LocalSnackbarHostState provides snackbarHostState,
                             ) {
+                                if (user == null) {
+                                    SignInNavKey
+                                } else {
+                                    MainNavKey
+                                }.let { startDestination ->
+                                    navigator.setStartDestination(startDestination)
+                                }
+
                                 StampNaivagionDisplay(
-                                    startDestination = if (user == null) {
-                                        SignInNavKey
-                                    } else {
-                                        MainNavKey
-                                    },
+                                    navigator,
                                     modifier = Modifier.padding(innerPadding),
+                                    entryProvider = entryProvider {
+                                        entryProviderScopes.forEach { build ->
+                                            this.build()
+                                        }
+                                    },
                                 )
                             }
                         }

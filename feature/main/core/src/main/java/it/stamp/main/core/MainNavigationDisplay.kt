@@ -12,7 +12,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import it.stamp.home.core.navigation.homeScreenEntry
 import it.stamp.missions.core.navigation.missionsScreenEntry
-import it.stamp.mypage.impl.navigation.myPageEntry
+import it.stamp.mypage.core.navigation.myPageEntry
 import it.stamp.navigation.Navigator
 
 @Composable
