@@ -54,9 +54,7 @@ import it.stamp.model.membership.Group
 import it.stamp.model.membership.Member
 import it.stamp.model.mission.Mission
 import it.stamp.model.stamp.LeaderboardMember
-import it.stamp.ui.LocalMembership
 import it.stamp.ui.LocalSnackbarHostState
-import it.stamp.ui.LocalUser
 import it.stamp.ui.StampTopAppBar
 import timber.log.Timber
 
@@ -70,13 +68,6 @@ internal fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val user = LocalUser.current ?: return
-    val membership = LocalMembership.current ?: return
-
-    LaunchedEffect(user, membership) {
-        viewModel.setUserAndMembership(user, membership)
-    }
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val snackbarHostState = LocalSnackbarHostState.current

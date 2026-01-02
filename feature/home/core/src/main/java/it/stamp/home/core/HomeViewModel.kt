@@ -11,6 +11,8 @@ import it.stamp.domain.usecase.GetGroupByIdUseCase
 import it.stamp.domain.usecase.GetGroupLeaderboardUseCase
 import it.stamp.domain.usecase.GetGroupMembersUseCase
 import it.stamp.domain.usecase.GetMembersMissionsUseCase
+import it.stamp.domain.usecase.ObserveCurrentMembershipUseCase
+import it.stamp.domain.usecase.ObserveCurrentUserUseCase
 import it.stamp.domain.usecase.ObserveMyMissionsThisWeekUseCase
 import it.stamp.model.ids.MissionId
 import it.stamp.model.membership.Group
@@ -19,14 +21,17 @@ import it.stamp.model.membership.Membership
 import it.stamp.model.mission.Mission
 import it.stamp.model.stamp.LeaderboardMember
 import it.stamp.model.user.User
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -34,6 +39,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    observeCurrentUserUseCase: ObserveCurrentUserUseCase,
+    observeCurrentMembershipUseCase: ObserveCurrentMembershipUseCase,
     private val getGroupByIdUseCase: GetGroupByIdUseCase,
     private val getGroupMembersUseCase: GetGroupMembersUseCase,
     private val getGroupLeaderboardUseCase: GetGroupLeaderboardUseCase,
@@ -43,13 +50,11 @@ class HomeViewModel @Inject constructor(
     private val cancelMissionCompletionUseCase: CancelMissionCompletionUseCase,
 ) : ViewModel() {
 
-    private val user = MutableStateFlow<User?>(null)
-    private val membership = MutableStateFlow<Membership?>(null)
+    private val user: Flow<User> = observeCurrentUserUseCase()
+        .filterNotNull()
 
-    fun setUserAndMembership(user: User, membership: Membership) {
-        this@HomeViewModel.user.value = user
-        this@HomeViewModel.membership.value = membership
-    }
+    private val membership: Flow<Membership> = observeCurrentMembershipUseCase()
+        .filterNotNull()
 
     private val retry = MutableStateFlow(0)
 
@@ -57,27 +62,23 @@ class HomeViewModel @Inject constructor(
         retry.value += 1
     }
 
-    val uiState = combineTransform(
+    private fun <T> Result<T>.asFlow(): Flow<T> = flowOf(getOrThrow())
+
+    val uiState: StateFlow<HomeUiState> = combineTransform(
         user,
         membership,
         retry
     ) { user, membership, _ ->
-        if (user == null || membership == null) return@combineTransform
-
         emit(HomeUiState.Loading)
 
         combine(
-            flow = flowOf(getGroupByIdUseCase(membership.groupId)),
-            flow2 = flowOf(getGroupMembersUseCase(membership.groupId)),
-            flow3 = flowOf(getGroupLeaderboardUseCase(membership.groupId)),
-            flow4 = observeMyMissionsThisWeekUseCase(assigneeId = user.id, membership.groupId),
-            flow5 = flowOf(getMembersMissionsUseCase(assignerId = user.id, membership.groupId)),
+            flow = getGroupByIdUseCase(membership.groupId).asFlow(),
+            flow2 = getGroupMembersUseCase(membership.groupId).asFlow(),
+            flow3 = getGroupLeaderboardUseCase(membership.groupId).asFlow(),
+            flow4 = observeMyMissionsThisWeekUseCase(),
+            flow5 = getMembersMissionsUseCase(assignerId = user.id, membership.groupId).asFlow(),
         ) { group, members, rankings, myMissions, membersMissions ->
-            val group = group.getOrElse { throwable -> throw throwable }
-            val members = members.getOrElse { throwable -> throw throwable }
             val me = members.first { member -> member.id == user.id }
-            val rankings = rankings.getOrElse { throwable -> throw throwable }
-            val membersMissions = membersMissions.getOrElse { throwable -> throw throwable }
 
             HomeUiState.Success(
                 user = me,
