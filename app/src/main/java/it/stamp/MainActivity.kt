@@ -26,9 +26,7 @@ import it.stamp.main.MainNavKey
 import it.stamp.navigation.EntryProviderInstaller
 import it.stamp.navigation.Navigator
 import it.stamp.signin.SignInNavKey
-import it.stamp.ui.LocalMembership
 import it.stamp.ui.LocalSnackbarHostState
-import it.stamp.ui.LocalUser
 import kotlinx.coroutines.flow.filterIsInstance
 import java.io.IOException
 import javax.inject.Inject
@@ -84,13 +82,9 @@ class MainActivity : ComponentActivity() {
                     },
                     containerColor = White,
                 ) { innerPadding ->
-                    when (val uiState = uiState) {
-                        is MainUiState.Success -> with(uiState) {
-                            CompositionLocalProvider(
-                                LocalUser provides user,
-                                LocalMembership provides membership,
-                                LocalSnackbarHostState provides snackbarHostState,
-                            ) {
+                    CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+                        when (val uiState = uiState) {
+                            is MainUiState.Success -> with(uiState) {
                                 if (user == null) {
                                     SignInNavKey
                                 } else {
@@ -103,14 +97,14 @@ class MainActivity : ComponentActivity() {
                                     navigator,
                                     modifier = Modifier.padding(innerPadding),
                                     entryProvider = entryProvider {
-                                        entryProviderScopes.forEach { build ->
-                                            this.build()
+                                        entryProviderScopes.forEach { builder ->
+                                            this.builder()
                                         }
                                     },
                                 )
                             }
+                            else -> {} // TODO : 빈 화면 대신
                         }
-                        else -> {}
                     }
                 }
             }
