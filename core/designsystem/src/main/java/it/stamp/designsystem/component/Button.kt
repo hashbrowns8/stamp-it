@@ -274,8 +274,8 @@ object ButtonDefaults {
     fun primaryButtonColors(
         containerColor: Color = Red400,
         contentColor: Color = White,
-        disabledContainerColor: Color = Gray300,
-        disabledContentColor: Color = White,
+        disabledContainerColor: Color = Gray50,
+        disabledContentColor: Color = Gray300,
     ): ButtonColors = ButtonColors(
         containerColor,
         contentColor,

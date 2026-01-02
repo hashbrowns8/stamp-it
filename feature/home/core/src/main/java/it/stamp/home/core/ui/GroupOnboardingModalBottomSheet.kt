@@ -24,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import it.stamp.designsystem.component.ButtonSize
 import it.stamp.designsystem.component.PrimaryButton
 import it.stamp.designsystem.component.StampModalBottomSheet
 import it.stamp.designsystem.theme.Gray50
@@ -139,7 +138,6 @@ private fun SheetContent(
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = groupOnboarding != null,
-            size = ButtonSize.Large,
         ) {
             Text(stringResource(R.string.confirm))
         }

@@ -63,7 +63,7 @@ import androidx.compose.material3.TextField as MaterialTextField
 import androidx.compose.material3.TextFieldDefaults as MaterialTextFieldDefaults
 
 @Composable
-fun TextField(
+fun StampTextField(
     state: TextFieldState,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -128,16 +128,23 @@ fun TextField(
                 if (state.text.isNotEmpty()) {
                     Box(
                         modifier = Modifier
-                            .padding(top = 16.dp)
-                            .size(24.dp)
+                            .then(
+                                if (label != null) {
+                                    Modifier.padding(top = 16.dp)
+                                } else {
+                                    Modifier
+                                }
+                            )
                             .clickable {
                                 state.clearText()
-                            },
+                            }
+                            .padding(4.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.icon_cancel),
                             contentDescription = null,
+                            modifier = Modifier.size(20.dp),
                             tint = Color.Unspecified,
                         )
                     }
@@ -260,7 +267,7 @@ object TextFieldDefaults {
 
 @Preview
 @Composable
-private fun TextFieldPreview() {
+private fun StampTextFieldPreview() {
     StampTheme {
         val focusManager = LocalFocusManager.current
 
@@ -275,7 +282,7 @@ private fun TextFieldPreview() {
         ) {
             val state = rememberTextFieldState()
 
-            TextField(
+            StampTextField(
                 state,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -284,7 +291,7 @@ private fun TextFieldPreview() {
                 lineLimits = TextFieldLineLimits.SingleLine,
             )
 
-            TextField(
+            StampTextField(
                 state = rememberTextFieldState(),
                 modifier = Modifier.fillMaxWidth(),
             )
