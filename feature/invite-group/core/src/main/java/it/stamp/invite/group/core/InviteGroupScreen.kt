@@ -21,8 +21,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import it.stamp.designsystem.component.displaySnackbar
 import it.stamp.designsystem.icon.ArrowLeft
 import it.stamp.designsystem.icon.CharacterRed
 import it.stamp.designsystem.icon.Drawables
@@ -45,8 +44,8 @@ import it.stamp.designsystem.theme.Gray500
 import it.stamp.designsystem.theme.Gray800
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
-import it.stamp.ui.LocalMembership
-import it.stamp.ui.LocalSnackbarHostState
+import it.stamp.domain.generator.InviteCodeGenerator
+import it.stamp.model.membership.InviteCode
 import it.stamp.ui.StampTopAppBar
 
 @Composable
@@ -55,30 +54,17 @@ internal fun InviteGroupScreen(
     modifier: Modifier = Modifier,
     viewModel: InviteGroupViewModel = hiltViewModel(),
 ) {
-    val membership = LocalMembership.current
-
-    val snackbarHostState = LocalSnackbarHostState.current
-
-    LaunchedEffect(membership) {
-        if (membership == null) {
-            snackbarHostState.displaySnackbar("인터넷 연결이 원활하지 않습니다")
-        } else {
-            viewModel.getInviteCode(membership.groupId)
-        }
-    }
-
     val inviteCode by viewModel.inviteCode.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { uiEvent ->
-            when (uiEvent) {
-                is InviteGroupUiEvent.GetInviteCodeFailed -> {
-                    snackbarHostState.displaySnackbar("인터넷 연결이 원활하지 않습니다")
-                }
-            }
-        }
-    }
+    InviteGroupScreen(inviteCode, onBackClick, modifier)
+}
 
+@Composable
+private fun InviteGroupScreen(
+    inviteCode: InviteCode,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Surface(modifier, color = White) {
         StampTopAppBar(
             title = {
@@ -130,8 +116,6 @@ internal fun InviteGroupScreen(
                 val context = LocalContext.current
 
                 val share by rememberUpdatedState {
-                    val inviteCode = inviteCode ?: return@rememberUpdatedState
-
                     Intent.createChooser(
                         Intent(Intent.ACTION_SEND)
                             .setType("text/plain")
@@ -159,7 +143,7 @@ internal fun InviteGroupScreen(
                     )
 
                     Text(
-                        text = inviteCode?.value ?: String(),
+                        text = inviteCode.value,
                         modifier = Modifier.weight(1F),
                         color = Gray800,
                         style = MaterialTheme.typography.labelMedium,
@@ -182,12 +166,14 @@ internal fun InviteGroupScreen(
 @Composable
 private fun InviteGroupScreenPreview() {
     StampTheme {
+        val inviteCode = remember {
+            InviteCodeGenerator.generate()
+        }
+
         InviteGroupScreen(
+            inviteCode,
             onBackClick = {
             },
-            modifier = Modifier
-                .fillMaxSize()
-                .background(White),
         )
     }
 }
