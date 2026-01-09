@@ -6,6 +6,7 @@ import it.stamp.domain.exception.GroupNotFoundException
 import it.stamp.domain.repository.GroupRepository
 import it.stamp.model.ids.GroupId
 import it.stamp.model.membership.Group
+import it.stamp.model.membership.InviteCode
 import javax.inject.Inject
 
 class GroupDataRepository @Inject constructor(
@@ -15,6 +16,13 @@ class GroupDataRepository @Inject constructor(
     override suspend fun getGroupById(groupId: GroupId): Result<Group> =
         runCatching {
             dataSource.read(groupId.value)
+                ?.let(GroupMapper::toDomainModel)
+                ?: throw GroupNotFoundException()
+        }
+
+    override suspend fun getGroupByInviteCode(inviteCode: InviteCode): Result<Group> =
+        runCatching {
+            dataSource.getGroupByInviteCode(inviteCode)
                 ?.let(GroupMapper::toDomainModel)
                 ?: throw GroupNotFoundException()
         }

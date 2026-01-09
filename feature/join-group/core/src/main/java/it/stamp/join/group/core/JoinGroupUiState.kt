@@ -2,5 +2,5 @@ package it.stamp.join.group.core
 
 sealed interface JoinGroupUiState {
     data object None : JoinGroupUiState
-    data object Loading : JoinGroupUiState
+    data object InProgress : JoinGroupUiState
 }

@@ -16,7 +16,7 @@ class ObserveCurrentMembershipUseCase @Inject constructor(
     operator fun invoke(): Flow<Membership?> = observeCurrentUserUseCase()
         .flatMapLatest { user ->
             user?.id
-                ?.let { membershipRepository.observeMembershipByUser(it) }
+                ?.let { userId -> membershipRepository.observeMembershipByUser(userId) }
                 ?: flowOf(null)
         }
 }

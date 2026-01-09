@@ -38,7 +38,6 @@ import it.stamp.designsystem.theme.Gray800
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.model.membership.InviteCode
-import it.stamp.ui.LocalMembership
 import it.stamp.ui.StampTopAppBar
 
 @Composable
@@ -46,7 +45,6 @@ internal fun JoinGroupScreen(
     modifier: Modifier = Modifier,
     viewModel: JoinGroupViewModel = hiltViewModel(),
 ) {
-    val membership = LocalMembership.current
     viewModel
 }
 
