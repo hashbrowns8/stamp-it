@@ -14,7 +14,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -29,13 +28,15 @@ import androidx.compose.ui.unit.dp
 import androidx.credentials.CredentialManager
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.icon.Logo
 import it.stamp.designsystem.theme.Black
 import it.stamp.designsystem.theme.Gray400
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
+import it.stamp.signin.core.idp.GoogleIDTokenProvider
+import it.stamp.signin.core.idp.IDTokenProvider
+import it.stamp.signin.core.ui.SignInWithButton
 import kotlinx.coroutines.launch
 
 @Composable
@@ -44,15 +45,14 @@ internal fun SignInScreen(
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(viewModel) {
+        viewModel.uiEvent.collect { uiEvent ->
+            when (uiEvent) {
+                is SignInUiEvent.SignedIn -> onSignInSuccess()
+                is SignInUiEvent.SignInFailed -> {
 
-    LaunchedEffect(uiState) {
-        when (val uiState = uiState) {
-            is SignInUiState.Authenticated -> onSignInSuccess()
-            is SignInUiState.Failure -> {
-
+                }
             }
-            SignInUiState.NotAuthenticated -> {}
         }
     }
 
@@ -60,15 +60,15 @@ internal fun SignInScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val idTokenProvider: IdTokenProvider = remember(context) {
-        GoogleIdTokenProvider(CredentialManager.create(context))
+    val idTokenProvider: IDTokenProvider = remember(context) {
+        GoogleIDTokenProvider(CredentialManager.create(context))
     }
 
     SignInScreen(
         onSignInWithAppleClick = {},
         onSignInWithGoogleClick = {
             coroutineScope.launch {
-                idTokenProvider.getIdToken(context)
+                idTokenProvider.getIDToken(context)
                     .onSuccess { idToken ->
                         viewModel.signInWithGoogle(idToken)
                     }

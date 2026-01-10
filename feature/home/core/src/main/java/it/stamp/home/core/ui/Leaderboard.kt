@@ -112,7 +112,7 @@ private fun Item(
             text = if (isMe) {
                 stringResource(R.string.me)
             } else {
-                this@with.member.displayName
+                this@with.member.displayName.value
             },
             modifier = Modifier.widthIn(max = 60.dp),
             color = Black,

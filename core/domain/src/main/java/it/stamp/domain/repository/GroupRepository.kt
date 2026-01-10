@@ -9,4 +9,6 @@ interface GroupRepository {
     suspend fun getGroupById(groupId: GroupId): Result<Group>
 
     suspend fun getGroupByInviteCode(inviteCode: InviteCode): Result<Group>
+
+    suspend fun findById(id: GroupId): Group?
 }

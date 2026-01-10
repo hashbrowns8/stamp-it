@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query.Direction
 import com.google.firebase.firestore.snapshots
 import it.stamp.data.firestore.model.FirestoreMission
+import it.stamp.data.firestore.util.missions
 import it.stamp.data.firestore.util.toTimestamp
 import it.stamp.domain.exception.MissionNotFoundException
 import it.stamp.model.ids.GroupId
@@ -25,16 +26,18 @@ import javax.inject.Singleton
 import kotlin.time.Clock
 
 @Singleton
-class MissionFirestoreDataSource @Inject constructor(
-    firestore: FirebaseFirestore
-) : FirestoreDataSource<FirestoreMission>(FirestoreMission::class.java) {
+class FirestoreMissionDataSource @Inject constructor(
+    firestore: FirebaseFirestore,
+) : FirestoreDataSource<FirestoreMission>() {
 
-    override val collection: CollectionReference = firestore.collection(COLLECTION_PATH)
+    override val collection: CollectionReference = firestore.missions
+
+    override val valueType: Class<FirestoreMission> = FirestoreMission::class.java
 
     suspend fun getMissionsByAssigner(
         assignerId: UserId,
         groupId: GroupId
-    ): List<FirestoreMission> = withContext(dispatcher) {
+    ): List<FirestoreMission> = withContext(coroutineDispatcher) {
         collection
             .whereEqualTo("groupId", groupId.value)
             .whereEqualTo("assignedBy", assignerId.value)
@@ -62,13 +65,13 @@ class MissionFirestoreDataSource @Inject constructor(
             .map { snapshot ->
                 snapshot.toObjects(FirestoreMission::class.java)
             }
-            .flowOn(dispatcher)
+            .flowOn(coroutineDispatcher)
     }
 
     suspend fun updateMissionStatus(
         missionId: MissionId,
         status: MissionStatus,
-    ): FirestoreMission = withContext(dispatcher) {
+    ): FirestoreMission = withContext(coroutineDispatcher) {
         collection.document(missionId.value)
             .update("status", status.name.lowercase())
             .await()
@@ -78,10 +81,5 @@ class MissionFirestoreDataSource @Inject constructor(
             .await()
             .toObject(FirestoreMission::class.java)
             ?: throw MissionNotFoundException()
-    }
-
-
-    companion object Companion {
-        private const val COLLECTION_PATH = "missions"
     }
 }

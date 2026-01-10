@@ -10,6 +10,9 @@ import javax.inject.Singleton
 class GetGroupMembersUseCase @Inject constructor(
     private val memberService: MemberService,
 ) {
-    suspend operator fun invoke(groupId: GroupId): Result<List<Member>> =
+    suspend operator fun invoke(
+        groupId: GroupId
+    ): Result<List<Member>> = runCatching {
         memberService.getMembersByGroup(groupId)
+    }
 }

@@ -4,14 +4,14 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import it.stamp.data.service.FirebaseAuthenticationService
+import it.stamp.data.service.FederatedSignInService
 import it.stamp.data.service.FirestoreLeaderboardService
 import it.stamp.data.service.FirestoreMemberService
-import it.stamp.data.service.FirestoreUserBootstrapService
-import it.stamp.domain.service.AuthenticationService
+import it.stamp.data.service.FirestoreSignUpService
 import it.stamp.domain.service.LeaderboardService
 import it.stamp.domain.service.MemberService
-import it.stamp.domain.service.UserBootstrapService
+import it.stamp.domain.service.SignInService
+import it.stamp.domain.service.SignUpService
 import javax.inject.Singleton
 
 @Module
@@ -19,7 +19,7 @@ import javax.inject.Singleton
 abstract class ServiceModule {
     @Binds
     @Singleton
-    abstract fun bindAuthenticationService(service: FirebaseAuthenticationService): AuthenticationService
+    abstract fun bindSignInService(service: FederatedSignInService): SignInService
 
     @Binds
     @Singleton
@@ -31,5 +31,5 @@ abstract class ServiceModule {
 
     @Binds
     @Singleton
-    abstract fun bindUserBootstrapService(service: FirestoreUserBootstrapService): UserBootstrapService
+    abstract fun bindSignUpService(service: FirestoreSignUpService): SignUpService
 }

@@ -44,7 +44,6 @@ import it.stamp.designsystem.theme.Gray500
 import it.stamp.designsystem.theme.Gray800
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
-import it.stamp.domain.generator.InviteCodeGenerator
 import it.stamp.model.membership.InviteCode
 import it.stamp.ui.StampTopAppBar
 
@@ -166,8 +165,8 @@ private fun InviteGroupScreen(
 @Composable
 private fun InviteGroupScreenPreview() {
     StampTheme {
-        val inviteCode = remember {
-            InviteCodeGenerator.generate()
+        val inviteCode: InviteCode = remember {
+            InviteCode()
         }
 
         InviteGroupScreen(

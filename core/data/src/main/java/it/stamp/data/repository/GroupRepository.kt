@@ -26,4 +26,7 @@ class GroupDataRepository @Inject constructor(
                 ?.let(GroupMapper::toDomainModel)
                 ?: throw GroupNotFoundException()
         }
+    override suspend fun findById(id: GroupId): Group? =
+        dataSource.read(id.value)
+            ?.let(GroupMapper::toDomainModel)
 }
