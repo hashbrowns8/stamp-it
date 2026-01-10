@@ -5,5 +5,5 @@ import it.stamp.model.membership.Group
 
 interface GroupRepository {
 
-    suspend fun getGroupById(groupId: GroupId): Result<Group>
+    suspend fun findById(id: GroupId): Group?
 }

@@ -83,7 +83,7 @@ fun MembersMissions(
                     onClick = {
                         selectedMember = member
                     },
-                    displayName = member.displayName,
+                    displayName = member.displayName.value,
                     modifier = Modifier.height(32.dp),
                 )
             }
@@ -142,7 +142,7 @@ fun MembersMissions(
 private fun MembersMissionsPreview() {
     StampTheme {
         MembersMissions(
-            userDisplayName = SampleMe.displayName,
+            userDisplayName = SampleMe.displayName.value,
             groupName = SampleGroup.name,
             members = SampleMembers - SampleMe,
             memberMissions = SampleMemberMissions,
@@ -158,7 +158,7 @@ private fun MembersMissionsPreview() {
 private fun MembersMissionsEmptyPreview() {
     StampTheme {
         MembersMissions(
-            userDisplayName = SampleMe.displayName,
+            userDisplayName = SampleMe.displayName.value,
             groupName = SampleGroup.name,
             members = SampleMembers - SampleMe,
             memberMissions = emptyList(),

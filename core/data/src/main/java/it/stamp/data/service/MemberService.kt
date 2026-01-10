@@ -1,6 +1,6 @@
 package it.stamp.data.service
 
-import it.stamp.domain.exception.UserNotFoundException
+import it.stamp.domain.exception.MemberNotFoundException
 import it.stamp.domain.repository.MembershipRepository
 import it.stamp.domain.repository.UserRepository
 import it.stamp.domain.service.MemberService
@@ -31,22 +31,16 @@ class FirestoreMemberService @Inject constructor(
         }
         .flowOn(Dispatchers.IO)
 
-    override suspend fun getMembersByGroup(groupId: GroupId): Result<List<Member>> =
-        runCatching {
-            val memberships = membershipRepository.getMembershipsByGroup(groupId)
-                .getOrThrow()
-
-            val members = memberships.map { membership ->
+    override suspend fun getMembersByGroup(groupId: GroupId): List<Member> {
+        return membershipRepository.getMembershipsByGroup(groupId)
+            .map { membership ->
                 getMemberByMembership(membership)
             }
-
-            return@runCatching members
-        }
+    }
 
     private suspend fun getMemberByMembership(membership: Membership): Member {
-        val user = userRepository.getUserById(membership.userId)
-            .getOrNull()
-            ?: throw UserNotFoundException()
+        val user = userRepository.findById(membership.userId)
+            ?: throw MemberNotFoundException()
 
         return Member(
             user.id,

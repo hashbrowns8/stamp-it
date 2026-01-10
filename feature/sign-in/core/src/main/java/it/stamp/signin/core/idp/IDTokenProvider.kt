@@ -1,19 +1,21 @@
-package it.stamp.signin.core
+package it.stamp.signin.core.idp
 
 import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import it.stamp.signin.core.BuildConfig
 
-interface IdTokenProvider {
-    suspend fun getIdToken(activityContext: Context): Result<String>
+interface IDTokenProvider {
+    // TODO : IdentityProvider
+    suspend fun getIDToken(activityContext: Context): Result<String>
 }
 
-class GoogleIdTokenProvider(
+class GoogleIDTokenProvider(
     private val credentialManager: CredentialManager,
-) : IdTokenProvider {
-    override suspend fun getIdToken(activityContext: Context): Result<String> = runCatching {
+) : IDTokenProvider {
+    override suspend fun getIDToken(activityContext: Context): Result<String> = runCatching {
         val credentialOption = GetGoogleIdOption.Builder()
             .setServerClientId(BuildConfig.GOOGLE_SERVER_CLIENT_ID)
             .setFilterByAuthorizedAccounts(false)

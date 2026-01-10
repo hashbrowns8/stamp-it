@@ -9,9 +9,9 @@ interface MembershipRepository {
 
     fun observeMembershipsByGroup(groupId: GroupId): Flow<List<Membership>>
 
-    suspend fun getMembershipsByGroup(groupId: GroupId): Result<List<Membership>>
+    suspend fun getMembershipsByGroup(groupId: GroupId): List<Membership>
 
     fun observeMembershipByUser(userId: UserId): Flow<Membership>
 
-    suspend fun getMembershipByUser(userId: UserId): Result<Membership>
+    suspend fun getMembershipByUser(userId: UserId): Membership
 }

@@ -51,9 +51,15 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val user: Flow<User> = observeCurrentUserUseCase()
+        .catch {
+            emit(null)
+        }
         .filterNotNull()
 
     private val membership: Flow<Membership> = observeCurrentMembershipUseCase()
+        .catch {
+            emit(null)
+        }
         .filterNotNull()
 
     private val retry = MutableStateFlow(0)

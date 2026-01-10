@@ -1,16 +1,18 @@
 package it.stamp.home.core.preview
 
-import it.stamp.domain.generator.InviteCodeGenerator
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.MissionId
 import it.stamp.model.ids.UserId
 import it.stamp.model.membership.Group
+import it.stamp.model.membership.InviteCode
 import it.stamp.model.membership.Member
 import it.stamp.model.membership.Role
 import it.stamp.model.mission.Mission
 import it.stamp.model.mission.MissionCategory
 import it.stamp.model.mission.MissionStatus
 import it.stamp.model.stamp.LeaderboardMember
+import it.stamp.model.user.Avatar
+import it.stamp.model.user.DisplayName
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -23,15 +25,15 @@ import kotlin.uuid.Uuid
 val SampleGroup = Group(
     id = GroupId(Uuid.random().toString()),
     name = "👦🏻👧🏻🧑🏻👩🏻👨🏻",
-    inviteCode = InviteCodeGenerator.generate(),
+    inviteCode = InviteCode(),
     createdAt = Clock.System.now(),
 )
 
 val SampleMe = Member(
     id = UserId("1"),
     groupId = SampleGroup.id,
-    displayName = "즐거운 호랑이",
-    avatar = String(),
+    displayName = DisplayName("즐거운 호랑이"),
+    avatar = Avatar.CHARACTER_1,
     role = Role.LEADER,
     joinedAt = Clock.System.now(),
 )
@@ -41,24 +43,24 @@ val SampleMembers = listOf(
     Member(
         id = UserId("2"),
         groupId = SampleGroup.id,
-        displayName = "엄마",
-        avatar = String(),
+        displayName = DisplayName("엄마"),
+        avatar = Avatar.CHARACTER_1,
         role = Role.MEMBER,
         joinedAt = Clock.System.now(),
     ),
     Member(
         id = UserId("3"),
         groupId = SampleGroup.id,
-        displayName = "아빠",
-        avatar = String(),
+        displayName = DisplayName("아빠"),
+        avatar = Avatar.CHARACTER_1,
         role = Role.MEMBER,
         joinedAt = Clock.System.now(),
     ),
     Member(
         id = UserId("4"),
         groupId = SampleGroup.id,
-        displayName = "행복한 호랑이-ABCDEFG",
-        avatar = String(),
+        displayName = DisplayName("행복한 호랑이-ABCDEFG"),
+        avatar = Avatar.CHARACTER_1,
         role = Role.MEMBER,
         joinedAt = Clock.System.now(),
     )

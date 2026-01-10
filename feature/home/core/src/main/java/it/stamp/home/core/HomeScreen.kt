@@ -226,21 +226,21 @@ private fun Content(
                 val myMissions = remember(myMissions, members) {
                     myMissions.filter { !it.isCompleted }.map { mission ->
                         with(mission) {
-                            val assignerName = members.first { it.id == assigner }.displayName
+                            val assigner = members.first { it.id == assigner }
 
                             MyMission(
-                                id = id,
-                                category = category,
-                                title = title,
-                                dueDate = dueDate,
-                                assignerName = assignerName,
+                                id,
+                                category,
+                                title,
+                                dueDate,
+                                assignerName = assigner.displayName.value,
                             )
                         }
                     }
                 }
 
                 MyMissions(
-                    userDisplayName = user.displayName,
+                    userDisplayName = user.displayName.value,
                     onViewMoreClick = {
                         onUiAction(HomeUiAction.OnViewMyMissionsMoreClick)
                     },
@@ -254,7 +254,7 @@ private fun Content(
                 )
 
                 MembersMissions(
-                    userDisplayName = user.displayName,
+                    userDisplayName = user.displayName.value,
                     groupName = group.name,
                     members = members - user,
                     membersMissions,

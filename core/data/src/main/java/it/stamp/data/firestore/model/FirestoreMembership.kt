@@ -11,4 +11,7 @@ data class FirestoreMembership(
     val profileImage: String = String(),
     val joinedAt: Timestamp = Timestamp.now(),
     val updatedAt: Timestamp = Timestamp.now(),
-)
+) : FirestoreModel {
+    override val id: String
+        get() = membershipId
+}

@@ -2,7 +2,11 @@ package it.stamp.domain.repository
 
 import it.stamp.model.ids.UserId
 import it.stamp.model.user.User
+import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
-    suspend fun getUserById(id: UserId): Result<User?>
+
+    fun observe(id: UserId): Flow<User?>
+
+    suspend fun findById(id: UserId): User?
 }

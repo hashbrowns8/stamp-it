@@ -11,6 +11,9 @@ import javax.inject.Singleton
 class CancelMissionCompletionUseCase @Inject constructor(
     private val missionRepository: MissionRepository,
 ) {
-    suspend operator fun invoke(missionId: MissionId): Result<Mission> =
+    suspend operator fun invoke(
+        missionId: MissionId
+    ): Result<Mission> = runCatching {
         missionRepository.updateMissionStatus(missionId, MissionStatus.ASSIGNED)
+    }
 }

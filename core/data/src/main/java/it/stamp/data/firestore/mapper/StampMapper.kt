@@ -9,15 +9,18 @@ import it.stamp.model.stamp.StampType
 
 object StampMapper {
     fun toDomainModel(stamp: FirestoreStamp) = with(stamp) {
-        val type = type.removePrefix("stamp")
-            .replaceFirstChar { it.uppercaseChar() }
-            .let(StampType::valueOf)
+        val type = parseType(type)
 
         Stamp(
-            id = StampId(stampId),
+            id = StampId(id),
             missionId = MissionId(missionId),
             type = type,
             createdAt = createdAt.toKotlinInstant()
         )
     }
+
+    private fun parseType(type: String): StampType =
+        type.removePrefix("stamp")
+            .uppercase()
+            .let(StampType::valueOf)
 }

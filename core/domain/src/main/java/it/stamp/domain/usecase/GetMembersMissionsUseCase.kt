@@ -11,6 +11,10 @@ import javax.inject.Singleton
 class GetMembersMissionsUseCase @Inject constructor(
     private val missionRepository: MissionRepository,
 ) {
-    suspend operator fun invoke(assignerId: UserId, groupId: GroupId): Result<List<Mission>> =
+    suspend operator fun invoke(
+        assignerId: UserId,
+        groupId: GroupId,
+    ): Result<List<Mission>> = runCatching {
         missionRepository.getMissionsByAssigner(assignerId, groupId)
+    }
 }

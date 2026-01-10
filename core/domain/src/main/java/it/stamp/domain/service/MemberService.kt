@@ -8,5 +8,5 @@ import kotlinx.coroutines.flow.Flow
 interface MemberService {
     fun observeMembersByUser(userId: UserId): Flow<List<Member>>
 
-    suspend fun getMembersByGroup(groupId: GroupId): Result<List<Member>>
+    suspend fun getMembersByGroup(groupId: GroupId): List<Member>
 }
