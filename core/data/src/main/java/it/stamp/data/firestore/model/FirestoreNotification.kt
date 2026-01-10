@@ -12,5 +12,6 @@ data class FirestoreNotification(
     val isRead: Boolean = false,
     val userId: String = String(),
 ) : FirestoreModel {
-    override val id: String = noticeId
+    override val id: String
+        get() = noticeId
 }

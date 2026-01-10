@@ -12,5 +12,6 @@ data class FirestoreGroup(
     val nameChangedAt: Timestamp = Timestamp.now(),
     val createdAt: Timestamp = Timestamp.now(),
 ) : FirestoreModel {
-    override val id: String = groupId
+    override val id: String
+        get() = groupId
 }

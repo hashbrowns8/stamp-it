@@ -14,5 +14,6 @@ data class FirestoreStamp(
     val createdAt: Timestamp = Timestamp.now(),
     val maxStamps: Int = 30,
 ) : FirestoreModel {
-    override val id: String = stampId
+    override val id: String
+        get() = stampId
 }
