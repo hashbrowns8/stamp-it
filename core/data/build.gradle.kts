@@ -8,6 +8,8 @@ android.namespace = "it.stamp.data"
 dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.model)
+
+    implementation(libs.datastore.preferences)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)

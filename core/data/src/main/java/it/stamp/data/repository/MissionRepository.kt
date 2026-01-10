@@ -1,7 +1,7 @@
 package it.stamp.data.repository
 
 import it.stamp.data.firestore.mapper.MissionMapper
-import it.stamp.data.firestore.source.MissionFirestoreDataSource
+import it.stamp.data.firestore.source.FirestoreMissionDataSource
 import it.stamp.domain.repository.MissionRepository
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.MissionId
@@ -13,22 +13,19 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class MissionDataRepository @Inject constructor(
-    private val dataSource: MissionFirestoreDataSource,
+    private val dataSource: FirestoreMissionDataSource,
 ) : MissionRepository {
+
     override suspend fun getMissionsByAssigner(
         assignerId: UserId,
         groupId: GroupId
-    ): Result<List<Mission>> = runCatching {
-        dataSource
-            .getMissionsByAssigner(assignerId, groupId)
-            .map(MissionMapper::toDomainModel)
-    }
+    ): List<Mission> = dataSource.getMissionsByAssigner(assignerId, groupId)
+        .map(MissionMapper::toDomainModel)
 
     override fun observeMissionsByAssigneeThisWeek(
         assigneeId: UserId,
         groupId: GroupId
-    ): Flow<List<Mission>> = dataSource
-        .observeMissionsByAssigneeThisWeek(assigneeId, groupId)
+    ): Flow<List<Mission>> = dataSource.observeMissionsByAssigneeThisWeek(assigneeId, groupId)
         .map { missions ->
             missions.map(MissionMapper::toDomainModel)
         }
@@ -36,9 +33,6 @@ class MissionDataRepository @Inject constructor(
     override suspend fun updateMissionStatus(
         missionId: MissionId,
         status: MissionStatus
-    ): Result<Mission> = runCatching {
-        dataSource
-            .updateMissionStatus(missionId, status)
-            .let(MissionMapper::toDomainModel)
-    }
+    ): Mission = dataSource.updateMissionStatus(missionId, status)
+        .let(MissionMapper::toDomainModel)
 }

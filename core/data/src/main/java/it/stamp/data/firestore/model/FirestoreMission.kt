@@ -13,4 +13,6 @@ data class FirestoreMission(
     val category: String = String(),
     val status: String = String(),
     val missionType: String = String(),
-)
+) : FirestoreModel {
+    override val id: String = missionId
+}

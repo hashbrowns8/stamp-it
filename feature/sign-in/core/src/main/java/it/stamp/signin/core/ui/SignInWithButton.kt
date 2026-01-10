@@ -1,4 +1,4 @@
-package it.stamp.signin.core
+package it.stamp.signin.core.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

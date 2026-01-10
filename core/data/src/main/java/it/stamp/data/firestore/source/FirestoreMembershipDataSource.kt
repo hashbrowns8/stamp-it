@@ -4,6 +4,7 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.snapshots
 import it.stamp.data.firestore.model.FirestoreMembership
+import it.stamp.data.firestore.util.memberships
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.UserId
 import kotlinx.coroutines.flow.Flow
@@ -15,11 +16,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MembershipFirestoreDataSource @Inject constructor(
-    firestore: FirebaseFirestore
-) : FirestoreDataSource<FirestoreMembership>(FirestoreMembership::class.java) {
+class FirestoreMembershipDataSource @Inject constructor(
+    firestore: FirebaseFirestore,
+) : FirestoreDataSource<FirestoreMembership>() {
 
-    override val collection: CollectionReference = firestore.collection(COLLECTION_PATH)
+    override val collection: CollectionReference = firestore.memberships
+
+    override val valueType: Class<FirestoreMembership> = FirestoreMembership::class.java
 
     fun observeGroupMemberships(groupId: GroupId): Flow<List<FirestoreMembership>> =
         collection.whereEqualTo("groupId", groupId.value)
@@ -27,9 +30,11 @@ class MembershipFirestoreDataSource @Inject constructor(
             .map { snapshot ->
                 snapshot.toObjects(FirestoreMembership::class.java)
             }
-            .flowOn(dispatcher)
+            .flowOn(coroutineDispatcher)
 
-    suspend fun getGroupMemberships(groupId: GroupId): List<FirestoreMembership> = withContext(dispatcher) {
+    suspend fun getGroupMemberships(
+        groupId: GroupId
+    ): List<FirestoreMembership> = withContext(coroutineDispatcher) {
         collection.whereEqualTo("groupId", groupId.value)
             .get()
             .await()
@@ -44,17 +49,13 @@ class MembershipFirestoreDataSource @Inject constructor(
                     .toObjects(FirestoreMembership::class.java)
                     .single()
             }
-            .flowOn(dispatcher)
+            .flowOn(coroutineDispatcher)
 
-    suspend fun getUserMembership(userId: UserId): FirestoreMembership = withContext(dispatcher) {
+    suspend fun getUserMembership(userId: UserId): FirestoreMembership = withContext(coroutineDispatcher) {
         collection.whereEqualTo("userId", userId.value)
             .get()
             .await()
             .toObjects(FirestoreMembership::class.java)
             .single()
-    }
-
-    companion object Companion {
-        private const val COLLECTION_PATH = "memberships"
     }
 }

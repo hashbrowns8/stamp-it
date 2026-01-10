@@ -11,4 +11,6 @@ data class FirestoreNotification(
     val url: String = String(),
     val isRead: Boolean = false,
     val userId: String = String(),
-)
+) : FirestoreModel {
+    override val id: String = noticeId
+}

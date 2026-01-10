@@ -14,7 +14,7 @@ import it.stamp.model.mission.MissionStatus
 object MissionMapper {
     fun toDomainModel(mission: FirestoreMission): Mission = with(mission) {
         Mission(
-            id = MissionId(missionId),
+            id = MissionId(id),
             groupId = GroupId(groupId),
             category = MissionCategory.valueOf(category.uppercase()),
             title = title,
