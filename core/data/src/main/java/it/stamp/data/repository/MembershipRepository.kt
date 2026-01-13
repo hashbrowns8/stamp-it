@@ -1,40 +1,39 @@
 package it.stamp.data.repository
 
 import it.stamp.data.firestore.mapper.MembershipMapper
-import it.stamp.data.firestore.source.FirestoreMembershipDataSource
+import it.stamp.data.firestore.source.MembershipFirestoreDataSource
 import it.stamp.domain.repository.MembershipRepository
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.UserId
 import it.stamp.model.membership.Membership
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class MembershipDataRepository @Inject constructor(
-    private val dataSource: FirestoreMembershipDataSource,
+    private val firestoreDataSource: MembershipFirestoreDataSource,
 ) : MembershipRepository {
 
-    override fun observeMembershipsByGroup(groupId: GroupId): Flow<List<Membership>> =
-        dataSource.observeGroupMemberships(groupId)
+    override fun observeGroupMemberships(groupId: GroupId): Flow<List<Membership>> =
+        firestoreDataSource.observeGroupMemberships(groupId)
             .map { memberships ->
                 memberships.map(MembershipMapper::toDomainModel)
             }
-            .flowOn(Dispatchers.IO)
 
-    override suspend fun getMembershipsByGroup(
-        groupId: GroupId
-    ): List<Membership> = dataSource.getGroupMemberships(groupId)
-        .map(MembershipMapper::toDomainModel)
-
-    override fun observeMembershipByUser(userId: UserId): Flow<Membership> =
-        dataSource.observeUserMembership(userId)
+    override suspend fun getGroupMemberships(groupId: GroupId): List<Membership> =
+        firestoreDataSource.getGroupMemberships(groupId)
             .map(MembershipMapper::toDomainModel)
-            .flowOn(Dispatchers.IO)
 
-    override suspend fun getMembershipByUser(
-        userId: UserId
-    ): Membership = dataSource.getUserMembership(userId)
-        .let(MembershipMapper::toDomainModel)
+    override suspend fun getGroupMemberCount(groupId: GroupId): Int =
+        firestoreDataSource.getGroupMemberCount(groupId)
+
+    override fun observeUserMembership(userId: UserId): Flow<Membership?> =
+        firestoreDataSource.observeUserMembership(userId)
+            .map { membership ->
+                membership?.let(MembershipMapper::toDomainModel)
+            }
+
+    override suspend fun getUserMembership(userId: UserId): Membership? =
+        firestoreDataSource.getUserMembership(userId)
+            ?.let(MembershipMapper::toDomainModel)
 }

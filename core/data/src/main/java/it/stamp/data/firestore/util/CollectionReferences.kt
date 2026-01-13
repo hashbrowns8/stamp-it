@@ -3,20 +3,20 @@ package it.stamp.data.firestore.util
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 
-val FirebaseFirestore.groups: CollectionReference
+val FirebaseFirestore.groupsCollection: CollectionReference
     get() = collection("groups")
 
-val FirebaseFirestore.memberships: CollectionReference
+val FirebaseFirestore.membershipsCollection: CollectionReference
     get() = collection("memberships")
 
-val FirebaseFirestore.missions: CollectionReference
+val FirebaseFirestore.missionsCollection: CollectionReference
     get() = collection("missions")
 
-val FirebaseFirestore.notifications: CollectionReference
+val FirebaseFirestore.notificationsCollection: CollectionReference
     get() = collection("DataNoticeFirestore")
 
-val FirebaseFirestore.stamps: CollectionReference
+val FirebaseFirestore.stampsCollection: CollectionReference
     get() = collection("stamps")
 
-val FirebaseFirestore.users: CollectionReference
+val FirebaseFirestore.usersCollection: CollectionReference
     get() = collection("users")

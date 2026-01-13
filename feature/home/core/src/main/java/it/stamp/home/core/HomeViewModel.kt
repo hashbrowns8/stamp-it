@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package it.stamp.home.core
 
 import androidx.compose.runtime.Immutable
@@ -5,23 +7,24 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.stamp.domain.usecase.CancelMissionCompletionUseCase
-import it.stamp.domain.usecase.CompleteMissionUseCase
-import it.stamp.domain.usecase.GetGroupByIdUseCase
-import it.stamp.domain.usecase.GetGroupLeaderboardUseCase
-import it.stamp.domain.usecase.GetGroupMembersUseCase
-import it.stamp.domain.usecase.GetMembersMissionsUseCase
-import it.stamp.domain.usecase.ObserveCurrentMembershipUseCase
-import it.stamp.domain.usecase.ObserveCurrentUserUseCase
-import it.stamp.domain.usecase.ObserveMyMissionsThisWeekUseCase
+import it.stamp.domain.exception.MissionException
+import it.stamp.domain.usecase.group.GetMyGroupLeaderboardUseCase
+import it.stamp.domain.usecase.group.GetMyGroupUseCase
+import it.stamp.domain.usecase.membership.GetMyGroupMembersUseCase
+import it.stamp.domain.usecase.membership.ObserveMyMembershipUseCase
+import it.stamp.domain.usecase.mission.CancelMissionCompletionUseCase
+import it.stamp.domain.usecase.mission.CompleteMissionUseCase
+import it.stamp.domain.usecase.mission.GetMyGroupMembersMissionsUseCase
+import it.stamp.domain.usecase.mission.ObserveMyMissionsThisWeekUseCase
+import it.stamp.domain.usecase.user.ObserveAuthenticatedUserUseCase
 import it.stamp.model.ids.MissionId
 import it.stamp.model.membership.Group
 import it.stamp.model.membership.Member
-import it.stamp.model.membership.Membership
 import it.stamp.model.mission.Mission
 import it.stamp.model.stamp.LeaderboardMember
-import it.stamp.model.user.User
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -31,36 +34,24 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    observeCurrentUserUseCase: ObserveCurrentUserUseCase,
-    observeCurrentMembershipUseCase: ObserveCurrentMembershipUseCase,
-    private val getGroupByIdUseCase: GetGroupByIdUseCase,
-    private val getGroupMembersUseCase: GetGroupMembersUseCase,
-    private val getGroupLeaderboardUseCase: GetGroupLeaderboardUseCase,
+    observeAuthenticatedUserUseCase: ObserveAuthenticatedUserUseCase,
+    observeMyMembershipUseCase: ObserveMyMembershipUseCase,
+    private val getMyGroupUseCase: GetMyGroupUseCase,
+    private val getMyGroupMembersUseCase: GetMyGroupMembersUseCase,
+    private val getMyGroupLeaderboardUseCase: GetMyGroupLeaderboardUseCase,
     private val observeMyMissionsThisWeekUseCase: ObserveMyMissionsThisWeekUseCase,
-    private val getMembersMissionsUseCase: GetMembersMissionsUseCase,
+    private val getMyGroupMembersMissionsUseCase: GetMyGroupMembersMissionsUseCase,
     private val completeMissionUseCase: CompleteMissionUseCase,
     private val cancelMissionCompletionUseCase: CancelMissionCompletionUseCase,
 ) : ViewModel() {
-
-    private val user: Flow<User> = observeCurrentUserUseCase()
-        .catch {
-            emit(null)
-        }
-        .filterNotNull()
-
-    private val membership: Flow<Membership> = observeCurrentMembershipUseCase()
-        .catch {
-            emit(null)
-        }
-        .filterNotNull()
 
     private val retry = MutableStateFlow(0)
 
@@ -68,36 +59,51 @@ class HomeViewModel @Inject constructor(
         retry.value += 1
     }
 
-    private fun <T> Result<T>.asFlow(): Flow<T> = flowOf(getOrThrow())
+    val uiState: StateFlow<HomeUiState> = observeMyMembershipUseCase()
+        .distinctUntilChangedBy { it.id }
+        .combineTransform(retry) { membership, retry ->
+            emit(HomeUiState.Loading)
 
-    val uiState: StateFlow<HomeUiState> = combineTransform(
-        user,
-        membership,
-        retry
-    ) { user, membership, _ ->
-        emit(HomeUiState.Loading)
+            val (group, members, rankings, memberMissions) = coroutineScope {
+                awaitAll(
+                    async {
+                        getMyGroupUseCase()
+                            .getOrThrow()
+                    },
+                    async {
+                        getMyGroupMembersUseCase()
+                            .getOrThrow()
+                    },
+                    async {
+                        getMyGroupLeaderboardUseCase()
+                            .getOrThrow()
+                    },
+                    async {
+                        getMyGroupMembersMissionsUseCase()
+                            .getOrThrow()
+                    }
+                )
+            }
 
-        combine(
-            flow = getGroupByIdUseCase(membership.groupId).asFlow(),
-            flow2 = getGroupMembersUseCase(membership.groupId).asFlow(),
-            flow3 = getGroupLeaderboardUseCase(membership.groupId).asFlow(),
-            flow4 = observeMyMissionsThisWeekUseCase(),
-            flow5 = getMembersMissionsUseCase(assignerId = user.id, membership.groupId).asFlow(),
-        ) { group, members, rankings, myMissions, membersMissions ->
-            val me = members.first { member -> member.id == user.id }
+            observeAuthenticatedUserUseCase()
+                .filterNotNull()
+                .combine(observeMyMissionsThisWeekUseCase()) { user, myMissions ->
+                    val user = (members as List<Member>)
+                        .first { member -> member.id == user.id }
+                        .copy(displayName = user.displayName, avatar = user.avatar)
 
-            HomeUiState.Success(
-                user = me,
-                group,
-                members = members - me,
-                rankings,
-                myMissions,
-                membersMissions,
-            )
+                    HomeUiState.Success(
+                        user,
+                        group as Group,
+                        members - user,
+                        rankings as List<LeaderboardMember>,
+                        myMissions,
+                        memberMissions as List<Mission>,
+                    )
+                }.collect(this)
         }.catch { throwable ->
             emit(HomeUiState.Failure(throwable))
-        }.collect(this)
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUiState.Loading)
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUiState.Loading)
 
     private val _uiEvent = MutableSharedFlow<HomeUiEvent>()
     val uiEvent: SharedFlow<HomeUiEvent> = _uiEvent.asSharedFlow()
@@ -108,7 +114,13 @@ class HomeViewModel @Inject constructor(
                 .onSuccess { mission ->
                     _uiEvent.emit(HomeUiEvent.MissionCompleted(mission))
                 }
-                .onFailure(::handleFailure)
+                .onFailure { throwable ->
+                    if (throwable is MissionException) {
+                        _uiEvent.emit(HomeUiEvent.UpdateMissionStatusFailed(throwable))
+                    } else {
+                        handleFailure(throwable)
+                    }
+                }
         }
     }
 
@@ -118,7 +130,13 @@ class HomeViewModel @Inject constructor(
                 .onSuccess { mission ->
                     _uiEvent.emit(HomeUiEvent.MissionCompletionCanceled(mission))
                 }
-                .onFailure(::handleFailure)
+                .onFailure { throwable ->
+                    if (throwable is MissionException) {
+                        _uiEvent.emit(HomeUiEvent.UpdateMissionStatusFailed(throwable))
+                    } else {
+                        handleFailure(throwable)
+                    }
+                }
         }
     }
 
@@ -141,7 +159,7 @@ sealed interface HomeUiState {
         val members: List<Member>,
         val rankings: List<LeaderboardMember>,
         val myMissions: List<Mission>,
-        val membersMissions: List<Mission>,
+        val memberMissions: List<Mission>,
     ) : HomeUiState
 
     @Immutable

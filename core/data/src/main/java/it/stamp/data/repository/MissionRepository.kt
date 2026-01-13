@@ -1,38 +1,44 @@
 package it.stamp.data.repository
 
 import it.stamp.data.firestore.mapper.MissionMapper
-import it.stamp.data.firestore.source.FirestoreMissionDataSource
+import it.stamp.data.firestore.source.MissionFirestoreDataSource
+import it.stamp.domain.exception.MissionNotFoundException
 import it.stamp.domain.repository.MissionRepository
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.MissionId
 import it.stamp.model.ids.UserId
 import it.stamp.model.mission.Mission
-import it.stamp.model.mission.MissionStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class MissionDataRepository @Inject constructor(
-    private val dataSource: FirestoreMissionDataSource,
+    private val firestoreDataSource: MissionFirestoreDataSource,
 ) : MissionRepository {
 
+    override suspend fun findById(id: MissionId): Mission? =
+        firestoreDataSource.get(id.value)
+            ?.let(MissionMapper::toDomainModel)
+
     override suspend fun getMissionsByAssigner(
-        assignerId: UserId,
-        groupId: GroupId
-    ): List<Mission> = dataSource.getMissionsByAssigner(assignerId, groupId)
+        groupId: GroupId,
+        assignerId: UserId
+    ): List<Mission> = firestoreDataSource.getMissionsByAssigner(groupId, assignerId)
         .map(MissionMapper::toDomainModel)
 
     override fun observeMissionsByAssigneeThisWeek(
-        assigneeId: UserId,
-        groupId: GroupId
-    ): Flow<List<Mission>> = dataSource.observeMissionsByAssigneeThisWeek(assigneeId, groupId)
+        groupId: GroupId,
+        assigneeId: UserId
+    ): Flow<List<Mission>> = firestoreDataSource.observeMissionsByAssigneeThisWeek(groupId, assigneeId)
         .map { missions ->
             missions.map(MissionMapper::toDomainModel)
         }
 
-    override suspend fun updateMissionStatus(
-        missionId: MissionId,
-        status: MissionStatus
-    ): Mission = dataSource.updateMissionStatus(missionId, status)
-        .let(MissionMapper::toDomainModel)
+    override suspend fun update(mission: Mission): Mission {
+        val missionFirestore = MissionMapper.toFirestoreModel(mission)
+
+        firestoreDataSource.update(mission.id.value, missionFirestore)
+
+        return findById(mission.id) ?: throw MissionNotFoundException()
+    }
 }

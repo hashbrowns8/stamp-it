@@ -10,16 +10,15 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import it.stamp.navigation.Navigator
 
 @Composable
-fun StampNaivagionDisplay(
-    navigator: Navigator,
+fun StampNavigationDisplay(
+    backStack: List<NavKey>,
     modifier: Modifier = Modifier,
     entryProvider: (key: NavKey) -> NavEntry<NavKey>,
 ) {
     NavDisplay(
-        navigator.backStack,
+        backStack,
         modifier,
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),

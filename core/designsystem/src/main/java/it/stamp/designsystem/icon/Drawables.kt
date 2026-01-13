@@ -113,6 +113,3 @@ val Drawables.MissionLearning: Painter
     @Composable
     get() = painterResource(R.drawable.mission_learning)
 
-val Drawables.CharacterRed: Painter
-    @Composable
-    get() = painterResource(R.drawable.character_red)

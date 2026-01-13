@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="enter">입장하기</string>
+    <string name="invite_code">초대코드</string>
+    <string name="join_group_with_invite_code_message">초대 받을 그룹의 코드를 입력해주세요</string>
+    <string name="join_group_title">초대 받기</string>
+</resources>

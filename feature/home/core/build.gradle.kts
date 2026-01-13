@@ -7,4 +7,5 @@ android.namespace = "it.stamp.home.core"
 dependencies {
     implementation(projects.feature.home.api)
     implementation(projects.feature.inviteGroup.api)
+    implementation(projects.feature.joinGroup.api)
 }

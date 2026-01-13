@@ -9,7 +9,7 @@ import it.stamp.model.user.User
 
 object UserMapper {
     fun toDomainModel(user: FirestoreUser) = with(user) {
-        val avatar = parseAvatar(profileImage)
+        val avatar = AvatarMapper.toDomainModel(profileImage)
 
         User(
             id = UserId(userId),
@@ -18,9 +18,18 @@ object UserMapper {
             createdAt = createdAt.toKotlinInstant(),
         )
     }
+}
 
-    private fun parseAvatar(profileImage: String): Avatar =
-        profileImage.takeLast(1)
-            .toInt()
-            .let(Avatar::valueOf)
+object AvatarMapper {
+    private const val PROFILE_IMAGE = "profileImage"
+
+    fun toDomainModel(value: String): Avatar =
+        value.takeLast(1)
+            .toIntOrNull()
+            ?.let { number ->
+                Avatar.entries.getOrNull(number - 1)
+            }
+            ?: Avatar.CHARACTER_1
+
+    fun toFirestoreModel(avatar: Avatar): String = PROFILE_IMAGE.plus(avatar.ordinal + 1)
 }

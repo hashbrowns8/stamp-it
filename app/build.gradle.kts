@@ -36,6 +36,8 @@ dependencies {
 
     implementation(projects.feature.inviteGroup.api)
     implementation(projects.feature.inviteGroup.core)
+    implementation(projects.feature.joinGroup.api)
+    implementation(projects.feature.joinGroup.core)
     implementation(projects.feature.main.api)
     implementation(projects.feature.main.core)
     implementation(projects.feature.signIn.api)

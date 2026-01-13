@@ -6,9 +6,7 @@ import it.stamp.model.membership.InviteCode
 
 interface GroupRepository {
 
-    suspend fun getGroupById(groupId: GroupId): Result<Group>
-
-    suspend fun getGroupByInviteCode(inviteCode: InviteCode): Result<Group>
+    suspend fun findGroupByInviteCode(inviteCode: InviteCode): Group?
 
     suspend fun findById(id: GroupId): Group?
 }
