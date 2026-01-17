@@ -1,8 +1,6 @@
 package it.stamp.domain.usecase.mission
 
 import it.stamp.domain.exception.MissionAlreadyCompletedException
-import it.stamp.domain.exception.MissionNotFoundException
-import it.stamp.domain.exception.NotAuthenticatedException
 import it.stamp.domain.exception.UnauthorizedException
 import it.stamp.domain.repository.MissionRepository
 import it.stamp.domain.service.AuthService
@@ -19,13 +17,11 @@ class CompleteMissionUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(missionId: MissionId): Result<Mission> =
         runCatching {
-            val currentUser = authService.currentUser
-                ?: throw NotAuthenticatedException()
+            val user = authService.requireUser()
 
-            val mission = missionRepository.findById(missionId)
-                ?: throw MissionNotFoundException()
+            val mission = missionRepository.getById(missionId)
 
-            require(mission.assignee == currentUser.id) {
+            require(mission.assignee == user.id) {
                 throw UnauthorizedException()
             }
 

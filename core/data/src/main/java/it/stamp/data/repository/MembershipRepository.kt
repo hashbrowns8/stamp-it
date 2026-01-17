@@ -33,7 +33,11 @@ class MembershipDataRepository @Inject constructor(
                 membership?.let(MembershipMapper::toDomainModel)
             }
 
-    override suspend fun getUserMembership(userId: UserId): Membership? =
+    override suspend fun findUserMembership(userId: UserId): Membership? =
         firestoreDataSource.getUserMembership(userId)
             ?.let(MembershipMapper::toDomainModel)
+
+    override suspend fun updateMembership(membership: Membership) {
+        TODO("Not yet implemented")
+    }
 }

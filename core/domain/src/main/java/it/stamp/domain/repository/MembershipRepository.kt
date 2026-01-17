@@ -1,5 +1,6 @@
 package it.stamp.domain.repository
 
+import it.stamp.domain.exception.MembershipNotFoundException
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.UserId
 import it.stamp.model.membership.Membership
@@ -15,7 +16,10 @@ interface MembershipRepository {
 
     fun observeUserMembership(userId: UserId): Flow<Membership?>
 
-    suspend fun getUserMembership(userId: UserId): Membership?
+    suspend fun findUserMembership(userId: UserId): Membership?
+
+    suspend fun getUserMembership(userId: UserId): Membership = findUserMembership(userId)
+        ?: throw MembershipNotFoundException()
 
     suspend fun updateMembership(membership: Membership)
 }

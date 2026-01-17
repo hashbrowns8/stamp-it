@@ -10,13 +10,14 @@ import androidx.compose.runtime.rememberUpdatedState
 import it.stamp.designsystem.component.displaySnackbar
 import it.stamp.join.group.core.JoinGroupUiEvent
 import it.stamp.join.group.core.JoinGroupViewModel
+import it.stamp.model.membership.Group
 import it.stamp.ui.LocalSnackbarHostState
 import kotlinx.coroutines.launch
 
 @Composable
 fun JoinGroupEventHandler(
     viewModel: JoinGroupViewModel,
-    onJoinGroupSuccess: () -> Unit,
+    onJoinGroupSuccess: (group: Group) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -39,7 +40,7 @@ fun JoinGroupEventHandler(
 
                 JoinGroupUiEvent.InvalidCode -> displaySnackbar("유효하지 않은 초대 코드입니다")
 
-                is JoinGroupUiEvent.JoinGroupSuccess -> onJoinGroupSuccess()
+                is JoinGroupUiEvent.JoinGroupSuccess -> onJoinGroupSuccess(event.group)
 
                 is JoinGroupUiEvent.JoinGroupFailure ->
                     displaySnackbar(

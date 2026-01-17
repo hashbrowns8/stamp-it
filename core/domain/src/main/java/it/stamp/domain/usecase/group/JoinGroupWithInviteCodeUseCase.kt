@@ -1,7 +1,5 @@
 package it.stamp.domain.usecase.group
 
-import it.stamp.domain.exception.GroupNotFoundException
-import it.stamp.domain.exception.NotAuthenticatedException
 import it.stamp.domain.repository.GroupRepository
 import it.stamp.domain.service.AuthService
 import it.stamp.domain.service.GroupTransferService
@@ -20,7 +18,7 @@ class JoinGroupWithInviteCodeUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(inviteCode: InviteCode): Result<JoinGroup> =
         runCatching {
-            val user = authService.currentUser ?: throw NotAuthenticatedException()
+            val user = authService.requireUser()
 
             val joiningGroup = groupRepository.findGroupByInviteCode(inviteCode)
                 ?: return@runCatching JoinGroup.InvalidCode
@@ -29,8 +27,7 @@ class JoinGroupWithInviteCodeUseCase @Inject constructor(
 
             if (membership.groupId == joiningGroup.id) return@runCatching JoinGroup.AlreadyInGroup
 
-            val leavingGroup = groupRepository.findById(membership.groupId)
-                ?: throw GroupNotFoundException()
+            val leavingGroup = groupRepository.getById(membership.groupId)
 
             val leavingGroupMemberCount = memberService.getGroupMemberCount(leavingGroup.id)
 

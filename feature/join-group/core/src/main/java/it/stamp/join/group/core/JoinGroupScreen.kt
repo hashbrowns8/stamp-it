@@ -51,13 +51,14 @@ import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.join.group.core.ui.JoinGroupEventHandler
 import it.stamp.join.group.core.ui.JoinGroupInProgress
+import it.stamp.model.membership.Group
 import it.stamp.model.membership.InviteCode
 import it.stamp.ui.StampTopAppBar
 
 @Composable
 internal fun JoinGroupScreen(
     onBackClick: () -> Unit,
-    onJoinGroupSuccess: () -> Unit,
+    onJoinGroupSuccess: (group: Group) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: JoinGroupViewModel = hiltViewModel(),
 ) {

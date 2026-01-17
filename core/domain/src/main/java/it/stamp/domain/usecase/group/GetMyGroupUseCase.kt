@@ -1,6 +1,5 @@
 package it.stamp.domain.usecase.group
 
-import it.stamp.domain.exception.GroupNotFoundException
 import it.stamp.domain.repository.GroupRepository
 import it.stamp.domain.usecase.membership.GetMyMembershipUseCase
 import it.stamp.model.membership.Group
@@ -12,9 +11,10 @@ class GetMyGroupUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Result<Group> =
         runCatching {
-            val membership = getMyMembershipUseCase().getOrThrow()
-
-            groupRepository.findById(membership.groupId)
-                ?: throw GroupNotFoundException()
+            getMyMembershipUseCase()
+                .getOrThrow()
+                .let { membership ->
+                    groupRepository.getById(membership.groupId)
+                }
         }
 }

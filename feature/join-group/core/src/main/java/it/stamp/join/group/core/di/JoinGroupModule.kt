@@ -19,6 +19,9 @@ object JoinGroupModule {
         entry<JoinGroupNavKey> {
             JoinGroupScreen(
                 onBackClick = navigator::navigateBack,
+                onJoinGroupSuccess = { group ->
+
+                },
             )
         }
     }

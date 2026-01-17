@@ -1,7 +1,5 @@
 package it.stamp.domain.usecase.membership
 
-import it.stamp.domain.exception.MembershipNotFoundException
-import it.stamp.domain.exception.NotAuthenticatedException
 import it.stamp.domain.repository.MembershipRepository
 import it.stamp.domain.service.AuthService
 import it.stamp.model.membership.Membership
@@ -13,10 +11,9 @@ class GetMyMembershipUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Result<Membership> =
         runCatching {
-            val currentUser = authService.currentUser
-                ?: throw NotAuthenticatedException()
-
-            membershipRepository.getUserMembership(currentUser.id)
-                ?: throw MembershipNotFoundException()
+            authService.requireUser()
+                .let { user ->
+                    membershipRepository.getUserMembership(user.id)
+                }
         }
 }

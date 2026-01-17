@@ -1,7 +1,5 @@
 package it.stamp.domain.usecase.membership
 
-import it.stamp.domain.exception.MembershipNotFoundException
-import it.stamp.domain.exception.NotAuthenticatedException
 import it.stamp.domain.repository.MembershipRepository
 import it.stamp.domain.service.AuthService
 import it.stamp.domain.service.MemberService
@@ -17,11 +15,9 @@ class GetMyGroupMembersUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Result<List<Member>> =
         runCatching {
-            val currentUser = authService.currentUser
-                ?: throw NotAuthenticatedException()
+            val user = authService.requireUser()
 
-            val membership = membershipRepository.getUserMembership(currentUser.id)
-                ?: throw MembershipNotFoundException()
+            val membership = membershipRepository.getUserMembership(user.id)
 
             memberService.getGroupMembers(membership.groupId)
         }
