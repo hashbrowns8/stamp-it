@@ -62,6 +62,7 @@ class HomeViewModel @Inject constructor(
     private val membership = observeMyMembershipUseCase()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
+    // TODO
     val uiState: StateFlow<HomeUiState> = membership.filterNotNull()
         .distinctUntilChangedBy { it.id }
         .combineTransform(retry) { membership, retry ->
