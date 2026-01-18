@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,13 +42,15 @@ fun EmptyGroupMemberView(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            painter = Drawables.CharacterRed,
+            Drawables.CharacterRed,
             contentDescription = null,
+            modifier = Modifier.width(48.dp),
         )
 
         Text(
             text = stringResource(R.string.group_onboarding_message),
             color = Gray800,
+            fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
         )

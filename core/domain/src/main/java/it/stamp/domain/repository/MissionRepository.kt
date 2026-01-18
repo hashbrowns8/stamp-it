@@ -1,16 +1,20 @@
 package it.stamp.domain.repository
 
+import it.stamp.domain.exception.MissionNotFoundException
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.MissionId
 import it.stamp.model.ids.UserId
 import it.stamp.model.mission.Mission
-import it.stamp.model.mission.MissionStatus
 import kotlinx.coroutines.flow.Flow
 
 interface MissionRepository {
-    suspend fun getMissionsByAssigner(assignerId: UserId, groupId: GroupId): List<Mission>
+    suspend fun findById(id: MissionId): Mission?
 
-    fun observeMissionsByAssigneeThisWeek(assigneeId: UserId, groupId: GroupId): Flow<List<Mission>>
+    suspend fun getById(id: MissionId): Mission = findById(id) ?: throw MissionNotFoundException()
 
-    suspend fun updateMissionStatus(missionId: MissionId, status: MissionStatus): Mission
+    suspend fun getMissionsByAssigner(groupId: GroupId, assignerId: UserId): List<Mission>
+
+    fun observeMissionsByAssigneeThisWeek(groupId: GroupId, assigneeId: UserId): Flow<List<Mission>>
+
+    suspend fun update(mission: Mission): Mission
 }

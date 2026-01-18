@@ -9,4 +9,6 @@ interface StampRepository {
     suspend fun getMonthlyStampsByGroup(groupId: GroupId, yearMonth: YearMonth): List<Stamp>
 
     suspend fun getMonthlyStampCountByMember(groupId: GroupId, yearMonth: YearMonth, userId: UserId): Int
+
+    suspend fun deleteUserStampsInGroup(groupId: GroupId, userId: UserId)
 }

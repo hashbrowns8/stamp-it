@@ -75,7 +75,7 @@ fun MemberMissionListItem(
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Chip("to.${assignee.displayName}")
+                Chip("to.${assignee.displayName.value}")
                 Chip("~${dateFormat.format(dueDate)}")
             }
 

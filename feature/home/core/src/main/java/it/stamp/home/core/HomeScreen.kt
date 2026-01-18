@@ -14,23 +14,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import it.stamp.designsystem.component.ActivityIndicator
-import it.stamp.designsystem.component.displayMissionCompletion
-import it.stamp.designsystem.component.displaySnackbar
 import it.stamp.designsystem.icon.Bell
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.icon.Logo
@@ -54,7 +49,6 @@ import it.stamp.model.membership.Group
 import it.stamp.model.membership.Member
 import it.stamp.model.mission.Mission
 import it.stamp.model.stamp.LeaderboardMember
-import it.stamp.ui.LocalSnackbarHostState
 import it.stamp.ui.StampTopAppBar
 import timber.log.Timber
 
@@ -70,31 +64,7 @@ internal fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val snackbarHostState = LocalSnackbarHostState.current
-
-    val resources = LocalResources.current
-    
-    LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { uiEvent ->
-            when (uiEvent) {
-                is HomeUiEvent.MissionCompleted -> with(uiEvent) {
-                    val result = snackbarHostState.displayMissionCompletion(
-                        mission.title,
-                        message = resources.getString(R.string.mission_completed),
-                        actionLabel = resources.getString(R.string.cancel),
-                    )
-
-                    if (result == SnackbarResult.ActionPerformed) {
-                        viewModel.cancelMissionCompletion(mission.id)
-                    }
-                }
-                is HomeUiEvent.MissionCompletionCanceled -> {}
-                is HomeUiEvent.OperationFailed -> {
-                    snackbarHostState.displaySnackbar("..") // TODO
-                }
-            }
-        }
-    }
+    HomeEventHandler(viewModel)
 
     HomeScreen(
         uiState,
@@ -138,7 +108,7 @@ private fun HomeScreen(
                 members,
                 rankings,
                 myMissions,
-                membersMissions,
+                memberMissions,
                 modifier,
                 onUiAction,
             )
@@ -156,7 +126,7 @@ private fun Content(
     members: List<Member>,
     rankings: List<LeaderboardMember>,
     myMissions: List<Mission>,
-    membersMissions: List<Mission>,
+    memberMissions: List<Mission>,
     modifier: Modifier = Modifier,
     onUiAction: OnUiAction,
 ) {
@@ -256,8 +226,8 @@ private fun Content(
                 MembersMissions(
                     userDisplayName = user.displayName.value,
                     groupName = group.name,
-                    members = members - user,
-                    membersMissions,
+                    members,
+                    memberMissions,
                     onAssignNewMissionClick = {
                         onUiAction(HomeUiAction.OnAssignNewMissionClick(it))
                     },
@@ -280,7 +250,7 @@ private fun HomeScreenPreview() {
                 members = SampleMembers,
                 rankings = SampleRankings,
                 myMissions = SampleMyMissions,
-                membersMissions = SampleMemberMissions,
+                memberMissions = SampleMemberMissions,
             ),
             modifier = Modifier
                 .fillMaxSize()
@@ -300,7 +270,7 @@ private fun HomeScreenOnlyMePreview() {
             members = emptyList(),
             rankings = SampleRankings,
             myMissions = emptyList(),
-            membersMissions = SampleMemberMissions,
+            memberMissions = SampleMemberMissions,
             modifier = Modifier
                 .fillMaxSize()
                 .background(White),

@@ -12,7 +12,8 @@ value class InviteCode(val value: String) {
             .uppercase()
     )
 
-    companion object {
-        val Empty = InviteCode(String())
+    init {
+        require(value.length == 8)
+        require(value.all(Char::isLetterOrDigit))
     }
 }

@@ -31,6 +31,8 @@ data class Mission(
     val isCompleted: Boolean
         get() = status == MissionStatus.COMPLETED
 
+    fun assign(): Mission = copy(status = MissionStatus.ASSIGNED)
+
     fun complete(): Mission = copy(status = MissionStatus.COMPLETED)
 
     fun fail(): Mission = copy(status = MissionStatus.FAILED)

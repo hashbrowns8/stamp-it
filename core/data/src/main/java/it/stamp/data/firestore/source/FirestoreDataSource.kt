@@ -19,7 +19,7 @@ abstract class FirestoreDataSource<T : FirestoreModel>(
 
     abstract val valueType: Class<T>
 
-    suspend fun create(id: String, data: T) {
+    suspend fun set(id: String, data: T) {
         withContext(coroutineDispatcher) {
             collection.document(id)
                 .set(data)
@@ -27,7 +27,7 @@ abstract class FirestoreDataSource<T : FirestoreModel>(
         }
     }
 
-    suspend fun read(id: String): T? = withContext(coroutineDispatcher) {
+    suspend fun get(id: String): T? = withContext(coroutineDispatcher) {
         collection.document(id)
             .get()
             .await()

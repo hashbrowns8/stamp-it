@@ -11,7 +11,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 interface UserSessionManager {
-    val currentUserId: Flow<UserId?>
+    val userId: Flow<UserId?>
 
     suspend fun setUserId(id: UserId)
 
@@ -23,7 +23,7 @@ class DataStoreUserSessionManager @Inject constructor(
     private val dataStore: DataStore<Preferences>,
 ) : UserSessionManager {
 
-    override val currentUserId: Flow<UserId?> = dataStore.data
+    override val userId: Flow<UserId?> = dataStore.data
         .map { preferences ->
             preferences[USER_ID]?.let(::UserId)
         }

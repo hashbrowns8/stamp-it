@@ -60,7 +60,7 @@ internal fun InviteGroupScreen(
 
 @Composable
 private fun InviteGroupScreen(
-    inviteCode: InviteCode,
+    inviteCode: InviteCode?,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -97,7 +97,7 @@ private fun InviteGroupScreen(
                     }
 
                     Image(
-                        painter = Drawables.CharacterRed,
+                        Drawables.CharacterRed,
                         contentDescription = null,
                         modifier = Modifier
                             .align(Alignment.TopCenter)
@@ -115,12 +115,15 @@ private fun InviteGroupScreen(
                 val context = LocalContext.current
 
                 val share by rememberUpdatedState {
-                    Intent.createChooser(
-                        Intent(Intent.ACTION_SEND)
-                            .setType("text/plain")
-                            .putExtra(Intent.EXTRA_TEXT, inviteCode.value),
-                        null
-                    ).let(context::startActivity)
+                    if (inviteCode == null) return@rememberUpdatedState
+
+                    val target = Intent(Intent.ACTION_SEND)
+                        .setType("text/plain")
+                        .putExtra(Intent.EXTRA_TEXT, inviteCode.value)
+
+                    Intent
+                        .createChooser(target, null) // TODO : 제목
+                        .let(context::startActivity)
                 }
 
                 Row(
@@ -142,7 +145,7 @@ private fun InviteGroupScreen(
                     )
 
                     Text(
-                        text = inviteCode.value,
+                        text = inviteCode?.value ?: String(),
                         modifier = Modifier.weight(1F),
                         color = Gray800,
                         style = MaterialTheme.typography.labelMedium,

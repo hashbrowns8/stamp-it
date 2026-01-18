@@ -6,14 +6,13 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 
+// TODO
 @ActivityRetainedScoped
 class Navigator {
     val backStack: SnapshotStateList<NavKey> = mutableStateListOf()
 
     fun setStartDestination(key: NavKey) {
-        if (backStack.isEmpty()) {
-            backStack.add(key)
-        }
+        if (backStack.isEmpty()) backStack.add(key)
     }
 
     fun navigate(key: NavKey) {

@@ -1,7 +1,7 @@
 package it.stamp.data.repository
 
 import it.stamp.data.firestore.mapper.StampMapper
-import it.stamp.data.firestore.source.FirestoreStampDataSource
+import it.stamp.data.firestore.source.StampFirestoreDataSource
 import it.stamp.domain.repository.StampRepository
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.UserId
@@ -10,18 +10,21 @@ import kotlinx.datetime.YearMonth
 import javax.inject.Inject
 
 class StampDataRepository @Inject constructor(
-    private val dataSource: FirestoreStampDataSource
+    private val firestoreDataSource: StampFirestoreDataSource
 ) : StampRepository {
 
     override suspend fun getMonthlyStampsByGroup(
         groupId: GroupId,
         yearMonth: YearMonth
-    ): List<Stamp> = dataSource.getMonthlyGroupStamps(groupId, yearMonth)
+    ): List<Stamp> = firestoreDataSource.getMonthlyGroupStamps(groupId, yearMonth)
         .map(StampMapper::toDomainModel)
 
     override suspend fun getMonthlyStampCountByMember(
         groupId: GroupId,
         yearMonth: YearMonth,
         userId: UserId
-    ): Int = dataSource.getMonthlyMemberStampCount(groupId, yearMonth, userId)
+    ): Int = firestoreDataSource.getMonthlyMemberStampCount(groupId, yearMonth, userId)
+
+    override suspend fun deleteUserStampsInGroup(groupId: GroupId, userId: UserId) =
+        firestoreDataSource.deleteUserStampsInGroup(groupId, userId)
 }
