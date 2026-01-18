@@ -39,11 +39,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import it.stamp.designsystem.component.PrimaryButton
 import it.stamp.designsystem.component.StampTextField
-import it.stamp.designsystem.icon.ArrowLeft
-import it.stamp.designsystem.icon.CharacterBlue
-import it.stamp.designsystem.icon.CharacterPurple
-import it.stamp.designsystem.icon.CharacterRed
-import it.stamp.designsystem.icon.CharacterYellow
+import it.stamp.designsystem.component.StampTopAppBar
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Black
 import it.stamp.designsystem.theme.Gray800
@@ -53,7 +49,6 @@ import it.stamp.join.group.core.ui.JoinGroupEventHandler
 import it.stamp.join.group.core.ui.JoinGroupInProgress
 import it.stamp.model.membership.Group
 import it.stamp.model.membership.InviteCode
-import it.stamp.ui.StampTopAppBar
 
 @Composable
 internal fun JoinGroupScreen(
@@ -216,7 +211,7 @@ private fun JoinGroupScreen(
                 inviteCode?.let(onJoinGroupClick)
             },
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 24.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
                 .fillMaxWidth(),
             enabled = inviteCode != null,
         ) {

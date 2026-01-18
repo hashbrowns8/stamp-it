@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import it.stamp.designsystem.component.displaySnackbar
 import it.stamp.join.group.core.JoinGroupUiEvent
 import it.stamp.join.group.core.JoinGroupViewModel
@@ -29,7 +30,7 @@ fun JoinGroupEventHandler(
         }
     }
 
-    val dataLossConsent = remember {
+    var pendingDataLossConsent by remember {
         mutableStateOf<JoinGroupUiEvent.RequestDataLossConsent?>(null)
     }
 
@@ -48,25 +49,21 @@ fun JoinGroupEventHandler(
                             ?: "알 수 없는 오류가 발생했습니다"
                     )
 
-                is JoinGroupUiEvent.RequestDataLossConsent -> {
-                    dataLossConsent.value = event
-                }
+                is JoinGroupUiEvent.RequestDataLossConsent -> pendingDataLossConsent = event
             }
         }
     }
 
-    dataLossConsent.value?.let { event ->
+    pendingDataLossConsent?.run {
         DataLossConsentDialog(
             onDismissRequest = {
-                dataLossConsent.value = null
+                pendingDataLossConsent = null
             },
             onAccept = {
-                with(event) {
-                    viewModel.acceptDataLoss(leavingGroup, joiningGroup)
-                }
+                viewModel.acceptDataLoss(leavingGroup, joiningGroup)
             },
             onDecline = {
-                dataLossConsent.value = null
+                pendingDataLossConsent = null
             },
         )
     }

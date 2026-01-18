@@ -28,7 +28,7 @@ fun HomeEventHandler(viewModel: HomeViewModel) {
                 is HomeUiEvent.MissionCompleted -> {
                     val mission = uiEvent.mission
                     val message = resources.getString(R.string.mission_completed)
-                    val actionLabel = resources.getString(R.string.cancel)
+                    val actionLabel = resources.getString(R.string.cancel_mission_completion)
 
                     val result = snackbarHostState.displayMissionCompletion(mission.title, message, actionLabel)
 

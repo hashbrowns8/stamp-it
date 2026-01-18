@@ -16,7 +16,7 @@ import it.stamp.domain.usecase.mission.CancelMissionCompletionUseCase
 import it.stamp.domain.usecase.mission.CompleteMissionUseCase
 import it.stamp.domain.usecase.mission.GetMyGroupMembersMissionsUseCase
 import it.stamp.domain.usecase.mission.ObserveMyMissionsThisWeekUseCase
-import it.stamp.domain.usecase.user.ObserveAuthenticatedUserUseCase
+import it.stamp.domain.usecase.user.ObserveCurrentUserUseCase
 import it.stamp.model.ids.MissionId
 import it.stamp.model.membership.Group
 import it.stamp.model.membership.Member
@@ -42,7 +42,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    observeAuthenticatedUserUseCase: ObserveAuthenticatedUserUseCase,
+    observeCurrentUserUseCase: ObserveCurrentUserUseCase,
     observeMyMembershipUseCase: ObserveMyMembershipUseCase,
     private val getMyGroupUseCase: GetMyGroupUseCase,
     private val getMyGroupMembersUseCase: GetMyGroupMembersUseCase,
@@ -59,7 +59,10 @@ class HomeViewModel @Inject constructor(
         retry.value += 1
     }
 
-    val uiState: StateFlow<HomeUiState> = observeMyMembershipUseCase()
+    private val membership = observeMyMembershipUseCase()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    val uiState: StateFlow<HomeUiState> = membership.filterNotNull()
         .distinctUntilChangedBy { it.id }
         .combineTransform(retry) { membership, retry ->
             emit(HomeUiState.Loading)
@@ -85,7 +88,7 @@ class HomeViewModel @Inject constructor(
                 )
             }
 
-            observeAuthenticatedUserUseCase()
+            observeCurrentUserUseCase()
                 .filterNotNull()
                 .combine(observeMyMissionsThisWeekUseCase()) { user, myMissions ->
                     val user = (members as List<Member>)
@@ -100,9 +103,9 @@ class HomeViewModel @Inject constructor(
                         myMissions,
                         memberMissions as List<Mission>,
                     )
+                }.catch { throwable ->
+                    emit(HomeUiState.Failure(throwable))
                 }.collect(this)
-        }.catch { throwable ->
-            emit(HomeUiState.Failure(throwable))
         }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUiState.Loading)
 
     private val _uiEvent = MutableSharedFlow<HomeUiEvent>()

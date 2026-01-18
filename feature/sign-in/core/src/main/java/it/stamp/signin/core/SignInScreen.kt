@@ -29,7 +29,6 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import it.stamp.designsystem.icon.Drawables
-import it.stamp.designsystem.icon.Logo
 import it.stamp.designsystem.theme.Black
 import it.stamp.designsystem.theme.Gray400
 import it.stamp.designsystem.theme.StampTheme

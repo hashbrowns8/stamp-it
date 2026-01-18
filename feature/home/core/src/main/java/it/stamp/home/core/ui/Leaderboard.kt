@@ -25,21 +25,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import it.stamp.designsystem.icon.CharacterRed
 import it.stamp.designsystem.icon.Drawables
-import it.stamp.designsystem.icon.FirstRank
-import it.stamp.designsystem.icon.SecondRank
-import it.stamp.designsystem.icon.ThirdRank
 import it.stamp.designsystem.theme.Black
 import it.stamp.designsystem.theme.Gray200
 import it.stamp.designsystem.theme.Gray300
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.bodyExtraSmall
 import it.stamp.home.core.R
-import it.stamp.home.core.preview.SampleMe
-import it.stamp.home.core.preview.SampleRankings
 import it.stamp.model.membership.Member
 import it.stamp.model.stamp.LeaderboardMember
+import it.stamp.ui.PreviewSamples
 
 @Composable
 fun Leaderboard(
@@ -133,6 +128,9 @@ private fun Item(
 @Composable
 private fun LeaderboardPreview() {
     StampTheme {
-        Leaderboard(SampleMe, SampleRankings)
+        Leaderboard(
+            PreviewSamples.MeAsMember,
+            PreviewSamples.Rankings,
+        )
     }
 }

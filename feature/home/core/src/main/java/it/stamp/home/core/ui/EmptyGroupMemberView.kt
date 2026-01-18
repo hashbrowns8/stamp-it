@@ -20,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import it.stamp.designsystem.component.ButtonSize
 import it.stamp.designsystem.component.PrimaryButton
-import it.stamp.designsystem.icon.CharacterRed
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Gray800
 import it.stamp.designsystem.theme.Red50

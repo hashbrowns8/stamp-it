@@ -26,19 +26,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import it.stamp.designsystem.component.ActivityIndicator
-import it.stamp.designsystem.icon.Bell
+import it.stamp.designsystem.component.StampTopAppBar
 import it.stamp.designsystem.icon.Drawables
-import it.stamp.designsystem.icon.Logo
 import it.stamp.designsystem.theme.Gray25
 import it.stamp.designsystem.theme.Red400
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
-import it.stamp.home.core.preview.SampleGroup
-import it.stamp.home.core.preview.SampleMe
-import it.stamp.home.core.preview.SampleMemberMissions
-import it.stamp.home.core.preview.SampleMembers
-import it.stamp.home.core.preview.SampleMyMissions
-import it.stamp.home.core.preview.SampleRankings
 import it.stamp.home.core.ui.EmptyGroupMemberView
 import it.stamp.home.core.ui.GroupOnboardingModalBottomSheet
 import it.stamp.home.core.ui.Leaderboard
@@ -49,7 +42,7 @@ import it.stamp.model.membership.Group
 import it.stamp.model.membership.Member
 import it.stamp.model.mission.Mission
 import it.stamp.model.stamp.LeaderboardMember
-import it.stamp.ui.StampTopAppBar
+import it.stamp.ui.PreviewSamples
 import timber.log.Timber
 
 @Composable
@@ -245,12 +238,12 @@ private fun HomeScreenPreview() {
     StampTheme {
         HomeScreen(
             HomeUiState.Success(
-                user = SampleMe,
-                group = SampleGroup,
-                members = SampleMembers,
-                rankings = SampleRankings,
-                myMissions = SampleMyMissions,
-                memberMissions = SampleMemberMissions,
+                user = PreviewSamples.MeAsMember,
+                group = PreviewSamples.Group,
+                members = PreviewSamples.Members,
+                rankings = PreviewSamples.Rankings,
+                myMissions = PreviewSamples.MyMissions,
+                memberMissions = PreviewSamples.MemberMissions,
             ),
             modifier = Modifier
                 .fillMaxSize()
@@ -265,12 +258,12 @@ private fun HomeScreenPreview() {
 private fun HomeScreenOnlyMePreview() {
     StampTheme {
         Content(
-            user = SampleMe,
-            group = SampleGroup,
+            user = PreviewSamples.MeAsMember,
+            group = PreviewSamples.Group,
             members = emptyList(),
-            rankings = SampleRankings,
+            rankings = PreviewSamples.Rankings,
             myMissions = emptyList(),
-            memberMissions = SampleMemberMissions,
+            memberMissions = PreviewSamples.MemberMissions,
             modifier = Modifier
                 .fillMaxSize()
                 .background(White),

@@ -4,12 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
 import it.stamp.designsystem.icon.Drawables
-import it.stamp.designsystem.icon.Flag
-import it.stamp.designsystem.icon.FlagFilled
-import it.stamp.designsystem.icon.Home
-import it.stamp.designsystem.icon.HomeFilled
-import it.stamp.designsystem.icon.MyPage
-import it.stamp.designsystem.icon.MyPageFilled
 import it.stamp.home.HomeNavKey
 import it.stamp.missions.MissionsNavKey
 import it.stamp.mypage.MyPageNavKey

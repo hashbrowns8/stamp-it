@@ -31,7 +31,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import it.stamp.designsystem.icon.CheckCircle
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Gray600
 import it.stamp.designsystem.theme.Gray800

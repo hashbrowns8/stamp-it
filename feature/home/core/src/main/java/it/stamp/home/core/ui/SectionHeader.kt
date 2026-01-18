@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import it.stamp.designsystem.icon.ChevronRight
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Gray400
 import it.stamp.designsystem.theme.Gray500

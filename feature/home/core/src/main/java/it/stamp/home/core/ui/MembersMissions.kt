@@ -25,15 +25,12 @@ import it.stamp.designsystem.theme.Gray50
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.home.core.R
-import it.stamp.home.core.preview.SampleGroup
-import it.stamp.home.core.preview.SampleMe
-import it.stamp.home.core.preview.SampleMemberMissions
-import it.stamp.home.core.preview.SampleMembers
 import it.stamp.model.ids.UserId
 import it.stamp.model.membership.Member
 import it.stamp.model.mission.Mission
 import it.stamp.ui.MemberFilterChip
 import it.stamp.ui.MemberMissionListItem
+import it.stamp.ui.PreviewSamples
 
 @Composable
 fun MembersMissions(
@@ -141,15 +138,17 @@ fun MembersMissions(
 @Composable
 private fun MembersMissionsPreview() {
     StampTheme {
-        MembersMissions(
-            userDisplayName = SampleMe.displayName.value,
-            groupName = SampleGroup.name,
-            members = SampleMembers - SampleMe,
-            memberMissions = SampleMemberMissions,
-            onAssignNewMissionClick = {
-            },
-            modifier = Modifier.background(White)
-        )
+        with(PreviewSamples) {
+            MembersMissions(
+                userDisplayName = Me.displayName.value,
+                groupName = Group.name,
+                members = Members - MeAsMember,
+                memberMissions = MemberMissions,
+                onAssignNewMissionClick = {
+                },
+                modifier = Modifier.background(White)
+            )
+        }
     }
 }
 
@@ -157,14 +156,16 @@ private fun MembersMissionsPreview() {
 @Composable
 private fun MembersMissionsEmptyPreview() {
     StampTheme {
-        MembersMissions(
-            userDisplayName = SampleMe.displayName.value,
-            groupName = SampleGroup.name,
-            members = SampleMembers - SampleMe,
-            memberMissions = emptyList(),
-            onAssignNewMissionClick = {
-            },
-            modifier = Modifier.background(White)
-        )
+        with(PreviewSamples) {
+            MembersMissions(
+                userDisplayName = Me.displayName.value,
+                groupName = Group.name,
+                members = Members - MeAsMember,
+                memberMissions = emptyList(),
+                onAssignNewMissionClick = {
+                },
+                modifier = Modifier.background(White)
+            )
+        }
     }
 }

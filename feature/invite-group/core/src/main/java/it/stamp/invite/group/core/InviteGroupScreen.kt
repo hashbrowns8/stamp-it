@@ -34,10 +34,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import it.stamp.designsystem.icon.ArrowLeft
-import it.stamp.designsystem.icon.CharacterRed
+import it.stamp.designsystem.component.StampTopAppBar
 import it.stamp.designsystem.icon.Drawables
-import it.stamp.designsystem.icon.Export
 import it.stamp.designsystem.theme.Black
 import it.stamp.designsystem.theme.Gray25
 import it.stamp.designsystem.theme.Gray500
@@ -45,7 +43,6 @@ import it.stamp.designsystem.theme.Gray800
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.model.membership.InviteCode
-import it.stamp.ui.StampTopAppBar
 
 @Composable
 internal fun InviteGroupScreen(

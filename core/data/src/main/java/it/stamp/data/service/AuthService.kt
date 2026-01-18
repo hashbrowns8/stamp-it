@@ -1,5 +1,6 @@
 package it.stamp.data.service
 
+import it.stamp.common.di.ApplicationScope
 import it.stamp.data.authentication.IdentityVerifier
 import it.stamp.data.authentication.UserSessionManager
 import it.stamp.domain.repository.UserRepository
@@ -23,7 +24,7 @@ class FederatedAuthService @Inject constructor(
     private val userRepository: UserRepository,
     private val userOnboardingService: UserOnboardingService,
     private val sessionManager: UserSessionManager,
-    coroutineScope: CoroutineScope,
+    @ApplicationScope coroutineScope: CoroutineScope,
 ) : AuthService {
     override val authState: StateFlow<AuthState> = sessionManager.userId
         .flatMapLatest { userId ->

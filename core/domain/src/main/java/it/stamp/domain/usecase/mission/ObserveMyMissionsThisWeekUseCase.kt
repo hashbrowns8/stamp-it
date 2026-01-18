@@ -5,6 +5,7 @@ import it.stamp.domain.usecase.membership.ObserveMyMembershipUseCase
 import it.stamp.model.mission.Mission
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,6 +16,12 @@ class ObserveMyMissionsThisWeekUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<List<Mission>> = observeMyMembershipUseCase()
         .flatMapLatest { membership ->
-            missionRepository.observeMissionsByAssigneeThisWeek(membership.groupId, assigneeId = membership.userId)
+            if (membership == null) {
+                flowOf(emptyList())
+            } else {
+                with(membership) {
+                    missionRepository.observeMissionsByAssigneeThisWeek(groupId, assigneeId = userId)
+                }
+            }
         }
 }

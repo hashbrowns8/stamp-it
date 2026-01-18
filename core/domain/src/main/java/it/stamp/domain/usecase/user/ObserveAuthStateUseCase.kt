@@ -7,7 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ObserveAuthenticationStateUseCase @Inject constructor(
+class ObserveAuthStateUseCase @Inject constructor(
     private val authService: AuthService
 ) {
     operator fun invoke(): Flow<AuthState> = authService.authState

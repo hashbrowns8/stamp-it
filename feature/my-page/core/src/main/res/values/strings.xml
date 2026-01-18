@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="confirm">확인</string>
+    <string name="cancel">취소</string>
+    <string name="sign_out_alert_title">정말 로그아웃 하시겠어요?</string>
+    <string name="sign_out_alert_text">현재까지의 모든 데이터는\n재로그인할 때까지 안전하게 보관돼요</string>
+    <string name="delete_account_alert_title">\'스탬프잇\'을 탈퇴하시겠어요?</string>
+    <string name="delete_account_alert_text">계정과 모든 데이터가 완전히 삭제됩니다\n이 작업은 되돌릴 수 없습니다</string>
+    <string name="group_memberships_management">그룹 구성원 관리</string>
+    <string name="member_management_title">멤버 관리</string>
+    <string name="member_management_description">그룹 멤버 관리하기</string>
+    <string name="invite_member_title">초대하기</string>
+    <string name="invite_member_description">그룹에 새로운 구성원 초대하기</string>
+    <string name="join_group_title">초대받기</string>
+    <string name="join_group_description">새로운 그룹에 초대받기</string>
+    <string name="leave_group_title">그룹 탈퇴</string>
+    <string name="leave_group_description">현재 그룹에서 탈퇴하기</string>
+    <string name="sign_out_title">로그아웃</string>
+    <string name="sign_out_description">현재 계정 로그아웃하기</string>
+    <string name="delete_account_title">서비스 탈퇴</string>
+    <string name="delete_account_description">\'스탬프잇\' 탈퇴하기</string>
+    <string name="user_membership_account_management">그룹 및 서비스 관리</string>
+    <string name="profile">프로필</string>
+    <string name="stampboard">스탬프판</string>
+</resources>

@@ -6,6 +6,7 @@ plugins {
 android.namespace = "it.stamp.data"
 
 dependencies {
+    implementation(projects.core.common)
     implementation(projects.core.domain)
     implementation(projects.core.model)
 
