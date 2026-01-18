@@ -42,7 +42,7 @@ fun UserProfile(
             modifier = Modifier
                 .size(72.dp)
                 .clip(CircleShape)
-                .border(1.dp, Gray100)
+                .border(1.dp, Gray100, CircleShape)
                 .clickable(onClick = onEditClick),
             contentAlignment = Alignment.Center,
         ) {

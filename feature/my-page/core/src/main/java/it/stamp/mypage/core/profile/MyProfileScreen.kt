@@ -130,6 +130,9 @@ private fun MyProfileScreen(
                     user.avatar,
                     group.name,
                     user.displayName.value,
+                    onEditClick = {
+                        onUiAction(MyProfileUiAction.EditProfile)
+                    },
                 )
             }
 
