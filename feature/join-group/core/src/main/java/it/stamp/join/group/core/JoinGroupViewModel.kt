@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -51,11 +52,15 @@ class JoinGroupViewModel @Inject constructor(
                         }
 
                         is JoinGroup.Success -> JoinGroupUiEvent.JoinGroupSuccess(result.group)
-                    }.let { value ->
-                        _uiEvent.emit(value)
+                    }.let { event ->
+                        Timber.d("$event")
+
+                        _uiEvent.emit(event)
                     }
                 }
                 .onFailure { throwable ->
+                    Timber.d(throwable)
+
                     JoinGroupUiEvent.JoinGroupFailure(throwable)
                 }
 

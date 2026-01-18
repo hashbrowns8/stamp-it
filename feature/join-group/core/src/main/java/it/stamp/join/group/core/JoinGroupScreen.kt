@@ -216,7 +216,7 @@ private fun JoinGroupScreen(
                 inviteCode?.let(onJoinGroupClick)
             },
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 24.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
                 .fillMaxWidth(),
             enabled = inviteCode != null,
         ) {

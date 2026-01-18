@@ -35,7 +35,9 @@ class FirestoreGroupTransferService @Inject constructor(
 
         val isSoloGroup = groupMemberships.size == 1
 
-        val newLeaderMembership = groupMemberships.minByOrNull { it.joinedAt }
+        val newLeaderMembership by lazy {
+            groupMemberships.minByOrNull { it.joinedAt }
+        }
 
         with(firestore) {
             val stamps: QuerySnapshot = stampsCollection
@@ -72,18 +74,20 @@ class FirestoreGroupTransferService @Inject constructor(
                         .let(::delete)
 
                     // assign new leader
-                    newLeaderMembership?.let { membership ->
-                        groupsCollection
-                            .document(membership.groupId.value)
-                            .let { document ->
-                                update(document, "leaderId", membership.userId.value)
-                            }
+                    if (userMembership.isLeader) {
+                        newLeaderMembership?.let { membership ->
+                            groupsCollection
+                                .document(membership.groupId.value)
+                                .let { document ->
+                                    update(document, "leaderId", membership.userId.value)
+                                }
 
-                        membershipsCollection
-                            .document(membership.id.value)
-                            .let { document ->
-                                update(document, "isLeader", true)
-                            }
+                            membershipsCollection
+                                .document(membership.id.value)
+                                .let { document ->
+                                    update(document, "isLeader", true)
+                                }
+                        }
                     }
 
                     // set new membership
@@ -91,11 +95,10 @@ class FirestoreGroupTransferService @Inject constructor(
 
                     set(membershipsCollection.document(newUserMembership.id), newUserMembership)
                 }
-            }
+            }.await()
         }
 
         val newUserMembership = membershipRepository.getUserMembership(user.id)
-            ?: throw MembershipNotFoundException()
 
         val snapshot = firestore.groupsCollection
             .document(newUserMembership.groupId.value)

@@ -59,6 +59,7 @@ class HomeViewModel @Inject constructor(
         retry.value += 1
     }
 
+    // TODO
     val uiState: StateFlow<HomeUiState> = observeMyMembershipUseCase()
         .distinctUntilChangedBy { it.id }
         .combineTransform(retry) { membership, retry ->

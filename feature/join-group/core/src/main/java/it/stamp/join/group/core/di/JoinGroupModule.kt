@@ -20,7 +20,7 @@ object JoinGroupModule {
             JoinGroupScreen(
                 onBackClick = navigator::navigateBack,
                 onJoinGroupSuccess = { group ->
-
+                    navigator.navigateBack()
                 },
             )
         }
