@@ -34,7 +34,7 @@ class MembershipDataRepository @Inject constructor(
             }
 
     override suspend fun findUserMembership(userId: UserId): Membership? =
-        firestoreDataSource.getUserMembership(userId)
+        firestoreDataSource.findUserMembership(userId)
             ?.let(MembershipMapper::toDomainModel)
 
     override suspend fun updateMembership(membership: Membership) {

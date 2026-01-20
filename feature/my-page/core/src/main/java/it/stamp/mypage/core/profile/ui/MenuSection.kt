@@ -9,7 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import it.stamp.designsystem.theme.Gray400
+import androidx.compose.ui.unit.sp
+import it.stamp.designsystem.theme.Gray300
 
 @Composable
 fun MenuSection(
@@ -19,15 +20,19 @@ fun MenuSection(
 ) {
     Column(
         modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            title,
-            color = Gray400,
+            text = title,
+            color = Gray300,
+            fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
             style = MaterialTheme.typography.labelSmall,
         )
 
-        content(this)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            content = content,
+        )
     }
 }

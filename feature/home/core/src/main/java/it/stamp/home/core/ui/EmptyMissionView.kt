@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,8 +35,8 @@ fun EmptyMissionView(
         modifier = modifier
             .fillMaxWidth()
             .border(1.dp, Gray50, RoundedCornerShape(8.dp))
-            .padding(vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+            .padding(top = 20.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
@@ -47,6 +48,7 @@ fun EmptyMissionView(
         SecondaryButton(
             onClick = onActionClick,
             size = ButtonSize.Small,
+            shape = CircleShape,
         ) {
             Text(actionLabel)
         }

@@ -11,7 +11,7 @@ class GetMyMembershipUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Result<Membership> =
         runCatching {
-            authService.requireUser()
+            authService.requireCurrentUser()
                 .let { user ->
                     membershipRepository.getUserMembership(user.id)
                 }

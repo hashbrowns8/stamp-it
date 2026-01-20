@@ -2,7 +2,7 @@ package it.stamp.domain.service
 
 import it.stamp.domain.repository.StampRepository
 import it.stamp.model.ids.GroupId
-import it.stamp.model.stamp.LeaderboardMember
+import it.stamp.model.stamp.LeaderboardEntry
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -18,7 +18,7 @@ class LeaderboardService @Inject constructor(
     private val clock: Clock = Clock.System,
     private val timeZone: TimeZone = TimeZone.currentSystemDefault(),
 ) {
-    suspend fun getGroupLeaderboard(groupId: GroupId): List<LeaderboardMember> =
+    suspend fun getGroupLeaderboard(groupId: GroupId): List<LeaderboardEntry> =
         coroutineScope {
             val members = memberService.getGroupMembers(groupId)
 
@@ -28,7 +28,7 @@ class LeaderboardService @Inject constructor(
                 async {
                     val stampCount = stampRepository.getMonthlyStampCountByMember(groupId, yearMonth, member.id)
 
-                    LeaderboardMember(
+                    LeaderboardEntry(
                         member,
                         rank = 0,
                         stamps = stampCount

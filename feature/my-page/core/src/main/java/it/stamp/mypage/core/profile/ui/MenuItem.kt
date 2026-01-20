@@ -38,7 +38,7 @@ fun MenuItem(
         Text(
             description,
             color = Gray500,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.Normal,
             style = MaterialTheme.typography.labelSmall,
         )
     }

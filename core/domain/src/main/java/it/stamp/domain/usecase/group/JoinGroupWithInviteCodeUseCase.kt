@@ -18,7 +18,7 @@ class JoinGroupWithInviteCodeUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(inviteCode: InviteCode): Result<JoinGroup> =
         runCatching {
-            val user = authService.requireUser()
+            val user = authService.requireCurrentUser()
 
             val joiningGroup = groupRepository.findByInviteCode(inviteCode)
                 ?: return@runCatching JoinGroup.InvalidCode

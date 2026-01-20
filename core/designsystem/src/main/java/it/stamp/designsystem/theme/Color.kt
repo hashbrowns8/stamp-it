@@ -3,9 +3,9 @@ package it.stamp.designsystem.theme
 import androidx.compose.ui.graphics.Color
 
 val White = Color(0xFFFFFFFF)
-val Gray25 = Color(0xFFF2F2F2)
-val Gray50 = Color(0xFFE6E6E6)
-val Gray100 = Color(0xFFCCCCCC)
+val Gray25 = Color(0xFFF5F5F5)
+val Gray50 = Color(0xFFEBEBEB)
+val Gray100 = Color(0xFFD7D7D7)
 val Gray200 = Color(0xFFB3B3B3)
 val Gray300 = Color(0xFF999999)
 val Gray400 = Color(0xFF7F7F7F)
@@ -51,5 +51,6 @@ val Blue900 = Color(0xFF070B13)
 val Purple50 = Color(0xFFEFE8F7)
 val Purple100 = Color(0xFFE1D4F0)
 val Purple200 = Color(0xFFC7AFE4)
+val Purple400 = Color(0xFF9263CB)
 
 val Green100 = Color(0xFFD7F4DC)

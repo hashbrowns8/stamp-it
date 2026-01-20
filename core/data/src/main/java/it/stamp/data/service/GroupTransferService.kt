@@ -93,7 +93,7 @@ class FirestoreGroupTransferService @Inject constructor(
                     // set new membership
                     val newUserMembership = createFirestoreMembership(user, joiningGroup)
 
-                    set(membershipsCollection.document(newUserMembership.id), newUserMembership)
+                    set(membershipsCollection.document(newUserMembership.membershipId), newUserMembership)
                 }
             }.await()
         }

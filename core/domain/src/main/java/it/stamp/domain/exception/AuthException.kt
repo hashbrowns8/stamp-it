@@ -7,3 +7,5 @@ class GoogleSignInException() : AuthException()
 class UserNotFoundException() : AuthException()
 
 class NotAuthenticatedException() : AuthException()
+
+class UnauthorizedException() : RuntimeException()

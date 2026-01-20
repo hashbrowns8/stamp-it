@@ -41,7 +41,7 @@ import it.stamp.home.core.ui.MyMissions
 import it.stamp.model.membership.Group
 import it.stamp.model.membership.Member
 import it.stamp.model.mission.Mission
-import it.stamp.model.stamp.LeaderboardMember
+import it.stamp.model.stamp.LeaderboardEntry
 import it.stamp.ui.PreviewSamples
 import timber.log.Timber
 
@@ -117,7 +117,7 @@ private fun Content(
     user: Member,
     group: Group,
     members: List<Member>,
-    rankings: List<LeaderboardMember>,
+    rankings: List<LeaderboardEntry>,
     myMissions: List<Mission>,
     memberMissions: List<Mission>,
     modifier: Modifier = Modifier,
@@ -146,7 +146,7 @@ private fun Content(
             },
         )
 
-        if (members.none { !it.isLeader }) {
+        if (members.isEmpty()) {
             Box {
                 var isOnboardingSheetOpen by remember {
                     mutableStateOf(false)

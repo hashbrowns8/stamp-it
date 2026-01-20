@@ -11,7 +11,7 @@ import it.stamp.model.membership.Role
 object MembershipMapper {
     fun toDomainModel(membership: FirestoreMembership): Membership = with(membership) {
         Membership(
-            id = MembershipId(id),
+            id = MembershipId(membershipId),
             groupId = GroupId(groupId),
             userId = UserId(userId),
             role = if (isLeader) {

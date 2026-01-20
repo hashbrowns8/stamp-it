@@ -25,11 +25,14 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextFieldLabelPosition
 import androidx.compose.material3.TextFieldLabelScope
 import androidx.compose.runtime.Composable
@@ -57,10 +60,9 @@ import it.stamp.designsystem.theme.Gray25
 import it.stamp.designsystem.theme.Gray300
 import it.stamp.designsystem.theme.Gray600
 import it.stamp.designsystem.theme.Gray800
+import it.stamp.designsystem.theme.Red400
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
-import androidx.compose.material3.TextField as MaterialTextField
-import androidx.compose.material3.TextFieldDefaults as MaterialTextFieldDefaults
 
 @Composable
 fun StampTextField(
@@ -85,25 +87,23 @@ fun StampTextField(
     lineLimits: TextFieldLineLimits = TextFieldLineLimits.Default,
     onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
     scrollState: ScrollState = rememberScrollState(),
-    shape: Shape = TextFieldDefaults.Shape,
-    colors: TextFieldColors = TextFieldDefaults.colors(),
-    contentPadding: PaddingValues = TextFieldDefaults.ContentPadding,
+    shape: Shape = StampTextFieldDefaults.Shape,
+    colors: TextFieldColors = StampTextFieldDefaults.colors(),
+    contentPadding: PaddingValues = StampTextFieldDefaults.ContentPadding,
     interactionSource: MutableInteractionSource? = null,
 ) {
     val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
 
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    val borderStroke by remember {
+    val border by remember {
         derivedStateOf {
-            if (isFocused) {
-                BorderStroke(1.dp, Gray800)
-            } else {
-                if (state.text.isEmpty()) {
-                    null
-                } else {
-                    BorderStroke(1.dp, Gray100)
-                }
+            when {
+                isFocused -> colors.focusedIndicatorColor
+                state.text.isEmpty() -> null
+                else -> colors.unfocusedIndicatorColor
+            }?.let { color ->
+                BorderStroke(1.dp, color)
             }
         }
     }
@@ -155,18 +155,14 @@ fun StampTextField(
         }
 
     MaterialTheme(
-        typography = MaterialTheme.typography.copy(
-            bodyLarge = MaterialTheme.typography.bodyLarge.merge(
-                color = Gray300,
-                fontWeight = FontWeight.SemiBold
-            ),
-            bodySmall = MaterialTheme.typography.bodySmall.merge(
-                color = Gray600,
-                fontSize = 12.sp,
+        typography = with(MaterialTheme.typography) {
+            copy(
+                bodyLarge = bodyLarge.merge(fontWeight = FontWeight.SemiBold),
+                bodySmall = bodySmall.merge(fontSize = 12.sp),
             )
-        )
+        },
     ) {
-        MaterialTextField(
+        TextField(
             state,
             modifier = modifier
                 .clip(shape)
@@ -178,7 +174,11 @@ fun StampTextField(
                         Modifier
                     }
                 )
-                .then(borderStroke?.let { Modifier.border(it, shape) } ?: Modifier),
+                .then(
+                    border
+                        ?.let { border -> Modifier.border(border, shape) }
+                        ?: Modifier
+                ),
             enabled,
             readOnly,
             textStyle,
@@ -204,6 +204,10 @@ fun StampTextField(
                 unfocusedContainerColor = Color.Transparent,
                 disabledContainerColor = Color.Transparent,
                 errorContainerColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                errorIndicatorColor = Color.Transparent,
             ),
             contentPadding,
             interactionSource,
@@ -212,7 +216,7 @@ fun StampTextField(
 
 }
 
-object TextFieldDefaults {
+object StampTextFieldDefaults {
 
     val Shape: Shape = RoundedCornerShape(12.dp)
 
@@ -233,17 +237,25 @@ object TextFieldDefaults {
         unfocusedContainerColor: Color = Gray25,
         disabledContainerColor: Color = Color.Unspecified,
         errorContainerColor: Color = Color.Unspecified,
-        cursorColor: Color = Gray800,
-        errorCursorColor: Color = Color.Unspecified,
-        focusedIndicatorColor: Color = Color.Transparent,
-        unfocusedIndicatorColor: Color = Color.Transparent,
-        disabledIndicatorColor: Color = Color.Transparent,
-        errorIndicatorColor: Color = Color.Transparent,
+        cursorColor: Color = Red400,
+        errorCursorColor: Color = cursorColor,
+        selectionColors: TextSelectionColors? = TextSelectionColors(
+            handleColor = focusedTextColor,
+            backgroundColor = focusedTextColor.copy(alpha = 0.4F),
+        ),
+        focusedIndicatorColor: Color = Gray800,
+        unfocusedIndicatorColor: Color = Gray100,
+        disabledIndicatorColor: Color = unfocusedIndicatorColor,
+        errorIndicatorColor: Color = unfocusedIndicatorColor,
         focusedLabelColor: Color = Gray600,
         unfocusedLabelColor: Color = Gray300,
         disabledLabelColor: Color = Color.Unspecified,
         errorLabelColor: Color = Color.Unspecified,
-    ): TextFieldColors = MaterialTextFieldDefaults.colors(
+        focusedPlaceholderColor: Color = Gray300,
+        unfocusedPlaceholderColor: Color = Gray300,
+        disabledPlaceholderColor: Color = unfocusedPlaceholderColor,
+        errorPlaceholderColor: Color = disabledPlaceholderColor,
+    ): TextFieldColors = TextFieldDefaults.colors(
         focusedTextColor = focusedTextColor,
         unfocusedTextColor = unfocusedTextColor,
         disabledTextColor = disabledTextColor,
@@ -254,6 +266,7 @@ object TextFieldDefaults {
         errorContainerColor = errorContainerColor,
         cursorColor = cursorColor,
         errorCursorColor = errorCursorColor,
+        selectionColors = selectionColors,
         focusedIndicatorColor = focusedIndicatorColor,
         unfocusedIndicatorColor = unfocusedIndicatorColor,
         disabledIndicatorColor = disabledIndicatorColor,
@@ -262,6 +275,10 @@ object TextFieldDefaults {
         unfocusedLabelColor = unfocusedLabelColor,
         disabledLabelColor = disabledLabelColor,
         errorLabelColor = errorLabelColor,
+        focusedPlaceholderColor = focusedPlaceholderColor,
+        unfocusedPlaceholderColor = unfocusedPlaceholderColor,
+        disabledPlaceholderColor = disabledPlaceholderColor,
+        errorPlaceholderColor = errorPlaceholderColor,
     )
 }
 
@@ -289,11 +306,6 @@ private fun StampTextFieldPreview() {
                     Text("입력해야 할 정보")
                 },
                 lineLimits = TextFieldLineLimits.SingleLine,
-            )
-
-            StampTextField(
-                state = rememberTextFieldState(),
-                modifier = Modifier.fillMaxWidth(),
             )
         }
     }

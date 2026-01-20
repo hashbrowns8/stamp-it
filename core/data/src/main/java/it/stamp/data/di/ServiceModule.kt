@@ -7,9 +7,11 @@ import dagger.hilt.components.SingletonComponent
 import it.stamp.data.service.FederatedAuthService
 import it.stamp.data.service.FirestoreGroupTransferService
 import it.stamp.data.service.FirestoreUserOnboardingService
+import it.stamp.data.service.FirestoreUserAndGroupProfileService
 import it.stamp.domain.service.AuthService
 import it.stamp.domain.service.GroupTransferService
 import it.stamp.domain.service.UserOnboardingService
+import it.stamp.domain.service.UserAndGroupProfileService
 import javax.inject.Singleton
 
 @Module
@@ -26,4 +28,8 @@ abstract class ServiceModule {
     @Binds
     @Singleton
     abstract fun bindUserOnboardingService(service: FirestoreUserOnboardingService): UserOnboardingService
+
+    @Binds
+    @Singleton
+    abstract fun bindUserProfileService(service: FirestoreUserAndGroupProfileService): UserAndGroupProfileService
 }
