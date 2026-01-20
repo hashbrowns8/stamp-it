@@ -34,6 +34,8 @@ dependencies {
     implementation(projects.core.navigation)
     implementation(projects.core.ui)
 
+    implementation(projects.feature.editProfile.api)
+    implementation(projects.feature.editProfile.core)
     implementation(projects.feature.inviteGroup.api)
     implementation(projects.feature.inviteGroup.core)
     implementation(projects.feature.joinGroup.api)

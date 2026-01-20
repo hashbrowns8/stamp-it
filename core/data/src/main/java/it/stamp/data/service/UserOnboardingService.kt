@@ -33,21 +33,21 @@ class FirestoreUserOnboardingService @Inject constructor(
             )
 
             val user = FirestoreUser(
-                id.value,
-                group.id,
-                displayName.value,
+                userId = id.value,
+                group.groupId,
+                nickname = displayName.value,
             )
 
             val membershipId = buildString {
-                append(group.id)
+                append(group.groupId)
                 append('_')
-                append(user.id)
+                append(user.userId)
             }
 
             val membership = FirestoreMembership(
                 membershipId,
-                group.id,
-                user.id,
+                group.groupId,
+                user.userId,
                 isLeader = true,
                 user.nickname,
                 user.profileImage,
@@ -55,9 +55,9 @@ class FirestoreUserOnboardingService @Inject constructor(
 
             runBatch { batch ->
                 with(batch) {
-                    set(usersCollection.document(user.id), user)
-                    set(groupsCollection.document(user.id), group)
-                    set(membershipsCollection.document(user.id), membership)
+                    set(usersCollection.document(user.userId), user)
+                    set(groupsCollection.document(group.groupId), group)
+                    set(membershipsCollection.document(membership.membershipId), membership)
                 }
             }.await()
 

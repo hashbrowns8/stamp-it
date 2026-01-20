@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -27,19 +27,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Black
-import it.stamp.designsystem.theme.Gray200
+import it.stamp.designsystem.theme.Gray100
 import it.stamp.designsystem.theme.Gray300
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.bodyExtraSmall
 import it.stamp.home.core.R
 import it.stamp.model.membership.Member
-import it.stamp.model.stamp.LeaderboardMember
+import it.stamp.model.stamp.LeaderboardEntry
+import it.stamp.ui.AvatarImage
 import it.stamp.ui.PreviewSamples
 
 @Composable
 fun Leaderboard(
     user: Member,
-    rankings: List<LeaderboardMember>,
+    rankings: List<LeaderboardEntry>,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
@@ -48,10 +49,10 @@ fun Leaderboard(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            items(rankings) { member ->
+            items(rankings) { entry ->
                 Item(
-                    member,
-                    isMe = member.member.id == user.id,
+                    entry,
+                    isMe = entry.member.id == user.id,
                 )
             }
         }
@@ -60,35 +61,31 @@ fun Leaderboard(
 
 @Composable
 private fun Item(
-    member: LeaderboardMember,
+    entry: LeaderboardEntry,
     isMe: Boolean,
     modifier: Modifier = Modifier,
-) = with(member) {
+) = with(entry) {
     Column(
         modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(
-            modifier = Modifier
-                .width(60.dp)
-                .height(64.dp),
-        ) {
+        Box {
             Box(
                 modifier = Modifier
-                    .size(60.dp)
+                    .padding(bottom = 4.dp)
+                    .size(56.dp)
                     .clip(CircleShape)
-                    .border(1.dp, Gray200, CircleShape),
+                    .border(1.dp, Gray100, CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
-                Image(
-                    Drawables.CharacterRed, // TODO
-                    contentDescription = null,
+                AvatarImage(
+                    member.avatar,
                     modifier = Modifier.size(40.dp),
                 )
             }
 
-            if (member.rank in 1..3) {
-                val imageVector = when (member.rank) {
+            if (entry.rank in 1..3) {
+                val imageVector = when (entry.rank) {
                     1 -> Drawables.FirstRank
                     2 -> Drawables.SecondRank
                     else -> Drawables.ThirdRank
@@ -109,7 +106,7 @@ private fun Item(
             } else {
                 this@with.member.displayName.value
             },
-            modifier = Modifier.widthIn(max = 60.dp),
+            modifier = Modifier.widthIn(max = 56.dp),
             color = Black,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,

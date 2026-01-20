@@ -10,7 +10,7 @@ import it.stamp.model.membership.Role
 import it.stamp.model.mission.Mission
 import it.stamp.model.mission.MissionCategory
 import it.stamp.model.mission.MissionStatus
-import it.stamp.model.stamp.LeaderboardMember
+import it.stamp.model.stamp.LeaderboardEntry
 import it.stamp.model.user.Avatar
 import it.stamp.model.user.DisplayName
 import it.stamp.model.user.User
@@ -155,7 +155,7 @@ data object PreviewSamples {
         val rank = index + 1
         val seed = (Members.size - rank)
         val stamps = Random.nextInt(seed * 10, (seed + 1) * 10)
-        LeaderboardMember(member, rank, stamps)
+        LeaderboardEntry(member, rank, stamps)
     }
 
 }

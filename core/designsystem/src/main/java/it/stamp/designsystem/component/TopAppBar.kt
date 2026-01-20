@@ -57,7 +57,7 @@ fun StampTopAppBar(
             contentAlignment = Alignment.CenterStart,
         ) {
             ProvideTextStyle(
-                value = MaterialTheme.typography.titleLarge,
+                value = MaterialTheme.typography.titleMedium,
                 content = title,
             )
         }

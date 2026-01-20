@@ -2,6 +2,7 @@ package it.stamp.mypage.core.navigation
 
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import it.stamp.edit.profile.EditProfileNavKey
 import it.stamp.invite.group.InviteGroupNavKey
 import it.stamp.join.group.api.JoinGroupNavKey
 import it.stamp.mypage.MyPageNavKey
@@ -12,6 +13,7 @@ fun EntryProviderScope<NavKey>.myPageEntry(navigator: Navigator) {
     entry<MyPageNavKey> {
         MyPageScreen(
             navigateToEditProfile = {
+                navigator.navigate(EditProfileNavKey)
             },
             navigateToManageMembers = {
             },

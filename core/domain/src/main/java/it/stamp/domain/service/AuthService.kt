@@ -11,7 +11,7 @@ interface AuthService {
 
     val currentUser: User?
 
-    fun requireUser(): User = currentUser ?: throw NotAuthenticatedException()
+    fun requireCurrentUser(): User = currentUser ?: throw NotAuthenticatedException()
 
     suspend fun signInWith(identityProvider: IdentityProvider, idToken: String): User
 

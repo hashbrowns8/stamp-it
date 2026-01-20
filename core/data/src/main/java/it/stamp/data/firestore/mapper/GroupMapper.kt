@@ -9,7 +9,7 @@ import it.stamp.model.membership.InviteCode
 object GroupMapper {
     fun toDomainModel(group: FirestoreGroup) = with(group) {
         Group(
-            id = GroupId(id),
+            id = GroupId(groupId),
             name = name,
             inviteCode = InviteCode(inviteCode),
             createdAt = createdAt.toKotlinInstant(),

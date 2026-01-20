@@ -17,7 +17,7 @@ class CompleteMissionUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(missionId: MissionId): Result<Mission> =
         runCatching {
-            val user = authService.requireUser()
+            val user = authService.requireCurrentUser()
 
             val mission = missionRepository.getById(missionId)
 

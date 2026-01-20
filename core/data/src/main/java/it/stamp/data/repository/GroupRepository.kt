@@ -1,5 +1,6 @@
 package it.stamp.data.repository
 
+import com.google.firebase.Timestamp
 import it.stamp.data.firestore.mapper.GroupMapper
 import it.stamp.data.firestore.source.GroupFirestoreDataSource
 import it.stamp.domain.repository.GroupRepository
@@ -16,7 +17,7 @@ class GroupDataRepository @Inject constructor(
 ) : GroupRepository {
 
     override suspend fun findById(id: GroupId): Group? =
-        firestoreDataSource.get(id.value)
+        firestoreDataSource.find(id.value)
             ?.let(GroupMapper::toDomainModel)
 
     override suspend fun findByInviteCode(inviteCode: InviteCode): Group? =
@@ -27,4 +28,15 @@ class GroupDataRepository @Inject constructor(
         firestoreDataSource.observe(id.value)
             .filterNotNull()
             .map(GroupMapper::toDomainModel)
+
+    override suspend fun update(group: Group) {
+        firestoreDataSource.find(group.id.value)
+            ?.copy(
+                name = group.name,
+                nameChangedAt = Timestamp.now(),
+            )
+            ?.let { data ->
+                firestoreDataSource.update(data.groupId, data)
+            }
+    }
 }

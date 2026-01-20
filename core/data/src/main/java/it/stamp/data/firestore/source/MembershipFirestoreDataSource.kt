@@ -61,7 +61,7 @@ class MembershipFirestoreDataSource @Inject constructor(
             }
             .flowOn(coroutineDispatcher)
 
-    suspend fun getUserMembership(userId: UserId): FirestoreMembership? = withContext(coroutineDispatcher) {
+    suspend fun findUserMembership(userId: UserId): FirestoreMembership? = withContext(coroutineDispatcher) {
         collection.whereEqualTo("userId", userId.value)
             .get()
             .await()

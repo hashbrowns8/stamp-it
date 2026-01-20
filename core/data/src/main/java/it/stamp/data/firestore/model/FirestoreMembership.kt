@@ -6,12 +6,10 @@ data class FirestoreMembership(
     val membershipId: String = String(),
     val groupId: String = String(),
     val userId: String = String(),
+    @field:JvmField
     val isLeader: Boolean = false,
     val nickname: String = String(),
     val profileImage: String = String(),
     val joinedAt: Timestamp = Timestamp.now(),
     val updatedAt: Timestamp = Timestamp.now(),
-) : FirestoreModel {
-    override val id: String
-        get() = membershipId
-}
+)

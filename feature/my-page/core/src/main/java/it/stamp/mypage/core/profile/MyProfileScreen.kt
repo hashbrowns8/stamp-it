@@ -123,7 +123,7 @@ private fun MyProfileScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp, bottom = 32.dp),
+                    .padding(top = 20.dp, bottom = 28.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 UserProfile(

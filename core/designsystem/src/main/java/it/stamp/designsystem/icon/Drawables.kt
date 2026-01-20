@@ -1,11 +1,16 @@
 package it.stamp.designsystem.icon
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import it.stamp.designsystem.R
+import it.stamp.designsystem.theme.StampTheme
 
 object Drawables {
     val ArrowLeft: ImageVector
@@ -143,4 +148,19 @@ object Drawables {
     val CharacterYellow: ImageVector
         @Composable
         get() = ImageVector.vectorResource(R.drawable.character_yellow)
+}
+
+@Preview
+@Composable
+private fun IconsPreview() {
+    StampTheme {
+        LazyVerticalGrid(GridCells.Fixed(5)) {
+            item {
+                Image(
+                    Drawables.Cancel,
+                    contentDescription = null
+                )
+            }
+        }
+    }
 }

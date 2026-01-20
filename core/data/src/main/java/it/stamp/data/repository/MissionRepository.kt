@@ -17,7 +17,7 @@ class MissionDataRepository @Inject constructor(
 ) : MissionRepository {
 
     override suspend fun findById(id: MissionId): Mission? =
-        firestoreDataSource.get(id.value)
+        firestoreDataSource.find(id.value)
             ?.let(MissionMapper::toDomainModel)
 
     override suspend fun getMissionsByAssigner(

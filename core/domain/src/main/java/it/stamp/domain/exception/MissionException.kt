@@ -4,8 +4,6 @@ sealed class MissionException(override val message: String? = null) : RuntimeExc
 
 class MissionNotFoundException : MissionException()
 
-class UnauthorizedException() : MissionException()
-
 class MissionAlreadyCompletedException : MissionException()
 
 class MissionNotCompletedException : MissionException()

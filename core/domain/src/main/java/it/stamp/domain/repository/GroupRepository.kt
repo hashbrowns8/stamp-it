@@ -14,4 +14,6 @@ interface GroupRepository {
     suspend fun findByInviteCode(inviteCode: InviteCode): Group?
 
     fun observe(id: GroupId): Flow<Group>
+
+    suspend fun update(group: Group)
 }

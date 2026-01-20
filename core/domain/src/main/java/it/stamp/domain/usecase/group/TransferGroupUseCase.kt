@@ -13,7 +13,7 @@ class TransferGroupUseCase @Inject constructor(
         leavingGroup: Group,
         joiningGroup: Group,
     ): Result<Group> = runCatching {
-        authService.requireUser()
+        authService.requireCurrentUser()
             .let { user ->
                 groupTransferService.transferGroup(user, leavingGroup, joiningGroup)
             }

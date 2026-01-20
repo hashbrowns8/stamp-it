@@ -21,7 +21,7 @@ import it.stamp.model.ids.MissionId
 import it.stamp.model.membership.Group
 import it.stamp.model.membership.Member
 import it.stamp.model.mission.Mission
-import it.stamp.model.stamp.LeaderboardMember
+import it.stamp.model.stamp.LeaderboardEntry
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -60,14 +60,13 @@ class HomeViewModel @Inject constructor(
     }
 
     private val membership = observeMyMembershipUseCase()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    // TODO
-    val uiState: StateFlow<HomeUiState> = membership.filterNotNull()
+        .filterNotNull()
         .distinctUntilChangedBy { it.id }
-        .combineTransform(retry) { membership, retry ->
-            emit(HomeUiState.Loading)
 
+    val uiState: StateFlow<HomeUiState> = combineTransform(membership, retry) { membership, retry ->
+        emit(HomeUiState.Loading)
+
+        try {
             val (group, members, rankings, memberMissions) = coroutineScope {
                 awaitAll(
                     async {
@@ -91,23 +90,38 @@ class HomeViewModel @Inject constructor(
 
             observeCurrentUserUseCase()
                 .filterNotNull()
-                .combine(observeMyMissionsThisWeekUseCase()) { user, myMissions ->
-                    val user = (members as List<Member>)
-                        .first { member -> member.id == user.id }
-                        .copy(displayName = user.displayName, avatar = user.avatar)
+                .combine(observeMyMissionsThisWeekUseCase()) { currentUser, myMissions ->
+                    val currentMember = (members as List<Member>)
+                        .first { member -> member.id == currentUser.id }
+                        .copy(
+                            displayName = currentUser.displayName,
+                            avatar = currentUser.avatar,
+                        )
+
+                    val rankings = (rankings as List<LeaderboardEntry>)
+                        .map { entry ->
+                            if (entry.member.id == currentMember.id) {
+                                entry.copy(member = currentMember)
+                            } else {
+                                entry
+                            }
+                        }
 
                     HomeUiState.Success(
-                        user,
+                        currentMember,
                         group as Group,
-                        members - user,
-                        rankings as List<LeaderboardMember>,
+                        members = members.filterNot { member -> member.id == currentMember.id },
+                        rankings,
                         myMissions,
                         memberMissions as List<Mission>,
                     )
                 }.catch { throwable ->
                     emit(HomeUiState.Failure(throwable))
                 }.collect(this)
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUiState.Loading)
+        } catch (throwable: Throwable) {
+            emit(HomeUiState.Failure(throwable))
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUiState.Loading)
 
     private val _uiEvent = MutableSharedFlow<HomeUiEvent>()
     val uiEvent: SharedFlow<HomeUiEvent> = _uiEvent.asSharedFlow()
@@ -161,7 +175,7 @@ sealed interface HomeUiState {
         val user: Member,
         val group: Group,
         val members: List<Member>,
-        val rankings: List<LeaderboardMember>,
+        val rankings: List<LeaderboardEntry>,
         val myMissions: List<Mission>,
         val memberMissions: List<Mission>,
     ) : HomeUiState

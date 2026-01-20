@@ -12,7 +12,7 @@ object StampMapper {
         val type = parseType(type)
 
         Stamp(
-            id = StampId(id),
+            id = StampId(stampId),
             missionId = MissionId(missionId),
             type = type,
             createdAt = createdAt.toKotlinInstant()

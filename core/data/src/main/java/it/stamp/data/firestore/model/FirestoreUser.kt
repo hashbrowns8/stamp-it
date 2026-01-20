@@ -9,10 +9,7 @@ data class FirestoreUser(
     val profileImage: String = PROFILE_IMAGE_1,
     val nicknameChangedAt: Timestamp = Timestamp.now(),
     val createdAt: Timestamp = Timestamp.now(),
-) : FirestoreModel {
-    override val id: String
-        get() = userId
-
+) {
     companion object {
         private const val PROFILE_IMAGE_1 = "profileImage1"
     }

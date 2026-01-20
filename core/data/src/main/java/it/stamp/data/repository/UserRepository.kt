@@ -20,6 +20,6 @@ class UserDataRepository @Inject constructor(
             }
 
     override suspend fun findById(id: UserId): User? =
-        firestoreDataSource.get(id.value)
+        firestoreDataSource.find(id.value)
             ?.let(UserMapper::toDomainModel)
 }

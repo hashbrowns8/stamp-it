@@ -15,7 +15,7 @@ class GetMyGroupMembersUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Result<List<Member>> =
         runCatching {
-            val user = authService.requireUser()
+            val user = authService.requireCurrentUser()
 
             val membership = membershipRepository.getUserMembership(user.id)
 
