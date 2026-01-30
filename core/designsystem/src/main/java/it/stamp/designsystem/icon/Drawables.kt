@@ -37,6 +37,10 @@ object Drawables {
         @Composable
         get() = ImageVector.vectorResource(R.drawable.icon_chevron_right)
 
+    val Dots: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_dots)
+
     val Edit: ImageVector
         @Composable
         get() = ImageVector.vectorResource(R.drawable.icon_edit)

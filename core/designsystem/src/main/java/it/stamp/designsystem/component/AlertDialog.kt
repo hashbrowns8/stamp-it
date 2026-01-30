@@ -37,14 +37,14 @@ import it.stamp.designsystem.theme.White
 @Composable
 fun StampAlertDialog(
     onDismissRequest: () -> Unit,
-    title: String,
     text: String,
     confirm: String,
     onConfirmClick: () -> Unit,
     modifier: Modifier = Modifier,
+    title: String? = null,
     dismiss: String? = null,
     onDismissClick: (() -> Unit)? = null,
-    shape: Shape = RoundedCornerShape(28.dp),
+    shape: Shape = RoundedCornerShape(32.dp),
     containerColor: Color = White,
     dismissContentColor: Color = Gray800,
     confirmContentColor: Color = Red400,
@@ -72,12 +72,14 @@ fun StampAlertDialog(
                         modifier = Modifier.padding(8.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        Text(
-                            text = title,
-                            color = titleContentColor,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                        )
+                        if (title != null) {
+                            Text(
+                                text = title,
+                                color = titleContentColor,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        }
 
                         Text(
                             text,

@@ -20,16 +20,18 @@ class MissionDataRepository @Inject constructor(
         firestoreDataSource.find(id.value)
             ?.let(MissionMapper::toDomainModel)
 
-    override suspend fun getMissionsByAssigner(
-        groupId: GroupId,
-        assignerId: UserId
-    ): List<Mission> = firestoreDataSource.getMissionsByAssigner(groupId, assignerId)
-        .map(MissionMapper::toDomainModel)
-
     override fun observeMissionsByAssigneeThisWeek(
         groupId: GroupId,
         assigneeId: UserId
     ): Flow<List<Mission>> = firestoreDataSource.observeMissionsByAssigneeThisWeek(groupId, assigneeId)
+        .map { missions ->
+            missions.map(MissionMapper::toDomainModel)
+        }
+
+    override fun observeMissionsByAssigner(
+        groupId: GroupId,
+        assignerId: UserId
+    ): Flow<List<Mission>> = firestoreDataSource.observeMissionsByAssigner(groupId, assignerId)
         .map { missions ->
             missions.map(MissionMapper::toDomainModel)
         }

@@ -26,18 +26,17 @@ import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.home.core.R
 import it.stamp.model.ids.UserId
-import it.stamp.model.membership.Member
-import it.stamp.model.mission.Mission
 import it.stamp.ui.MemberFilterChip
 import it.stamp.ui.MemberMissionListItem
+import it.stamp.ui.MemberMissionUiModel
 import it.stamp.ui.PreviewSamples
 
 @Composable
 fun MembersMissions(
     userDisplayName: String,
     groupName: String,
-    members: List<Member>,
-    memberMissions: List<Mission>,
+    memberNamesById: Map<UserId, String>,
+    missions: List<MemberMissionUiModel>,
     onAssignNewMissionClick: (assignee: UserId?) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -54,8 +53,8 @@ fun MembersMissions(
             modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
         )
 
-        var selectedMember: Member? by remember {
-            mutableStateOf(null)
+        var selectedMemberId by remember {
+            mutableStateOf<UserId?>(null)
         }
 
         LazyRow(
@@ -65,37 +64,33 @@ fun MembersMissions(
         ) {
             item {
                 MemberFilterChip(
-                    selected = selectedMember == null,
+                    selected = selectedMemberId == null,
                     onClick = {
-                        selectedMember = null
+                        selectedMemberId = null
                     },
                     displayName = stringResource(R.string.all),
                     modifier = Modifier.height(32.dp),
                 )
             }
 
-            items(members) { member ->
+            items(memberNamesById.toList()) { (id, displayName) ->
                 MemberFilterChip(
-                    selected = selectedMember == member,
+                    selected = selectedMemberId == id,
+                    displayName,
                     onClick = {
-                        selectedMember = member
+                        selectedMemberId = id
                     },
-                    displayName = member.displayName.value,
                     modifier = Modifier.height(32.dp),
                 )
             }
         }
 
-        val membersById = remember(members) {
-            members.associateBy { it.id }
-        }
-
         val missionsFiltered by remember {
             derivedStateOf {
-                if (selectedMember == null) {
-                    memberMissions
+                if (selectedMemberId == null) {
+                    missions
                 } else {
-                    memberMissions.filter { mission -> mission.assignee == selectedMember?.id }
+                    missions.filter { mission -> mission.assigneeId == selectedMemberId }
                 }.take(4) // TODO
             }
         }
@@ -106,7 +101,7 @@ fun MembersMissions(
                     stringResource(R.string.no_mission_assigned_by_me),
                     stringResource(R.string.assign_new_mission),
                     onActionClick = {
-                        onAssignNewMissionClick(selectedMember?.id)
+                        selectedMemberId?.let(onAssignNewMissionClick)
                     },
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 )
@@ -114,7 +109,6 @@ fun MembersMissions(
                 missionsFiltered.forEachIndexed { index, mission ->
                     MemberMissionListItem(
                         mission,
-                        assignee = membersById.getValue(mission.assignee),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
@@ -140,10 +134,14 @@ private fun MembersMissionsPreview() {
     StampTheme {
         with(PreviewSamples) {
             MembersMissions(
-                userDisplayName = Me.displayName.value,
-                groupName = Group.name,
-                members = Members - MeAsMember,
-                memberMissions = MemberMissions,
+                userDisplayName = me.displayName.value,
+                groupName = group.name,
+                memberNamesById = members
+                    .drop(1)
+                    .associate { member ->
+                        member.id to member.displayName.value
+                    },
+                missions = memberMissions,
                 onAssignNewMissionClick = {
                 },
                 modifier = Modifier.background(White)
@@ -158,10 +156,14 @@ private fun MembersMissionsEmptyPreview() {
     StampTheme {
         with(PreviewSamples) {
             MembersMissions(
-                userDisplayName = Me.displayName.value,
-                groupName = Group.name,
-                members = Members - MeAsMember,
-                memberMissions = emptyList(),
+                userDisplayName = me.displayName.value,
+                groupName = group.name,
+                memberNamesById = members
+                    .drop(1)
+                    .associate { member ->
+                        member.id to member.displayName.value
+                    },
+                missions = emptyList(),
                 onAssignNewMissionClick = {
                 },
                 modifier = Modifier.background(White)

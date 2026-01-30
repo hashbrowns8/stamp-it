@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.Flow
 interface GroupRepository {
     suspend fun findById(id: GroupId): Group?
 
-    suspend fun getById(id: GroupId): Group = findById(id) ?: throw GroupNotFoundException()
+    suspend fun getById(id: GroupId): Group =
+        findById(id) ?: throw GroupNotFoundException()
 
     suspend fun findByInviteCode(inviteCode: InviteCode): Group?
 

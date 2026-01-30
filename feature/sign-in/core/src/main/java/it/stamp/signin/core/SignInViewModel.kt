@@ -3,7 +3,7 @@ package it.stamp.signin.core
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.stamp.domain.usecase.user.SignInWithGoogleUseCase
+import it.stamp.domain.usecase.user.SignInWithGoogle
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignInViewModel @Inject constructor(
-    private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
+    private val signInWithGoogleUseCase: SignInWithGoogle,
 ) : ViewModel() {
 
     private val _uiEvent = MutableSharedFlow<SignInUiEvent>()

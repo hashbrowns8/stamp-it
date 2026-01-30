@@ -22,7 +22,7 @@ import it.stamp.designsystem.component.StampSnackbar
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.main.MainNavKey
-import it.stamp.model.authentication.AuthState
+import it.stamp.model.authentication.AuthenticationState
 import it.stamp.navigation.EntryProviderInstaller
 import it.stamp.navigation.Navigator
 import it.stamp.signin.SignInNavKey
@@ -46,10 +46,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             StampTheme {
-                val authState by viewModel.authState.collectAsStateWithLifecycle()
+                val authenticationState by viewModel.authenticationState.collectAsStateWithLifecycle()
 
                 splashScreen.setKeepOnScreenCondition { // TODO : 최대 로딩 시간 기다리고 실패
-                    authState == AuthState.Unknown
+                    authenticationState == AuthenticationState.Unknown
                 }
 
                 val snackbarHostState = remember { SnackbarHostState() }
@@ -66,9 +66,9 @@ class MainActivity : ComponentActivity() {
                     containerColor = White,
                 ) { innerPadding ->
                     CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
-                        if (authState == AuthState.Unknown) return@CompositionLocalProvider
+                        if (authenticationState == AuthenticationState.Unknown) return@CompositionLocalProvider
 
-                        val startDestination = if (authState is AuthState.Authenticated) {
+                        val startDestination = if (authenticationState is AuthenticationState.Authenticated) {
                             MainNavKey
                         } else {
                             SignInNavKey

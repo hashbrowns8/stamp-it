@@ -210,11 +210,13 @@ private fun MyProfileScreen(
 @Composable
 private fun MyProfileScreenPreview() {
     StampTheme {
-        MyProfileScreen(
-            user = PreviewSamples.Me,
-            group = PreviewSamples.Group,
-            onUiAction = {}
-        )
+        with(PreviewSamples) {
+            MyProfileScreen(
+                user = me,
+                group = group,
+                onUiAction = {}
+            )
+        }
 
         SignOutAlertDialog(
             onDismissRequest = {},

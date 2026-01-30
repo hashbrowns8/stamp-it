@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -33,21 +34,37 @@ import it.stamp.designsystem.theme.Gray400
 import it.stamp.designsystem.theme.Gray500
 import it.stamp.designsystem.theme.Gray800
 import it.stamp.designsystem.theme.Red400
-import it.stamp.model.membership.Member
-import it.stamp.model.mission.Mission
+import it.stamp.model.ids.MissionId
+import it.stamp.model.ids.UserId
+import it.stamp.model.mission.MissionCategory
+import it.stamp.model.mission.MissionStatus
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
-import kotlinx.datetime.minus
-import kotlinx.datetime.todayIn
-import kotlin.time.Clock
+
+data class MemberMissionUiModel(
+    val id: MissionId,
+    val category: MissionCategory,
+    val title: String,
+    val assigneeId: UserId,
+    val assigneeDisplayName: String,
+    val dueDate: LocalDate,
+    val daysAgo: String,
+    val status: MissionStatus,
+    val isOverdue: Boolean,
+    val isDone: Boolean,
+)
 
 @Composable
 fun MemberMissionListItem(
-    mission: Mission,
-    assignee: Member,
+    mission: MemberMissionUiModel,
     modifier: Modifier = Modifier,
+    dateFormat: DateTimeFormat<LocalDate> = remember {
+        LocalDate.Format {
+            monthNumber(Padding.NONE); char('/'); day(Padding.NONE)
+        }
+    }
 ) = with(mission) {
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         Box(
@@ -66,15 +83,9 @@ fun MemberMissionListItem(
             modifier = Modifier.weight(1F),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            val dateFormat = remember {
-                LocalDate.Format {
-                    monthNumber(Padding.NONE); char('/'); day(Padding.NONE)
-                }
-            }
-
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Chip("to.${assignee.displayName.value}")
-                Chip("~${dateFormat.format(dueDate)}")
+                Chip(stringResource(R.string.to_assignee, assigneeDisplayName))
+                Chip(stringResource(R.string.due_date, dateFormat.format(dueDate)))
             }
 
             Text(
@@ -88,36 +99,25 @@ fun MemberMissionListItem(
             verticalArrangement = Arrangement.spacedBy(2.dp),
             horizontalAlignment = Alignment.End,
         ) {
-            val text = remember(dueDate) {
-                val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-
-                when (val days = (dueDate - today).days) {
-                    0 -> "오늘"
-                    1 -> "내일"
-                    in 2..Int.MAX_VALUE -> "${days}일 전"
-                    else -> ""
-                }
-            }
-
             Text(
-                text,
+                text = daysAgo,
                 color = Gray500,
                 style = MaterialTheme.typography.bodySmall,
             )
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                val contentColor = if (isOverdue) {
-                    Gray400
-                } else if (isCompleted) {
-                    Red400
-                } else {
-                    Color.Unspecified
-                }
+            val contentColor = if (isOverdue) {
+                Gray400
+            } else if (isDone) {
+                Red400
+            } else {
+                Color.Unspecified
+            }
 
-                CompositionLocalProvider(LocalContentColor provides contentColor) {
+            CompositionLocalProvider(LocalContentColor provides contentColor) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     when {
                         isOverdue -> {
                             Icon(
@@ -128,7 +128,8 @@ fun MemberMissionListItem(
 
                             Text("만료", style = MaterialTheme.typography.labelSmall)
                         }
-                        isCompleted -> {
+
+                        isDone -> {
                             Icon(
                                 imageVector = Drawables.Check,
                                 contentDescription = null,

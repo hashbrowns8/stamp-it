@@ -22,4 +22,8 @@ class UserDataRepository @Inject constructor(
     override suspend fun findById(id: UserId): User? =
         firestoreDataSource.find(id.value)
             ?.let(UserMapper::toDomainModel)
+
+    override suspend fun getByIds(ids: List<UserId>): List<User> =
+        firestoreDataSource.getByIds(ids)
+            .map(UserMapper::toDomainModel)
 }

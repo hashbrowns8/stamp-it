@@ -2,7 +2,7 @@ package it.stamp.model.mission
 
 enum class MissionStatus {
     ASSIGNED,
-    COMPLETED,
+    DONE,
     FAILED;
 
     val isInProgress: Boolean

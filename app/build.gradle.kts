@@ -36,12 +36,14 @@ dependencies {
 
     implementation(projects.feature.editProfile.api)
     implementation(projects.feature.editProfile.core)
-    implementation(projects.feature.inviteGroup.api)
-    implementation(projects.feature.inviteGroup.core)
+    implementation(projects.feature.inviteMember.api)
+    implementation(projects.feature.inviteMember.core)
     implementation(projects.feature.joinGroup.api)
     implementation(projects.feature.joinGroup.core)
     implementation(projects.feature.main.api)
     implementation(projects.feature.main.core)
+    implementation(projects.feature.membership.api)
+    implementation(projects.feature.membership.core)
     implementation(projects.feature.signIn.api)
     implementation(projects.feature.signIn.core)
 

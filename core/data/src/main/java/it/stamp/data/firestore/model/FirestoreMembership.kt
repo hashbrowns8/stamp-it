@@ -11,5 +11,4 @@ data class FirestoreMembership(
     val nickname: String = String(),
     val profileImage: String = String(),
     val joinedAt: Timestamp = Timestamp.now(),
-    val updatedAt: Timestamp = Timestamp.now(),
 )

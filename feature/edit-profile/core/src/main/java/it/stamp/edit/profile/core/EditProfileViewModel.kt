@@ -3,25 +3,24 @@ package it.stamp.edit.profile.core
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.stamp.domain.exception.GroupNotFoundException
-import it.stamp.domain.exception.MembershipNotFoundException
-import it.stamp.domain.exception.NotAuthenticatedException
-import it.stamp.domain.usecase.group.ObserveMyGroupUseCase
+import it.stamp.domain.usecase.group.ObserveMyGroup
 import it.stamp.domain.usecase.membership.ObserveMyMembershipUseCase
 import it.stamp.domain.usecase.user.EditProfileCommand
 import it.stamp.domain.usecase.user.EditProfileUseCase
-import it.stamp.domain.usecase.user.ObserveCurrentUserUseCase
+import it.stamp.domain.usecase.user.ObserveCurrentUser
 import it.stamp.model.membership.Group
 import it.stamp.model.membership.Membership
 import it.stamp.model.user.Avatar
 import it.stamp.model.user.DisplayName
 import it.stamp.model.user.User
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -29,33 +28,31 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
-    observeCurrentUserUseCase: ObserveCurrentUserUseCase,
+    observeCurrentUser: ObserveCurrentUser,
     observeMyMembershipUseCase: ObserveMyMembershipUseCase,
-    observeMyGroupUseCase: ObserveMyGroupUseCase,
+    observeMyGroup: ObserveMyGroup,
     private val editProfileUseCase: EditProfileUseCase,
 ) : ViewModel() {
 
-    private val user = observeCurrentUserUseCase()
-        .map { user ->
-            user ?: throw NotAuthenticatedException()
-        }
+    private val user = observeCurrentUser()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val membership = observeMyMembershipUseCase()
-        .map { membership ->
-            membership ?: throw MembershipNotFoundException()
-        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    private val group = observeMyGroupUseCase()
-        .map { group ->
-            group ?: throw GroupNotFoundException()
-        }
+    private val group = observeMyGroup()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val _uiState = MutableStateFlow<EditProfileUiState>(EditProfileUiState.Loading)
     val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            combine(user, membership, group) { user, membership, group ->
+            combine(
+                user.filterNotNull(),
+                membership.filterNotNull(),
+                group.filterNotNull(),
+            ) { user, membership, group ->
                 EditProfileUiState.Success(user, membership, group) as EditProfileUiState
             }.catch { throwable ->
                 emit(EditProfileUiState.Failure(throwable))

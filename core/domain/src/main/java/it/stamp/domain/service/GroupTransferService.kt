@@ -4,7 +4,8 @@ import it.stamp.model.membership.Group
 import it.stamp.model.user.User
 
 interface GroupTransferService {
-    suspend fun transferGroup(
+
+    suspend fun transfer(
         user: User,
         leavingGroup: Group,
         joiningGroup: Group,

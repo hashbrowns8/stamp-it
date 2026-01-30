@@ -8,18 +8,18 @@ import kotlinx.coroutines.flow.Flow
 
 interface MembershipRepository {
 
-    fun observeGroupMemberships(groupId: GroupId): Flow<List<Membership>>
+    suspend fun findUserMembership(userId: UserId): Membership?
 
-    suspend fun getGroupMemberships(groupId: GroupId): List<Membership>
-
-    suspend fun getGroupMemberCount(groupId: GroupId): Int
+    suspend fun getUserMembership(userId: UserId): Membership =
+        findUserMembership(userId) ?: throw MembershipNotFoundException()
 
     fun observeUserMembership(userId: UserId): Flow<Membership?>
 
-    suspend fun findUserMembership(userId: UserId): Membership?
+    suspend fun getGroupMemberships(groupId: GroupId): List<Membership>
 
-    suspend fun getUserMembership(userId: UserId): Membership = findUserMembership(userId)
-        ?: throw MembershipNotFoundException()
+    fun observeGroupMemberships(groupId: GroupId): Flow<List<Membership>>
+
+    suspend fun getGroupMemberCount(groupId: GroupId): Int
 
     suspend fun updateMembership(membership: Membership)
 }
