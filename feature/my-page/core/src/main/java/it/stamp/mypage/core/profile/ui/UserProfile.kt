@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Gray100
+import it.stamp.designsystem.theme.Gray50
 import it.stamp.designsystem.theme.Gray500
 import it.stamp.designsystem.theme.Gray800
 import it.stamp.model.user.Avatar
@@ -43,7 +44,7 @@ fun UserProfile(
             modifier = Modifier
                 .size(72.dp)
                 .clip(CircleShape)
-                .border(1.dp, Gray100, CircleShape)
+                .border(1.dp, Gray50, CircleShape)
                 .clickable(onClick = onEditClick),
             contentAlignment = Alignment.Center,
         ) {

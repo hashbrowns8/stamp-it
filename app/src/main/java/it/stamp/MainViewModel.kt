@@ -3,8 +3,8 @@ package it.stamp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.stamp.domain.usecase.user.ObserveAuthStateUseCase
-import it.stamp.model.authentication.AuthState
+import it.stamp.domain.usecase.user.ObserveAuthenticationState
+import it.stamp.model.authentication.AuthenticationState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -12,9 +12,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    observeAuthStateUseCase: ObserveAuthStateUseCase,
+    observeAuthenticationState: ObserveAuthenticationState,
 ) : ViewModel() {
 
-    val authState: StateFlow<AuthState> = observeAuthStateUseCase()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, AuthState.Unknown)
+    val authenticationState: StateFlow<AuthenticationState> = observeAuthenticationState()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AuthenticationState.Unknown)
 }

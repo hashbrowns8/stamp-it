@@ -4,14 +4,18 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import it.stamp.data.service.FederatedAuthService
+import it.stamp.data.service.DefaultGroupMemberService
+import it.stamp.data.service.FederatedAuthenticationService
+import it.stamp.data.service.FirestoreEditProfileService
 import it.stamp.data.service.FirestoreGroupTransferService
-import it.stamp.data.service.FirestoreUserOnboardingService
-import it.stamp.data.service.FirestoreUserAndGroupProfileService
-import it.stamp.domain.service.AuthService
+import it.stamp.data.service.FirestoreMembershipService
+import it.stamp.data.service.FirestoreUserProvisioningService
+import it.stamp.domain.service.AuthenticationService
+import it.stamp.domain.service.EditProfileService
+import it.stamp.domain.service.GroupMemberService
 import it.stamp.domain.service.GroupTransferService
-import it.stamp.domain.service.UserOnboardingService
-import it.stamp.domain.service.UserAndGroupProfileService
+import it.stamp.domain.service.MembershipService
+import it.stamp.domain.service.UserProvisioningService
 import javax.inject.Singleton
 
 @Module
@@ -19,17 +23,25 @@ import javax.inject.Singleton
 abstract class ServiceModule {
     @Binds
     @Singleton
-    abstract fun bindSignInService(service: FederatedAuthService): AuthService
+    abstract fun bindAuthenticationService(service: FederatedAuthenticationService): AuthenticationService
 
     @Binds
     @Singleton
-    abstract fun bindGroupMigrationService(service: FirestoreGroupTransferService): GroupTransferService
+    abstract fun bindEditProfileService(service: FirestoreEditProfileService): EditProfileService
 
     @Binds
     @Singleton
-    abstract fun bindUserOnboardingService(service: FirestoreUserOnboardingService): UserOnboardingService
+    abstract fun bindGroupMemberService(service: DefaultGroupMemberService): GroupMemberService
 
     @Binds
     @Singleton
-    abstract fun bindUserProfileService(service: FirestoreUserAndGroupProfileService): UserAndGroupProfileService
+    abstract fun bindGroupTransferService(service: FirestoreGroupTransferService): GroupTransferService
+
+    @Binds
+    @Singleton
+    abstract fun bindMembershipService(service: FirestoreMembershipService): MembershipService
+
+    @Binds
+    @Singleton
+    abstract fun bindUserProvisioningService(service: FirestoreUserProvisioningService): UserProvisioningService
 }

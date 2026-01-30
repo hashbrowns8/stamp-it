@@ -4,7 +4,6 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -12,7 +11,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 abstract class FirestoreDataSource<T : Any>(
-    protected val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    protected val coroutineDispatcher: CoroutineDispatcher,
 ) {
     abstract val collection: CollectionReference
 

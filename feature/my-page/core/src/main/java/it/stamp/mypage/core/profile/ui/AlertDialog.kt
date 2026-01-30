@@ -51,11 +51,11 @@ private fun AlertDialog(
 ) {
     StampAlertDialog(
         onDismissRequest,
-        title,
         text,
         confirm = stringResource(R.string.confirm),
         onConfirmClick = onConfirm,
         modifier,
+        title,
         dismiss = stringResource(R.string.cancel),
         onDismissClick = onDismiss,
     )

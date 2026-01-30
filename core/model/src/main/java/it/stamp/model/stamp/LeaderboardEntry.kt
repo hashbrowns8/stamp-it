@@ -1,9 +1,9 @@
 package it.stamp.model.stamp
 
-import it.stamp.model.membership.Member
+import it.stamp.model.ids.UserId
 
 data class LeaderboardEntry(
-    val member: Member,
+    val memberId: UserId,
     val rank: Int,
-    val stamps: Int,
+    val stampCount: Int,
 )

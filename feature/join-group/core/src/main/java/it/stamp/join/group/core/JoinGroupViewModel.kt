@@ -3,9 +3,9 @@ package it.stamp.join.group.core
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.stamp.domain.usecase.group.JoinGroup
-import it.stamp.domain.usecase.group.JoinGroupWithInviteCodeUseCase
-import it.stamp.domain.usecase.group.TransferGroupUseCase
+import it.stamp.domain.usecase.membership.JoinGroup
+import it.stamp.domain.usecase.membership.JoinGroupWithInviteCodeUseCase
+import it.stamp.domain.usecase.membership.TransferGroupUseCase
 import it.stamp.model.membership.Group
 import it.stamp.model.membership.InviteCode
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -42,26 +42,27 @@ class JoinGroupViewModel @Inject constructor(
             }
 
             joinGroupWithInviteCode(inviteCode)
-                .onSuccess { result ->
-                    when (result) {
-                        JoinGroup.InvalidCode -> JoinGroupUiEvent.InvalidCode
-                        JoinGroup.AlreadyInGroup -> JoinGroupUiEvent.AlreadyInGroup
+                .fold(
+                    onSuccess = { result ->
+                        when (result) {
+                            JoinGroup.InvalidCode -> JoinGroupUiEvent.InvalidCode
+                            JoinGroup.AlreadyInGroup -> JoinGroupUiEvent.AlreadyInGroup
 
-                        is JoinGroup.RequiresDataLossConsent -> with(result) {
-                            JoinGroupUiEvent.RequestDataLossConsent(leavingGroup, joiningGroup)
+                            is JoinGroup.RequiresDataLossConsent -> with(result) {
+                                JoinGroupUiEvent.DataLossConsentRequired(leavingGroup, joiningGroup)
+                            }
+
+                            is JoinGroup.Success -> JoinGroupUiEvent.JoinGroupSucceeded(result.group)
                         }
+                    },
+                    onFailure = { throwable ->
+                        Timber.d(throwable)
 
-                        is JoinGroup.Success -> JoinGroupUiEvent.JoinGroupSuccess(result.group)
-                    }.let { event ->
-                        Timber.d("$event")
-
-                        _uiEvent.emit(event)
+                        JoinGroupUiEvent.JoinGroupFailed(throwable)
                     }
-                }
-                .onFailure { throwable ->
-                    Timber.d(throwable)
-
-                    JoinGroupUiEvent.JoinGroupFailure(throwable)
+                )
+                .let { event ->
+                    _uiEvent.emit(event)
                 }
 
             _uiState.update { uiState ->
@@ -74,10 +75,10 @@ class JoinGroupViewModel @Inject constructor(
         viewModelScope.launch {
             transferGroup(leavingGroup, joiningGroup)
                 .map { group ->
-                    JoinGroupUiEvent.JoinGroupSuccess(group)
+                    JoinGroupUiEvent.JoinGroupSucceeded(group)
                 }
                 .getOrElse { throwable ->
-                    JoinGroupUiEvent.JoinGroupFailure(throwable)
+                    JoinGroupUiEvent.JoinGroupFailed(throwable)
                 }
                 .let {
                     _uiEvent.emit(it)

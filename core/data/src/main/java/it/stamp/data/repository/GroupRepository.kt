@@ -21,7 +21,7 @@ class GroupDataRepository @Inject constructor(
             ?.let(GroupMapper::toDomainModel)
 
     override suspend fun findByInviteCode(inviteCode: InviteCode): Group? =
-        firestoreDataSource.getGroupByInviteCode(inviteCode)
+        firestoreDataSource.findGroupByInviteCode(inviteCode)
             ?.let(GroupMapper::toDomainModel)
 
     override fun observe(id: GroupId): Flow<Group> =

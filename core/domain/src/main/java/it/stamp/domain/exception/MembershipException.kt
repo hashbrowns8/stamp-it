@@ -4,4 +4,6 @@ sealed class MembershipException(override val message: String? = null) : Runtime
 
 class MembershipNotFoundException : MembershipException()
 
-class MemberNotFoundException() : MembershipException()
+class MemberNotFoundException : MembershipException()
+
+class MemberAlreadyRemovedException : MembershipException()

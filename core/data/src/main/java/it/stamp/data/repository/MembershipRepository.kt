@@ -14,18 +14,9 @@ class MembershipDataRepository @Inject constructor(
     private val firestoreDataSource: MembershipFirestoreDataSource,
 ) : MembershipRepository {
 
-    override fun observeGroupMemberships(groupId: GroupId): Flow<List<Membership>> =
-        firestoreDataSource.observeGroupMemberships(groupId)
-            .map { memberships ->
-                memberships.map(MembershipMapper::toDomainModel)
-            }
-
-    override suspend fun getGroupMemberships(groupId: GroupId): List<Membership> =
-        firestoreDataSource.getGroupMemberships(groupId)
-            .map(MembershipMapper::toDomainModel)
-
-    override suspend fun getGroupMemberCount(groupId: GroupId): Int =
-        firestoreDataSource.getGroupMemberCount(groupId)
+    override suspend fun findUserMembership(userId: UserId): Membership? =
+        firestoreDataSource.findUserMembership(userId)
+            ?.let(MembershipMapper::toDomainModel)
 
     override fun observeUserMembership(userId: UserId): Flow<Membership?> =
         firestoreDataSource.observeUserMembership(userId)
@@ -33,9 +24,18 @@ class MembershipDataRepository @Inject constructor(
                 membership?.let(MembershipMapper::toDomainModel)
             }
 
-    override suspend fun findUserMembership(userId: UserId): Membership? =
-        firestoreDataSource.findUserMembership(userId)
-            ?.let(MembershipMapper::toDomainModel)
+    override suspend fun getGroupMemberships(groupId: GroupId): List<Membership> =
+        firestoreDataSource.getGroupMemberships(groupId)
+            .map(MembershipMapper::toDomainModel)
+
+    override fun observeGroupMemberships(groupId: GroupId): Flow<List<Membership>> =
+        firestoreDataSource.observeGroupMemberships(groupId)
+            .map { memberships ->
+                memberships.map(MembershipMapper::toDomainModel)
+            }
+
+    override suspend fun getGroupMemberCount(groupId: GroupId): Int =
+        firestoreDataSource.getGroupMemberCount(groupId)
 
     override suspend fun updateMembership(membership: Membership) {
         TODO("Not yet implemented")

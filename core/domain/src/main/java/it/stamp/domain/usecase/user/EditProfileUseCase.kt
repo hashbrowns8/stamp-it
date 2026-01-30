@@ -1,17 +1,17 @@
 package it.stamp.domain.usecase.user
 
 import it.stamp.domain.exception.UnauthorizedException
-import it.stamp.domain.service.AuthService
-import it.stamp.domain.service.UserAndGroupProfileService
+import it.stamp.domain.service.AuthenticationService
+import it.stamp.domain.service.EditProfileService
 import it.stamp.domain.usecase.membership.GetMyMembershipUseCase
 import it.stamp.model.membership.Group
 import it.stamp.model.user.User
 import javax.inject.Inject
 
 class EditProfileUseCase @Inject constructor(
-    private val authService: AuthService,
+    private val authenticationService: AuthenticationService,
     private val getMyMembershipUseCase: GetMyMembershipUseCase,
-    private val profileService: UserAndGroupProfileService,
+    private val editProfileService: EditProfileService,
 ) {
     suspend operator fun invoke(command: EditProfileCommand) =
         runCatching {
@@ -19,7 +19,7 @@ class EditProfileUseCase @Inject constructor(
                 if (user == null && group == null) return@runCatching
 
                 if (user != null) {
-                    val currentUser = authService.requireCurrentUser()
+                    val currentUser = authenticationService.requireUser()
 
                     require(user.id == currentUser.id) {
                         throw UnauthorizedException()
@@ -35,7 +35,7 @@ class EditProfileUseCase @Inject constructor(
                     }
                 }
 
-                profileService.update(user, group)
+                editProfileService.update(user, group)
             }
         }
 }

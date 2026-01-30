@@ -22,18 +22,22 @@ data class Mission(
     val createdAt: Instant,
     val updatedAt: Instant? = null,
 ) {
-    val isOverdue: Boolean
-        get() = !isCompleted && Clock.System.todayIn(TimeZone.currentSystemDefault()) > dueDate
+    fun isOverdue(
+        clock: Clock = Clock.System,
+        timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    ): Boolean = !isDone && clock.todayIn(timeZone) > dueDate
 
-    val remainingDays: Int
-        get() = Clock.System.todayIn(TimeZone.currentSystemDefault()).daysUntil(dueDate)
+    fun daysUntilDue(
+        clock: Clock = Clock.System,
+        timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    ): Int = clock.todayIn(timeZone).daysUntil(dueDate)
 
-    val isCompleted: Boolean
-        get() = status == MissionStatus.COMPLETED
+    val isDone: Boolean
+        get() = status == MissionStatus.DONE
 
     fun assign(): Mission = copy(status = MissionStatus.ASSIGNED)
 
-    fun complete(): Mission = copy(status = MissionStatus.COMPLETED)
+    fun complete(): Mission = copy(status = MissionStatus.DONE)
 
     fun fail(): Mission = copy(status = MissionStatus.FAILED)
 }

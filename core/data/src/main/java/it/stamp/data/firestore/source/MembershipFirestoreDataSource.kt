@@ -4,10 +4,12 @@ import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.snapshots
+import it.stamp.common.di.IODispatcher
 import it.stamp.data.firestore.model.FirestoreMembership
 import it.stamp.data.firestore.util.membershipsCollection
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.UserId
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -19,7 +21,8 @@ import javax.inject.Singleton
 @Singleton
 class MembershipFirestoreDataSource @Inject constructor(
     firestore: FirebaseFirestore,
-) : FirestoreDataSource<FirestoreMembership>() {
+    @IODispatcher coroutineDispatcher: CoroutineDispatcher,
+) : FirestoreDataSource<FirestoreMembership>(coroutineDispatcher) {
 
     override val collection: CollectionReference = firestore.membershipsCollection
 

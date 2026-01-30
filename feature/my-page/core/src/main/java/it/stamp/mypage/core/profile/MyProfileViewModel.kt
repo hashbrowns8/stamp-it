@@ -3,8 +3,8 @@ package it.stamp.mypage.core.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.stamp.domain.usecase.group.ObserveMyGroupUseCase
-import it.stamp.domain.usecase.user.ObserveCurrentUserUseCase
+import it.stamp.domain.usecase.group.ObserveMyGroup
+import it.stamp.domain.usecase.user.ObserveCurrentUser
 import it.stamp.model.membership.Group
 import it.stamp.model.user.User
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,12 +15,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyProfileViewModel @Inject constructor(
-    observeCurrentUserUseCase: ObserveCurrentUserUseCase,
-    observeMyGroupUseCase: ObserveMyGroupUseCase,
+    observeCurrentUser: ObserveCurrentUser,
+    observeMyGroup: ObserveMyGroup,
 ) : ViewModel() {
 
-    val uiState: StateFlow<MyProfileUiState> = observeCurrentUserUseCase()
-        .combine(observeMyGroupUseCase()) { user, group ->
+    val uiState: StateFlow<MyProfileUiState> = observeCurrentUser()
+        .combine(observeMyGroup()) { user, group ->
             if (user == null || group == null) {
                 MyProfileUiState.SignOut
             } else {
