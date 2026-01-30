@@ -52,7 +52,7 @@ fun MemberFilterChip(
                 }
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
     ) {
         Text(
             text = displayName,

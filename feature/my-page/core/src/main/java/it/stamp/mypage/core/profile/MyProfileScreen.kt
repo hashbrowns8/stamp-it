@@ -45,7 +45,7 @@ fun MyProfileScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    var pending by remember {
+    var pendingAction by remember {
         mutableStateOf<MyProfileUiAction?>(null)
     }
 
@@ -56,8 +56,8 @@ fun MyProfileScreen(
             MyProfileUiAction.InviteMember -> navigateToInviteMember()
             MyProfileUiAction.JoinGroup -> navigateToJoinGroup()
             MyProfileUiAction.LeaveGroup -> viewModel.leaveGroup()
-            MyProfileUiAction.SignOut -> pending = action
-            MyProfileUiAction.DeleteAccount -> pending = action
+            MyProfileUiAction.SignOut -> pendingAction = action
+            MyProfileUiAction.DeleteAccount -> pendingAction = action
         }
     }
 
@@ -67,20 +67,20 @@ fun MyProfileScreen(
         onUiAction
     )
 
-    pending?.run {
-        if (pending == MyProfileUiAction.SignOut) {
+    pendingAction?.run {
+        if (pendingAction == MyProfileUiAction.SignOut) {
             SignOutAlertDialog(
                 onDismissRequest = {
-                    pending = null
+                    pendingAction = null
                 },
                 onConfirm = {
                     viewModel.signOut()
                 },
             )
-        } else if (pending == MyProfileUiAction.DeleteAccount) {
+        } else if (pendingAction == MyProfileUiAction.DeleteAccount) {
             DeleteAccountAlertDialog(
                 onDismissRequest = {
-                    pending = null
+                    pendingAction = null
                 },
                 onConfirm = {
                     viewModel.deleteAccount()

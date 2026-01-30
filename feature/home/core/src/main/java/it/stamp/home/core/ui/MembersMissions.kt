@@ -69,7 +69,6 @@ fun MembersMissions(
                         selectedMemberId = null
                     },
                     displayName = stringResource(R.string.all),
-                    modifier = Modifier.height(32.dp),
                 )
             }
 
@@ -80,7 +79,6 @@ fun MembersMissions(
                     onClick = {
                         selectedMemberId = id
                     },
-                    modifier = Modifier.height(32.dp),
                 )
             }
         }

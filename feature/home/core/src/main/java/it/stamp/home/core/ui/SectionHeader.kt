@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import it.stamp.designsystem.icon.Drawables
-import it.stamp.designsystem.theme.Gray500
+import it.stamp.designsystem.theme.Gray200
 import it.stamp.designsystem.theme.Gray700
 import it.stamp.designsystem.theme.Gray800
 import it.stamp.designsystem.theme.StampTheme
@@ -46,7 +46,7 @@ fun SectionHeader(
                 style = MaterialTheme.typography.titleMedium,
             )
 
-            CompositionLocalProvider(LocalContentColor provides Gray500) {
+            CompositionLocalProvider(LocalContentColor provides Gray200) {
                 Row(
                     modifier = Modifier
                         .height(32.dp)
@@ -56,7 +56,8 @@ fun SectionHeader(
                 ) {
                     Text(
                         text = stringResource(R.string.view_all),
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.Medium,
+                        lineHeight = 1.em,
                         style = MaterialTheme.typography.labelSmall,
                     )
 
