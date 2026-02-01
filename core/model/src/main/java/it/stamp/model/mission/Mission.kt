@@ -3,10 +3,8 @@ package it.stamp.model.mission
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.MissionId
 import it.stamp.model.ids.UserId
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
-import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -17,23 +15,24 @@ data class Mission(
     val title: String,
     val assignee: UserId,
     val assigner: UserId,
-    val dueDate: LocalDate,
+    val dueDate: Instant,
     val status: MissionStatus,
     val createdAt: Instant,
     val updatedAt: Instant? = null,
 ) {
-    val isOverdue: Boolean
-        get() = !isCompleted && Clock.System.todayIn(TimeZone.currentSystemDefault()) > dueDate
+    fun isOverdue(clock: Clock = Clock.System): Boolean = !isDone && clock.now() > dueDate
 
-    val remainingDays: Int
-        get() = Clock.System.todayIn(TimeZone.currentSystemDefault()).daysUntil(dueDate)
+    fun daysUntilDue(
+        clock: Clock = Clock.System,
+        timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    ): Int = clock.now().daysUntil(dueDate, timeZone)
 
-    val isCompleted: Boolean
-        get() = status == MissionStatus.COMPLETED
+    val isDone: Boolean
+        get() = status == MissionStatus.DONE
 
     fun assign(): Mission = copy(status = MissionStatus.ASSIGNED)
 
-    fun complete(): Mission = copy(status = MissionStatus.COMPLETED)
+    fun complete(): Mission = copy(status = MissionStatus.DONE)
 
     fun fail(): Mission = copy(status = MissionStatus.FAILED)
 }

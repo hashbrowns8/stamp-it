@@ -3,17 +3,15 @@ package it.stamp.data.firestore.source
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.snapshots
-import it.stamp.data.firestore.model.FirestoreModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-abstract class FirestoreDataSource<T : FirestoreModel>(
-    protected val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO,
+abstract class FirestoreDataSource<T : Any>(
+    protected val coroutineDispatcher: CoroutineDispatcher,
 ) {
     abstract val collection: CollectionReference
 
@@ -27,7 +25,7 @@ abstract class FirestoreDataSource<T : FirestoreModel>(
         }
     }
 
-    suspend fun get(id: String): T? = withContext(coroutineDispatcher) {
+    suspend fun find(id: String): T? = withContext(coroutineDispatcher) {
         collection.document(id)
             .get()
             .await()
@@ -42,10 +40,10 @@ abstract class FirestoreDataSource<T : FirestoreModel>(
         }
     }
 
-    suspend fun delete(id: String) {
+    suspend fun update(id: String, data: Map<String, Any>) {
         withContext(coroutineDispatcher) {
             collection.document(id)
-                .delete()
+                .update(data)
                 .await()
         }
     }

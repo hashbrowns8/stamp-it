@@ -20,10 +20,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import it.stamp.designsystem.icon.ChevronRight
+import androidx.compose.ui.unit.sp
 import it.stamp.designsystem.icon.Drawables
-import it.stamp.designsystem.theme.Gray400
-import it.stamp.designsystem.theme.Gray500
+import it.stamp.designsystem.theme.Gray200
+import it.stamp.designsystem.theme.Gray700
 import it.stamp.designsystem.theme.Gray800
 import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
@@ -43,10 +43,10 @@ fun SectionHeader(
                 modifier = Modifier.weight(1F),
                 color = Gray800,
                 lineHeight = 1.em,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
             )
 
-            CompositionLocalProvider(LocalContentColor provides Gray400) {
+            CompositionLocalProvider(LocalContentColor provides Gray200) {
                 Row(
                     modifier = Modifier
                         .height(32.dp)
@@ -57,6 +57,7 @@ fun SectionHeader(
                     Text(
                         text = stringResource(R.string.view_all),
                         fontWeight = FontWeight.Medium,
+                        lineHeight = 1.em,
                         style = MaterialTheme.typography.labelSmall,
                     )
 
@@ -70,7 +71,9 @@ fun SectionHeader(
 
         Text(
             text = description,
-            color = Gray500,
+            color = Gray700,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Normal,
             style = MaterialTheme.typography.bodySmall,
         )
     }

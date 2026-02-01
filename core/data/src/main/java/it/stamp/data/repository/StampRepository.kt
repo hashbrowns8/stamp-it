@@ -1,30 +1,34 @@
 package it.stamp.data.repository
 
-import it.stamp.data.firestore.mapper.StampMapper
+import it.stamp.data.firestore.mapper.toDomainModel
 import it.stamp.data.firestore.source.StampFirestoreDataSource
 import it.stamp.domain.repository.StampRepository
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.UserId
 import it.stamp.model.stamp.Stamp
+import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.YearMonth
 import javax.inject.Inject
 
 class StampDataRepository @Inject constructor(
-    private val firestoreDataSource: StampFirestoreDataSource
+    private val dataSource: StampFirestoreDataSource
 ) : StampRepository {
 
-    override suspend fun getMonthlyStampsByGroup(
+    override suspend fun getStampsForMonth(groupId: GroupId, yearMonth: YearMonth): List<Stamp> =
+        dataSource.getStampsByGroupAndMonth(groupId, yearMonth)
+            .map { stamp -> stamp.toDomainModel() }
+
+    override suspend fun getMemberStampCountForMonth(
+        groupId: GroupId,
+        userId: UserId,
+        yearMonth: YearMonth
+    ): Int = dataSource.getMonthlyMemberStampCount(groupId, yearMonth, userId)
+
+    override fun observeGroupStampCountsForMonth(
         groupId: GroupId,
         yearMonth: YearMonth
-    ): List<Stamp> = firestoreDataSource.getMonthlyGroupStamps(groupId, yearMonth)
-        .map(StampMapper::toDomainModel)
-
-    override suspend fun getMonthlyStampCountByMember(
-        groupId: GroupId,
-        yearMonth: YearMonth,
-        userId: UserId
-    ): Int = firestoreDataSource.getMonthlyMemberStampCount(groupId, yearMonth, userId)
+    ): Flow<Map<UserId, Int>> = dataSource.observeMonthlyStampCountByUser(groupId, yearMonth)
 
     override suspend fun deleteUserStampsInGroup(groupId: GroupId, userId: UserId) =
-        firestoreDataSource.deleteUserStampsInGroup(groupId, userId)
+        dataSource.deleteUserStampsInGroup(groupId, userId)
 }

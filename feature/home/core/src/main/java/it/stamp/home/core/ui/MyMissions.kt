@@ -44,9 +44,11 @@ import it.stamp.model.mission.MissionCategory
 import it.stamp.ui.backgroundColor
 import it.stamp.ui.image
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.number
+import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
 
-data class MyMission(
+data class MyMissionUiModel(
     val id: MissionId,
     val category: MissionCategory,
     val title: String,
@@ -58,7 +60,7 @@ data class MyMission(
 fun MyMissions(
     userDisplayName: String,
     onViewMoreClick: () -> Unit,
-    missions: List<MyMission>,
+    missions: List<MyMissionUiModel>,
     onRequestNewMissionClick: () -> Unit,
     onMissionCompleteClick: (MissionId) -> Unit,
     modifier: Modifier = Modifier,
@@ -73,9 +75,9 @@ fun MyMissions(
 
         if (missions.isEmpty()) {
             EmptyMissionView(
-                stringResource(R.string.no_mission_assigned_to_me),
-                stringResource(R.string.request_new_mission),
-                onRequestNewMissionClick,
+                description = stringResource(R.string.no_mission_assigned_to_me),
+                actionLabel = stringResource(R.string.request_new_mission),
+                onActionClick = onRequestNewMissionClick,
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
         } else {
@@ -106,9 +108,14 @@ fun MyMissions(
 
 @Composable
 fun MyMissionCard(
-    mission: MyMission,
+    mission: MyMissionUiModel,
     onCompleteClick: (MissionId) -> Unit,
     modifier: Modifier = Modifier,
+    dateFormat: DateTimeFormat<LocalDate> = remember {
+        LocalDate.Format {
+            monthNumber(Padding.NONE); char('/'); day(Padding.NONE)
+        }
+    },
 ) = with(mission) {
     Column(
         modifier = modifier
@@ -134,7 +141,7 @@ fun MyMissionCard(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "${dueDate.month.number}/${dueDate.day}",
+                    text = dateFormat.format(dueDate),
                     color = Gray800,
                     style = MaterialTheme.typography.bodyExtraSmall,
                 )
@@ -197,7 +204,7 @@ fun MyMissionCard(
 private fun MyMissionsEmptyPreview() {
     StampTheme {
         MyMissions(
-            userDisplayName = "즐거운 호랑이-4325df4",
+            userDisplayName = "즐거운 호랑이",
             onViewMoreClick = {},
             missions = emptyList(),
             onRequestNewMissionClick = {},
@@ -212,25 +219,25 @@ private fun MyMissionsPreview() {
     StampTheme {
         val myMissions = remember {
             listOf(
-                MyMission(
+                MyMissionUiModel(
                     id = MissionId("1"),
                     category = MissionCategory.CHORE,
                     title = "이불 빨고 말리기",
                     dueDate = LocalDate(2023, 12, 15),
-                    assignerName = "즐거운 호랑이-AOSTEST",
+                    assignerName = "행복한 토끼",
                 ),
-                MyMission(
+                MyMissionUiModel(
                     id = MissionId("2"),
                     category = MissionCategory.HEALTH,
                     title = "건강한 수면 환경 함께 조성하기",
                     dueDate = LocalDate(2023, 12, 18),
-                    assignerName = "고나리",
+                    assignerName = "엄마",
                 ),
             )
         }
 
         MyMissions(
-            userDisplayName = "즐거운 호랑이-4325df4",
+            userDisplayName = "즐거운 호랑이",
             onViewMoreClick = {},
             missions = myMissions,
             onRequestNewMissionClick = {},

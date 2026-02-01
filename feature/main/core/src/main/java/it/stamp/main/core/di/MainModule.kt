@@ -1,5 +1,11 @@
 package it.stamp.main.core.di
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.navigation3.ui.NavDisplay
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +22,15 @@ object MainModule {
     @Provides
     @IntoSet
     fun provideEntryProviderInstaller(navigator: Navigator): EntryProviderInstaller = {
-        entry<MainNavKey> {
+        entry<MainNavKey>(
+            metadata = NavDisplay.transitionSpec {
+                EnterTransition.None togetherWith fadeOut(tween(1000))
+            } + NavDisplay.popTransitionSpec {
+                EnterTransition.None togetherWith ExitTransition.None
+            } + NavDisplay.predictivePopTransitionSpec {
+                EnterTransition.None togetherWith ExitTransition.None
+            },
+        ) {
             MainScreen(navigator)
         }
     }

@@ -13,7 +13,9 @@ data class FirestoreMission(
     val category: String = String(),
     val status: String = String(),
     val missionType: String = String(),
-) : FirestoreModel {
-    override val id: String
-        get() = missionId
+) {
+    companion object {
+        const val FIELD_GROUP_ID = "groupId"
+        const val FIELD_ASSIGNED_TO = "assignedTo"
+    }
 }

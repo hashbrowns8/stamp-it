@@ -27,9 +27,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import it.stamp.designsystem.theme.Gray200
 import it.stamp.designsystem.theme.Gray300
 import it.stamp.designsystem.theme.Gray50
-import it.stamp.designsystem.theme.Gray500
 import it.stamp.designsystem.theme.Red400
 import it.stamp.designsystem.theme.Red50
 import it.stamp.designsystem.theme.StampTheme
@@ -275,7 +275,7 @@ object ButtonDefaults {
         containerColor: Color = Red400,
         contentColor: Color = White,
         disabledContainerColor: Color = Gray50,
-        disabledContentColor: Color = Gray300,
+        disabledContentColor: Color = Gray200,
     ): ButtonColors = ButtonColors(
         containerColor,
         contentColor,
@@ -287,7 +287,7 @@ object ButtonDefaults {
         containerColor: Color = Red50,
         contentColor: Color = Red400,
         disabledContainerColor: Color = Gray50,
-        disabledContentColor: Color = Gray300,
+        disabledContentColor: Color = Gray200,
     ): ButtonColors = ButtonColors(
         containerColor,
         contentColor,
@@ -299,7 +299,7 @@ object ButtonDefaults {
         containerColor: Color = White,
         contentColor: Color = Red400,
         disabledContainerColor: Color = Gray50,
-        disabledContentColor: Color = Gray500,
+        disabledContentColor: Color = Gray300,
     ): ButtonColors = ButtonColors(
         containerColor,
         contentColor,
@@ -312,7 +312,7 @@ object ButtonDefaults {
         color = if (enabled) {
             Red400
         } else {
-            Gray500
+            Gray300
         },
     )
 }

@@ -29,7 +29,6 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import it.stamp.designsystem.icon.Drawables
-import it.stamp.designsystem.icon.Logo
 import it.stamp.designsystem.theme.Black
 import it.stamp.designsystem.theme.Gray400
 import it.stamp.designsystem.theme.StampTheme
@@ -37,6 +36,7 @@ import it.stamp.designsystem.theme.White
 import it.stamp.signin.core.idp.GoogleIDTokenProvider
 import it.stamp.signin.core.idp.IDTokenProvider
 import it.stamp.signin.core.ui.SignInWithButton
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -48,7 +48,11 @@ internal fun SignInScreen(
     LaunchedEffect(viewModel) {
         viewModel.uiEvent.collect { uiEvent ->
             when (uiEvent) {
-                is SignInUiEvent.SignedIn -> onSignInSuccess()
+                is SignInUiEvent.SignedIn -> {
+                    delay(250L)
+
+                    onSignInSuccess()
+                }
                 is SignInUiEvent.SignInFailed -> {
 
                 }

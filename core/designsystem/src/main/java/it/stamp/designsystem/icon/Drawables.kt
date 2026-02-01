@@ -1,115 +1,170 @@
 package it.stamp.designsystem.icon
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import it.stamp.designsystem.R
+import it.stamp.designsystem.theme.StampTheme
 
-object Drawables
+object Drawables {
+    val ArrowLeft: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_arrow_left)
 
-val Drawables.ArrowLeft: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_arrow_left)
+    val Bell: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_bell)
 
-val Drawables.Bell: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_bell)
+    val Cancel: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_cancel)
 
-val Drawables.Cancel: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_cancel)
+    val Check: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_check)
 
-val Drawables.Check: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_check)
+    val CheckCircle: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_check_circle)
 
-val Drawables.CheckCircle: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_check_circle)
+    val ChevronRight: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_chevron_right)
 
-val Drawables.ChevronRight: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_chevron_right)
+    val Dots: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_dots)
 
-val Drawables.Export: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_export)
+    val Edit: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_edit)
 
-val Drawables.Home: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_home)
+    val Export: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_export)
 
-val Drawables.HomeFilled: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_home_filled)
+    val Home: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_home)
 
-val Drawables.Flag: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_flag)
+    val HomeFilled: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_home_filled)
 
-val Drawables.FlagFilled: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_flag_filled)
+    val Flag: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_flag)
 
-val Drawables.MyPage: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_mypage)
+    val FlagFilled: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_flag_filled)
 
-val Drawables.MyPageFilled: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_mypage_filled)
+    val MyPage: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_mypage)
 
-val Drawables.Plus: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_plus)
+    val MyPageFilled: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_mypage_filled)
 
-val Drawables.X: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.icon_x)
+    val Plus: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_plus)
 
-val Drawables.Logo: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.logo)
+    val X: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.icon_x)
 
-val Drawables.LogoInversed: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.logo_inversed)
+    val Logo: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.logo)
 
-val Drawables.LogoOutlined: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.logo_outlined)
+    val LogoInversed: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.logo_inversed)
 
-val Drawables.FirstRank: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.rank_first)
+    val LogoOutlined: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.logo_outlined)
 
-val Drawables.SecondRank: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.rank_second)
+    val FirstRank: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.rank_first)
 
-val Drawables.ThirdRank: ImageVector
-    @Composable
-    get() = ImageVector.vectorResource(R.drawable.rank_third)
+    val SecondRank: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.rank_second)
 
-val Drawables.MissionChore: Painter
-    @Composable
-    get() = painterResource(R.drawable.mission_chore)
+    val ThirdRank: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.rank_third)
 
-val Drawables.MissionCommunication: Painter
-    @Composable
-    get() = painterResource(R.drawable.mission_communication)
+    val MissionChore: Painter
+        @Composable
+        get() = painterResource(R.drawable.mission_chore)
 
-val Drawables.MissionCustom: Painter
-    @Composable
-    get() = painterResource(R.drawable.mission_custom)
+    val MissionCommunication: Painter
+        @Composable
+        get() = painterResource(R.drawable.mission_communication)
 
-val Drawables.MissionHealth: Painter
-    @Composable
-    get() = painterResource(R.drawable.mission_health)
+    val MissionCustom: Painter
+        @Composable
+        get() = painterResource(R.drawable.mission_custom)
 
-val Drawables.MissionLearning: Painter
-    @Composable
-    get() = painterResource(R.drawable.mission_learning)
+    val MissionHealth: Painter
+        @Composable
+        get() = painterResource(R.drawable.mission_health)
 
+    val MissionLearning: Painter
+        @Composable
+        get() = painterResource(R.drawable.mission_learning)
+
+    val CharacterBlue: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.character_blue)
+
+    val CharacterPurple: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.character_purple)
+
+    val CharacterRed: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.character_red)
+
+    val CharacterRedSad: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.character_red_sad)
+
+    val CharacterRedSadMono: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.character_red_sad_mono)
+
+    val CharacterWhite: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.character_white)
+
+    val CharacterYellow: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.character_yellow)
+}
+
+@Preview
+@Composable
+private fun IconsPreview() {
+    StampTheme {
+        LazyVerticalGrid(GridCells.Fixed(5)) {
+            item {
+                Image(
+                    Drawables.Cancel,
+                    contentDescription = null
+                )
+            }
+        }
+    }
+}

@@ -12,9 +12,13 @@ interface MissionRepository {
 
     suspend fun getById(id: MissionId): Mission = findById(id) ?: throw MissionNotFoundException()
 
-    suspend fun getMissionsByAssigner(groupId: GroupId, assignerId: UserId): List<Mission>
+    fun observeMissionsByAssignee(
+        groupId: GroupId,
+        assigneeId: UserId,
+        dueWithinDays: Int? = null,
+    ): Flow<List<Mission>>
 
-    fun observeMissionsByAssigneeThisWeek(groupId: GroupId, assigneeId: UserId): Flow<List<Mission>>
+    fun observeMissionsByAssigner(groupId: GroupId, assignerId: UserId): Flow<List<Mission>>
 
     suspend fun update(mission: Mission): Mission
 }

@@ -17,10 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import it.stamp.designsystem.icon.CharacterBlue
-import it.stamp.designsystem.icon.CharacterPurple
-import it.stamp.designsystem.icon.CharacterRed
-import it.stamp.designsystem.icon.CharacterYellow
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Gray400
 import it.stamp.designsystem.theme.Gray800

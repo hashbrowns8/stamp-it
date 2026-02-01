@@ -1,5 +1,3 @@
-@file:Suppress("UNCHECKED_CAST")
-
 package it.stamp.home.core
 
 import androidx.compose.runtime.Immutable
@@ -8,103 +6,160 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import it.stamp.domain.exception.MissionException
-import it.stamp.domain.usecase.group.GetMyGroupLeaderboardUseCase
-import it.stamp.domain.usecase.group.GetMyGroupUseCase
-import it.stamp.domain.usecase.membership.GetMyGroupMembersUseCase
-import it.stamp.domain.usecase.membership.ObserveMyMembershipUseCase
-import it.stamp.domain.usecase.mission.CancelMissionCompletionUseCase
-import it.stamp.domain.usecase.mission.CompleteMissionUseCase
-import it.stamp.domain.usecase.mission.GetMyGroupMembersMissionsUseCase
-import it.stamp.domain.usecase.mission.ObserveMyMissionsThisWeekUseCase
-import it.stamp.domain.usecase.user.ObserveAuthenticatedUserUseCase
+import it.stamp.domain.usecase.group.ObserveMyGroupUseCase
+import it.stamp.domain.usecase.membership.ObserveMyGroupMembers
+import it.stamp.domain.usecase.mission.CompleteMission
+import it.stamp.domain.usecase.mission.ObserveMissionsAssignedByUser
+import it.stamp.domain.usecase.mission.ObserveMissionsAssignedToMeForThisWeek
+import it.stamp.domain.usecase.mission.UndoMissionCompletion
+import it.stamp.domain.usecase.stamp.ObserveGroupStampCountsForMonthUseCase
+import it.stamp.domain.usecase.user.ObserveCurrentUserUseCase
+import it.stamp.home.core.ui.LeaderboardEntryUiModel
+import it.stamp.home.core.ui.MemberUiModel
+import it.stamp.home.core.ui.MyMissionUiModel
 import it.stamp.model.ids.MissionId
 import it.stamp.model.membership.Group
 import it.stamp.model.membership.Member
 import it.stamp.model.mission.Mission
-import it.stamp.model.stamp.LeaderboardMember
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import it.stamp.model.user.User
+import it.stamp.ui.MemberMissionUiModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.combineTransform
-import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    observeAuthenticatedUserUseCase: ObserveAuthenticatedUserUseCase,
-    observeMyMembershipUseCase: ObserveMyMembershipUseCase,
-    private val getMyGroupUseCase: GetMyGroupUseCase,
-    private val getMyGroupMembersUseCase: GetMyGroupMembersUseCase,
-    private val getMyGroupLeaderboardUseCase: GetMyGroupLeaderboardUseCase,
-    private val observeMyMissionsThisWeekUseCase: ObserveMyMissionsThisWeekUseCase,
-    private val getMyGroupMembersMissionsUseCase: GetMyGroupMembersMissionsUseCase,
-    private val completeMissionUseCase: CompleteMissionUseCase,
-    private val cancelMissionCompletionUseCase: CancelMissionCompletionUseCase,
+    observeCurrentUserUseCase: ObserveCurrentUserUseCase,
+    observeMyGroupUseCase: ObserveMyGroupUseCase,
+    observeMyGroupMembers: ObserveMyGroupMembers,
+    observeGroupStampCountsForMonthUseCase: ObserveGroupStampCountsForMonthUseCase,
+    observeMissionsAssignedToMeForThisWeek: ObserveMissionsAssignedToMeForThisWeek,
+    observeMissionsAssignedByUser: ObserveMissionsAssignedByUser,
+    private val completeMissionUseCase: CompleteMission,
+    private val undoMissionCompletionUseCase: UndoMissionCompletion,
+    private val timeZone: TimeZone,
 ) : ViewModel() {
 
-    private val retry = MutableStateFlow(0)
+    private val user: StateFlow<User?> = observeCurrentUserUseCase()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    fun retry() {
-        retry.value += 1
-    }
+    private val members: StateFlow<List<Member>> = observeMyGroupMembers()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    // TODO
-    val uiState: StateFlow<HomeUiState> = observeMyMembershipUseCase()
-        .distinctUntilChangedBy { it.id }
-        .combineTransform(retry) { membership, retry ->
-            emit(HomeUiState.Loading)
-
-            val (group, members, rankings, memberMissions) = coroutineScope {
-                awaitAll(
-                    async {
-                        getMyGroupUseCase()
-                            .getOrThrow()
-                    },
-                    async {
-                        getMyGroupMembersUseCase()
-                            .getOrThrow()
-                    },
-                    async {
-                        getMyGroupLeaderboardUseCase()
-                            .getOrThrow()
-                    },
-                    async {
-                        getMyGroupMembersMissionsUseCase()
-                            .getOrThrow()
+    private val rankings = user.filterNotNull()
+        .flatMapLatest { user ->
+            members.filterNot(List<Member>::isEmpty)
+                .combine(observeGroupStampCountsForMonthUseCase()) { members, stampCountByMemberId ->
+                    members.map { member ->
+                        with(member) {
+                            LeaderboardEntryUiModel(
+                                member = MemberUiModel(
+                                    id,
+                                    avatar,
+                                    displayName.value,
+                                ),
+                                isMe = id == user.id,
+                                rank = 0,
+                                stampCount = stampCountByMemberId.getOrDefault(id, 0),
+                            )
+                        }
+                    }.sortedByDescending { entry ->
+                        entry.stampCount
+                    }.mapIndexed { index, entry ->
+                        entry.copy(rank = index + 1)
                     }
-                )
-            }
+                }
+                .flowOn(Dispatchers.Default)
+        }
 
-            observeAuthenticatedUserUseCase()
-                .filterNotNull()
-                .combine(observeMyMissionsThisWeekUseCase()) { user, myMissions ->
-                    val user = (members as List<Member>)
-                        .first { member -> member.id == user.id }
-                        .copy(displayName = user.displayName, avatar = user.avatar)
+    private val myMissions = members.filterNot(List<Member>::isEmpty)
+        .combine(observeMissionsAssignedToMeForThisWeek()) { members, missions ->
+            missions.filterNot(Mission::isDone)
+                .map { mission ->
+                    with(mission) {
+                        val assigner = members.first { it.id == assigner }
 
-                    HomeUiState.Success(
-                        user,
-                        group as Group,
-                        members - user,
-                        rankings as List<LeaderboardMember>,
-                        myMissions,
-                        memberMissions as List<Mission>,
+                        val dueDate = dueDate
+                            .toLocalDateTime(timeZone)
+                            .date
+
+                        MyMissionUiModel(
+                            id,
+                            category,
+                            title,
+                            dueDate,
+                            assignerName = assigner.displayName.value,
+                        )
+                    }
+                }
+        }
+
+    private val memberMissions = members.filterNot(List<Member>::isEmpty)
+        .combine(observeMissionsAssignedByUser()) { members, missions ->
+            missions.map { mission ->
+                with(mission) {
+                    val daysAgo = when (val daysUntilDue = daysUntilDue()) {
+                        0 -> "오늘"
+                        1 -> "내일"
+                        else -> "${daysUntilDue}일 전"
+                    }
+
+                    val assignee = members.first { it.id == assignee }
+
+                    val dueDate = dueDate
+                        .toLocalDateTime(timeZone)
+                        .date
+
+                    MemberMissionUiModel(
+                        id,
+                        category,
+                        title,
+                        assigneeId = assignee.id,
+                        assigneeDisplayName = assignee.displayName.value,
+                        dueDate,
+                        daysAgo,
+                        status,
+                        isOverdue(),
+                        isDone,
                     )
-                }.collect(this)
+                }
+            }
+        }
+
+    val uiState: StateFlow<HomeUiState> = user.filterNotNull().flatMapLatest { user ->
+        combine(
+            observeMyGroupUseCase().filterNotNull(),
+            members,
+            rankings,
+            myMissions,
+            memberMissions,
+        ) { group, members, rankings, myMissions, memberMissions ->
+            HomeUiState.Success(
+                user,
+                group,
+                members,
+                rankings,
+                myMissions,
+                memberMissions,
+            ) as HomeUiState
         }.catch { throwable ->
             emit(HomeUiState.Failure(throwable))
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUiState.Loading)
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUiState.Loading)
 
     private val _uiEvent = MutableSharedFlow<HomeUiEvent>()
     val uiEvent: SharedFlow<HomeUiEvent> = _uiEvent.asSharedFlow()
@@ -113,7 +168,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             completeMissionUseCase(missionId)
                 .onSuccess { mission ->
-                    _uiEvent.emit(HomeUiEvent.MissionCompleted(mission))
+                    _uiEvent.emit(HomeUiEvent.CompleteMission(mission))
                 }
                 .onFailure { throwable ->
                     if (throwable is MissionException) {
@@ -127,9 +182,9 @@ class HomeViewModel @Inject constructor(
 
     fun cancelMissionCompletion(missionId: MissionId) {
         viewModelScope.launch {
-            cancelMissionCompletionUseCase(missionId)
+            undoMissionCompletionUseCase(missionId)
                 .onSuccess { mission ->
-                    _uiEvent.emit(HomeUiEvent.MissionCompletionCanceled(mission))
+                    _uiEvent.emit(HomeUiEvent.UndoMissionCompletion(mission))
                 }
                 .onFailure { throwable ->
                     if (throwable is MissionException) {
@@ -155,12 +210,12 @@ sealed interface HomeUiState {
 
     @Immutable
     data class Success(
-        val user: Member,
+        val user: User,
         val group: Group,
         val members: List<Member>,
-        val rankings: List<LeaderboardMember>,
-        val myMissions: List<Mission>,
-        val memberMissions: List<Mission>,
+        val rankings: List<LeaderboardEntryUiModel>,
+        val myMissions: List<MyMissionUiModel>,
+        val memberMissions: List<MemberMissionUiModel>,
     ) : HomeUiState
 
     @Immutable

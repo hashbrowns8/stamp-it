@@ -4,7 +4,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import it.stamp.home.HomeNavKey
 import it.stamp.home.core.HomeScreen
-import it.stamp.invite.group.InviteGroupNavKey
+import it.stamp.invite.member.InviteMemberNavKey
 import it.stamp.join.group.api.JoinGroupNavKey
 import it.stamp.navigation.Navigator
 
@@ -13,7 +13,7 @@ fun EntryProviderScope<NavKey>.homeScreenEntry(navigator: Navigator) {
         HomeScreen(
             onNotificationsClick = {},
             onInviteGroupClick = {
-                navigator.navigate(InviteGroupNavKey)
+                navigator.navigate(InviteMemberNavKey)
             },
             onJoinGroupClick = {
                 navigator.navigate(JoinGroupNavKey)

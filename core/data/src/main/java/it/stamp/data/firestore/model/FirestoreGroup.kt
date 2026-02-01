@@ -7,11 +7,12 @@ data class FirestoreGroup(
     val groupId: String = Uuid.random().toString(),
     val leaderId: String = String(),
     val name: String = String(),
+    val nameChangedAt: Timestamp = Timestamp.now(),
     val inviteCode: String = String(),
     val inviteCodeCreateAt: Timestamp = Timestamp.now(),
-    val nameChangedAt: Timestamp = Timestamp.now(),
     val createdAt: Timestamp = Timestamp.now(),
-) : FirestoreModel {
-    override val id: String
-        get() = groupId
+) {
+    companion object {
+        const val FIELD_LEADER_ID = "leaderId"
+    }
 }

@@ -13,7 +13,9 @@ data class FirestoreStamp(
     val assignedBy: String = String(),
     val createdAt: Timestamp = Timestamp.now(),
     val maxStamps: Int = 30,
-) : FirestoreModel {
-    override val id: String
-        get() = stampId
+) {
+    companion object {
+        const val FIELD_USER_ID = "userId"
+        const val FIELD_GROUP_ID = "groupId"
+    }
 }

@@ -1,5 +1,6 @@
 package it.stamp.main.core
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -22,6 +23,8 @@ fun MainNavigationDisplay(
     navigator: Navigator,
     modifier: Modifier = Modifier,
 ) {
+    BackHandler {}
+
     NavDisplay(
         backStack,
         modifier,
@@ -53,7 +56,7 @@ fun MainNavigationDisplay(
 
             missionsScreenEntry()
 
-            myPageEntry()
+            myPageEntry(navigator)
         },
     )
 }

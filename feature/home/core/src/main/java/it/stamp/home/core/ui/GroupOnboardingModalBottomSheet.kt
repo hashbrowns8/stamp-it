@@ -1,14 +1,9 @@
 package it.stamp.home.core.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
@@ -18,33 +13,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import it.stamp.designsystem.component.PrimaryButton
 import it.stamp.designsystem.component.StampModalBottomSheet
-import it.stamp.designsystem.theme.Gray50
 import it.stamp.designsystem.theme.Gray500
 import it.stamp.designsystem.theme.Gray800
-import it.stamp.designsystem.theme.Red400
-import it.stamp.designsystem.theme.Red50
 import it.stamp.designsystem.theme.StampTheme
-import it.stamp.designsystem.theme.White
 import it.stamp.home.core.R
+import it.stamp.ui.SelectableButton
 
 enum class GroupOnboarding {
-    Invite,
-    Join,
+    INVITE_MEMBER,
+    JOIN_GROUP;
 }
 
 @Composable
 fun GroupOnboardingModalBottomSheet(
     onDismissRequest: () -> Unit,
-    onInviteGroupClick: () -> Unit,
-    onJoinGroupClick: () -> Unit,
+    onInviteGroupRequest: () -> Unit,
+    onJoinGroupRequest: () -> Unit,
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(),
 ) {
@@ -64,8 +54,8 @@ fun GroupOnboardingModalBottomSheet(
             },
             onConfirmClick = { groupOnboarding ->
                 when (groupOnboarding) {
-                    GroupOnboarding.Invite -> onInviteGroupClick()
-                    GroupOnboarding.Join -> onJoinGroupClick()
+                    GroupOnboarding.INVITE_MEMBER -> onInviteGroupRequest()
+                    GroupOnboarding.JOIN_GROUP -> onJoinGroupRequest()
                 }
 
                 onDismissRequest()
@@ -111,21 +101,21 @@ private fun SheetContent(
                 .padding(vertical = 28.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            DestinationButton(
-                selected = groupOnboarding == GroupOnboarding.Invite,
+            SelectableButton(
+                selected = groupOnboarding == GroupOnboarding.INVITE_MEMBER,
                 label = stringResource(R.string.invite),
                 description = stringResource(R.string.invite_group_description),
                 onClick = {
-                    onOnboardingActionClick(GroupOnboarding.Invite)
+                    onOnboardingActionClick(GroupOnboarding.INVITE_MEMBER)
                 },
             )
 
-            DestinationButton(
-                selected = groupOnboarding == GroupOnboarding.Join,
+            SelectableButton(
+                selected = groupOnboarding == GroupOnboarding.JOIN_GROUP,
                 label = stringResource(R.string.join),
                 description = stringResource(R.string.join_group_description),
                 onClick = {
-                    onOnboardingActionClick(GroupOnboarding.Join)
+                    onOnboardingActionClick(GroupOnboarding.JOIN_GROUP)
                 },
             )
         }
@@ -144,55 +134,14 @@ private fun SheetContent(
     }
 }
 
-@Composable
-private fun DestinationButton(
-    selected: Boolean,
-    label: String,
-    description: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    borderColor: Color = if (selected) {
-        Red400
-    } else {
-        Gray50
-    },
-    backgroundColor: Color = if (selected) {
-        Red50
-    } else {
-        White
-    },
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(64.dp)
-            .border(1.dp, borderColor, RoundedCornerShape(12.dp))
-            .background(backgroundColor, RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp, alignment = Alignment.CenterVertically),
-    ) {
-        Text(
-            text = label,
-            color = Gray800,
-            style = MaterialTheme.typography.labelMedium,
-        )
-        Text(
-            text = description,
-            color = Gray500,
-            style = MaterialTheme.typography.bodySmall,
-        )
-    }
-}
-
 @Preview
 @Composable
 private fun GroupOnboardingModalBottomSheetPreview() {
     StampTheme {
         GroupOnboardingModalBottomSheet(
             onDismissRequest = {},
-            onInviteGroupClick = {},
-            onJoinGroupClick = {},
+            onInviteGroupRequest = {},
+            onJoinGroupRequest = {},
         )
     }
 }

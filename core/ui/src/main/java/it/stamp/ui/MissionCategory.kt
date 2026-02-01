@@ -4,11 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import it.stamp.designsystem.icon.Drawables
-import it.stamp.designsystem.icon.MissionChore
-import it.stamp.designsystem.icon.MissionCommunication
-import it.stamp.designsystem.icon.MissionCustom
-import it.stamp.designsystem.icon.MissionHealth
-import it.stamp.designsystem.icon.MissionLearning
 import it.stamp.designsystem.theme.Blue100
 import it.stamp.designsystem.theme.Green100
 import it.stamp.designsystem.theme.Purple100

@@ -15,9 +15,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.allCaps
 import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,17 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import it.stamp.designsystem.component.PrimaryButton
 import it.stamp.designsystem.component.StampTextField
-import it.stamp.designsystem.icon.ArrowLeft
-import it.stamp.designsystem.icon.CharacterBlue
-import it.stamp.designsystem.icon.CharacterPurple
-import it.stamp.designsystem.icon.CharacterRed
-import it.stamp.designsystem.icon.CharacterYellow
+import it.stamp.designsystem.component.StampTopAppBar
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Black
 import it.stamp.designsystem.theme.Gray800
@@ -51,14 +49,12 @@ import it.stamp.designsystem.theme.StampTheme
 import it.stamp.designsystem.theme.White
 import it.stamp.join.group.core.ui.JoinGroupEventHandler
 import it.stamp.join.group.core.ui.JoinGroupInProgress
-import it.stamp.model.membership.Group
 import it.stamp.model.membership.InviteCode
-import it.stamp.ui.StampTopAppBar
 
 @Composable
 internal fun JoinGroupScreen(
     onBackClick: () -> Unit,
-    onJoinGroupSuccess: (group: Group) -> Unit,
+    onJoinGroupSuccess: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: JoinGroupViewModel = hiltViewModel(),
 ) {
@@ -107,6 +103,7 @@ private fun JoinGroupScreen(
     onInviteCodeChange: (String) -> Unit,
     onJoinGroupClick: (InviteCode) -> Unit,
     modifier: Modifier = Modifier,
+    textFieldState: TextFieldState = rememberTextFieldState(inviteCode)
 ) {
     Column(
         modifier = modifier
@@ -126,14 +123,6 @@ private fun JoinGroupScreen(
                 }
             }
         )
-
-        val textFieldState = rememberTextFieldState()
-
-        LaunchedEffect(inviteCode) {
-            if (textFieldState.text == inviteCode) return@LaunchedEffect
-
-            textFieldState.setTextAndPlaceCursorAtEnd(inviteCode)
-        }
 
         LaunchedEffect(textFieldState) {
             snapshotFlow { textFieldState.text.toString() }
@@ -195,7 +184,9 @@ private fun JoinGroupScreen(
                 label = {
                     Text(stringResource(R.string.invite_code))
                 },
-                inputTransformation = InputTransformation.maxLength(8),
+                inputTransformation = InputTransformation
+                    .maxLength(8)
+                    .allCaps(Locale.current),
                 lineLimits = TextFieldLineLimits.SingleLine,
             )
         }

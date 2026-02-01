@@ -12,7 +12,7 @@ class Navigator {
     val backStack: SnapshotStateList<NavKey> = mutableStateListOf()
 
     fun setStartDestination(key: NavKey) {
-        if (backStack.isEmpty()) backStack.add(key)
+        backStack.clear(); backStack.add(key)
     }
 
     fun navigate(key: NavKey) {
