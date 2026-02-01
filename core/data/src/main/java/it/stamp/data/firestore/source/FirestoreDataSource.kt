@@ -40,10 +40,10 @@ abstract class FirestoreDataSource<T : Any>(
         }
     }
 
-    suspend fun delete(id: String) {
+    suspend fun update(id: String, data: Map<String, Any>) {
         withContext(coroutineDispatcher) {
             collection.document(id)
-                .delete()
+                .update(data)
                 .await()
         }
     }

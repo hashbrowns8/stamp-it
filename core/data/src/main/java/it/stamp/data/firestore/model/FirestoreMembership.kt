@@ -11,4 +11,12 @@ data class FirestoreMembership(
     val nickname: String = String(),
     val profileImage: String = String(),
     val joinedAt: Timestamp = Timestamp.now(),
-)
+) {
+    companion object {
+        const val FIELD_MEMBERSHIP_ID = "membershipId"
+        const val FIELD_GROUP_ID = "groupId"
+        const val FIELD_USER_ID = "userId"
+        const val FIELD_IS_LEADER = "isLeader"
+        const val MEMBERSHIP_ID_SEPARATOR = '_'
+    }
+}

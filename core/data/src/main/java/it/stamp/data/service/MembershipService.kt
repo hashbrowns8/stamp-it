@@ -4,159 +4,162 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import it.stamp.data.firestore.model.FirestoreGroup
 import it.stamp.data.firestore.model.FirestoreMembership
-import it.stamp.data.firestore.model.FirestoreUser
+import it.stamp.data.firestore.util.assignNewLeader
+import it.stamp.data.firestore.util.createNewGroupAndMembership
+import it.stamp.data.firestore.util.createNewMembership
 import it.stamp.data.firestore.util.groupsCollection
 import it.stamp.data.firestore.util.membershipsCollection
-import it.stamp.data.firestore.util.missionsCollection
-import it.stamp.data.firestore.util.stampsCollection
-import it.stamp.data.firestore.util.usersCollection
-import it.stamp.domain.exception.UserNotFoundException
+import it.stamp.data.firestore.util.queryMemberDataForDeletion
+import it.stamp.domain.repository.MembershipRepository
 import it.stamp.domain.service.MembershipService
-import it.stamp.model.membership.InviteCode
+import it.stamp.model.ids.GroupId
 import it.stamp.model.membership.Membership
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirestoreMembershipService @Inject constructor(
     private val firestore: FirebaseFirestore,
+    private val membershipRepository: MembershipRepository,
 ) : MembershipService {
 
-    override suspend fun transferLeadership(from: Membership, to: Membership) {
-        firestore.run {
-            runBatch { batch ->
-                // 기존 리더 권한 해제
-                membershipsCollection
-                    .document(from.id.value)
-                    .let { documentReference ->
-                        batch.update(documentReference, FIELD_IS_LEADER, false)
-                    }
+    override suspend fun joinGroup(
+        currentMembership: Membership,
+        targetGroupId: GroupId,
+    ) {
+        val (isSoloGroup, nextLeaderMembership) = transferContext(currentMembership)
 
-                // 새 리더 권한 부여
-                membershipsCollection
-                    .document(to.id.value)
-                    .let { documentReference ->
-                        batch.update(documentReference, FIELD_IS_LEADER, true)
-                    }
+        val documents = queryMemberDataForDeletion(firestore, currentMembership)
 
-                // 그룹 리더 ID 업데이트
-                groupsCollection
-                    .document(from.groupId.value)
-                    .let { documentReference ->
-                        batch.update(documentReference, FIELD_LEADER_ID, to.userId.value)
-                    }
-            }
-        }.await()
+        val newMembership = createNewMembership(
+            firestore,
+            currentMembershipId = currentMembership.id,
+            userId = currentMembership.userId.value,
+            targetGroupId = targetGroupId.value,
+        )
+
+        executeGroupTransferBatch(
+            currentMembership,
+            isSoloGroup,
+            nextLeaderMembership,
+            documents,
+            newMembership,
+        )
     }
 
-    override suspend fun removeMember(membership: Membership) {
-        val (documents, user) = queryMemberDataForDeletion(membership)
+    data class TransferGroupContext(
+        val isSoloGroup: Boolean,
+        val nextLeaderMembership: Membership?,
+    )
 
-        val (newGroup, newMembership) = createNewGroupAndMembership(user)
+    private suspend fun transferContext(currentMembership: Membership): TransferGroupContext {
+        val groupMemberships = membershipRepository.getGroupMemberships(currentMembership.groupId)
 
+        val isSoloGroup = groupMemberships.size == 1
+
+        val nextLeaderMembership = if (currentMembership.isLeader && !isSoloGroup) {
+            groupMemberships
+                .filterNot(Membership::isLeader)
+                .minByOrNull { it.joinedAt }
+        } else {
+            null
+        }
+
+        return TransferGroupContext(isSoloGroup, nextLeaderMembership)
+    }
+
+    private suspend fun executeGroupTransferBatch(
+        currentMembership: Membership,
+        isSoloGroup: Boolean,
+        nextLeaderMembership: Membership?,
+        documents: List<DocumentSnapshot>,
+        newMembership: FirestoreMembership,
+    ) {
         firestore.run {
             runBatch { batch ->
-                // 사용자 데이터 삭제
+                // 멤버 데이터 삭제
                 documents.forEach { document ->
                     batch.delete(document.reference)
                 }
 
                 // 기존 멤버십 삭제
                 membershipsCollection
-                    .document(membership.id.value)
+                    .document(currentMembership.id.value)
                     .let(batch::delete)
 
-                // 새로운 개인 그룹 & 멤버십 생성
-                groupsCollection
-                    .document(newGroup.groupId)
-                    .let { documentReference ->
-                        batch.set(documentReference, newGroup)
-                    }
+                // 솔로 그룹이면 그룹 삭제
+                if (isSoloGroup) {
+                    groupsCollection
+                        .document(currentMembership.groupId.value)
+                        .let(batch::delete)
+                }
 
+                // 새 리더 할당
+                if (nextLeaderMembership != null) batch.assignNewLeader(firestore, nextLeaderMembership)
+
+                // 새 멤버십 생성
                 membershipsCollection
                     .document(newMembership.membershipId)
-                    .let { documentReference ->
-                        batch.set(documentReference, newMembership)
-                    }
-
-                // 업데이트 그룹 ID
-                usersCollection
-                    .document(user.userId)
-                    .let { documentReference ->
-                        batch.update(documentReference, FIELD_GROUP_ID, newGroup.groupId)
-                    }
+                    .let { documentReference -> batch.set(documentReference, newMembership) }
             }
         }.await()
     }
 
-    private suspend fun queryMemberDataForDeletion(
-        membership: Membership
-    ): Pair<List<DocumentSnapshot>, FirestoreUser> =
-        coroutineScope {
-            val stamps = async {
-                firestore.stampsCollection
-                    .whereEqualTo(FIELD_GROUP_ID, membership.groupId.value)
-                    .whereEqualTo(FIELD_USER_ID, membership.userId.value)
-                    .get()
-                    .await()
-                    .documents
-            }
+    override suspend fun leaveGroup(currentMembership: Membership) {
+        val nextLeaderMembership = if (currentMembership.isLeader) {
+            val groupMemberships = membershipRepository.getGroupMemberships(currentMembership.groupId)
 
-            val missions = async {
-                firestore.missionsCollection
-                    .whereEqualTo(FIELD_GROUP_ID, membership.groupId.value)
-                    .whereEqualTo(FIELD_ASSIGNED_TO, membership.userId.value)
-                    .get()
-                    .await()
-                    .documents
-            }
-
-            val user = async {
-                firestore.usersCollection
-                    .document(membership.userId.value)
-                    .get()
-                    .await()
-                    .toObject(FirestoreUser::class.java)
-                    ?: throw UserNotFoundException()
-            }
-
-            (stamps.await() + missions.await()) to user.await()
+            groupMemberships
+                .filterNot(Membership::isLeader)
+                .minByOrNull { it.joinedAt }
+        } else {
+            null
         }
 
-    private fun createNewGroupAndMembership(user: FirestoreUser): Pair<FirestoreGroup, FirestoreMembership> {
-        val inviteCode = InviteCode()
+        val documents = queryMemberDataForDeletion(firestore, currentMembership)
 
-        val group = FirestoreGroup(
-            leaderId = user.userId,
-            name = "${user.nickname}의 그룹",
-            inviteCode = inviteCode.value,
+        val (newGroup, newMembership) = createNewGroupAndMembership(
+            firestore,
+            currentMembership.id,
+            currentMembership.userId,
         )
 
-        val membershipId = buildString {
-            append(group.groupId)
-            append(MEMBERSHIP_ID_SEPARATOR)
-            append(user.userId)
-        }
-
-        val membership = FirestoreMembership(
-            membershipId,
-            group.groupId,
-            user.userId,
-            isLeader = true,
-            user.nickname,
-            user.profileImage,
+        executeGroupLeaveBatch(
+            currentMembership = currentMembership,
+            nextLeaderMembership,
+            documents,
+            newGroup,
+            newMembership,
         )
-
-        return group to membership
     }
 
-    companion object {
-        private const val FIELD_IS_LEADER = "isLeader"
-        private const val FIELD_LEADER_ID = "leaderId"
-        private const val FIELD_GROUP_ID = "groupId"
-        private const val FIELD_USER_ID = "userId"
-        private const val FIELD_ASSIGNED_TO = "assignedTo"
-        private const val MEMBERSHIP_ID_SEPARATOR = '_'
+    private suspend fun executeGroupLeaveBatch(
+        currentMembership: Membership,
+        nextLeaderMembership: Membership?,
+        documents: List<DocumentSnapshot>,
+        newGroup: FirestoreGroup,
+        newMembership: FirestoreMembership,
+    ) {
+        firestore.run {
+            runBatch { batch ->
+                // 멤버 데이터 삭제
+                documents.forEach { document ->
+                    batch.delete(document.reference)
+                }
+
+                // 기존 멤버십 삭제
+                membershipsCollection
+                    .document(currentMembership.id.value)
+                    .let(batch::delete)
+
+                // 새 리더 할당
+                if (nextLeaderMembership != null) batch.assignNewLeader(firestore, nextLeaderMembership)
+
+                // 새 그룹 생성
+                batch.set(groupsCollection.document(newGroup.groupId), newGroup)
+
+                // 새 멤버십 생성
+                batch.set(membershipsCollection.document(newMembership.membershipId), newMembership)
+            }
+        }.await()
     }
 }

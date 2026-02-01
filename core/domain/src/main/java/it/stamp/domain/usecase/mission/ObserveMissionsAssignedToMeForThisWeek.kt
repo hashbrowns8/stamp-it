@@ -10,7 +10,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ObserveMissionsAssignedByMe @Inject constructor(
+class ObserveMissionsAssignedToMeForThisWeek @Inject constructor(
     private val observeMyMembershipUseCase: ObserveMyMembershipUseCase,
     private val missionRepository: MissionRepository,
 ) {
@@ -20,7 +20,7 @@ class ObserveMissionsAssignedByMe @Inject constructor(
                 flowOf(emptyList())
             } else {
                 with(membership) {
-                    missionRepository.observeMissionsByAssigner(groupId, assignerId = userId)
+                    missionRepository.observeMissionsByAssignee(groupId, assigneeId = userId)
                 }
             }
         }

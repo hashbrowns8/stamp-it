@@ -1,5 +1,6 @@
 package it.stamp.mypage.core
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -55,7 +56,7 @@ internal fun MyPageScreen(
                             coroutineScope.launch {
                                 tabs.indexOf(MyPageTab.StampBoard)
                                     .let { page ->
-                                        pagerState.animateScrollToPage(page)
+                                        pagerState.animateScrollToPage(page, animationSpec = tween(500))
                                     }
                             }
                         }
@@ -67,7 +68,7 @@ internal fun MyPageScreen(
                             coroutineScope.launch {
                                 tabs.indexOf(MyPageTab.Profile)
                                     .let { page ->
-                                        pagerState.animateScrollToPage(page)
+                                        pagerState.animateScrollToPage(page, animationSpec = tween(500))
                                     }
                             }
                         }

@@ -3,11 +3,11 @@ package it.stamp.mypage.core
 sealed interface MyPageUiAction
 
 sealed interface MyProfileUiAction : MyPageUiAction {
-    data object EditProfile : MyProfileUiAction
-    data object ManageMembers : MyProfileUiAction
-    data object InviteMember : MyProfileUiAction
-    data object JoinGroup : MyProfileUiAction
-    data object LeaveGroup : MyProfileUiAction
-    data object DeleteAccount : MyProfileUiAction
-    data object SignOut : MyProfileUiAction
+    data object OnEditProfileClick : MyProfileUiAction
+    data object OnManageMembersClick : MyProfileUiAction
+    data object OnInviteMemberClick : MyProfileUiAction
+    data object OnJoinGroupClick : MyProfileUiAction
+    data class OnLeaveGroupClick(val groupName: String) : MyProfileUiAction
+    data object OnDeleteAccountClick : MyProfileUiAction
+    data object OnSignOutClick : MyProfileUiAction
 }

@@ -36,6 +36,7 @@ import it.stamp.designsystem.theme.White
 import it.stamp.signin.core.idp.GoogleIDTokenProvider
 import it.stamp.signin.core.idp.IDTokenProvider
 import it.stamp.signin.core.ui.SignInWithButton
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -47,7 +48,11 @@ internal fun SignInScreen(
     LaunchedEffect(viewModel) {
         viewModel.uiEvent.collect { uiEvent ->
             when (uiEvent) {
-                is SignInUiEvent.SignedIn -> onSignInSuccess()
+                is SignInUiEvent.SignedIn -> {
+                    delay(250L)
+
+                    onSignInSuccess()
+                }
                 is SignInUiEvent.SignInFailed -> {
 
                 }

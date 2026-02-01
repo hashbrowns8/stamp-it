@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
                 val authenticationState by viewModel.authenticationState.collectAsStateWithLifecycle()
 
                 splashScreen.setKeepOnScreenCondition { // TODO : 최대 로딩 시간 기다리고 실패
-                    authenticationState == AuthenticationState.Unknown
+                    authenticationState == AuthenticationState.Initializing
                 }
 
                 val snackbarHostState = remember { SnackbarHostState() }
@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
                     containerColor = White,
                 ) { innerPadding ->
                     CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
-                        if (authenticationState == AuthenticationState.Unknown) return@CompositionLocalProvider
+                        if (authenticationState == AuthenticationState.Initializing) return@CompositionLocalProvider
 
                         val startDestination = if (authenticationState is AuthenticationState.Authenticated) {
                             MainNavKey

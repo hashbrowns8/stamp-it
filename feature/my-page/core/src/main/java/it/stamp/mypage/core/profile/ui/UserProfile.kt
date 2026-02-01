@@ -36,7 +36,7 @@ fun UserProfile(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier,
+        modifier = modifier.clickable(onClick = onEditClick),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -44,8 +44,7 @@ fun UserProfile(
             modifier = Modifier
                 .size(72.dp)
                 .clip(CircleShape)
-                .border(1.dp, Gray50, CircleShape)
-                .clickable(onClick = onEditClick),
+                .border(1.dp, Gray50, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             AvatarImage(
@@ -64,10 +63,11 @@ fun UserProfile(
         )
 
         Row(
-            modifier = Modifier.clickable(onClick = onEditClick),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            Spacer(Modifier.width(18.dp))
+
             Text(
                 text = displayName,
                 color = Gray800,

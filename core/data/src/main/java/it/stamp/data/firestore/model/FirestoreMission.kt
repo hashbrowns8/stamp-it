@@ -13,4 +13,9 @@ data class FirestoreMission(
     val category: String = String(),
     val status: String = String(),
     val missionType: String = String(),
-)
+) {
+    companion object {
+        const val FIELD_GROUP_ID = "groupId"
+        const val FIELD_ASSIGNED_TO = "assignedTo"
+    }
+}

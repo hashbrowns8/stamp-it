@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import it.stamp.designsystem.icon.Drawables
 import it.stamp.designsystem.theme.Gray600
 import it.stamp.designsystem.theme.Gray800
@@ -156,7 +157,7 @@ private fun StampDefaultSnackbar(
 ) {
     Box(
         modifier = modifier
-            .padding(24.dp)
+            .padding(16.dp)
             .fillMaxWidth(),
         contentAlignment = Alignment.Center,
     ) {
@@ -176,7 +177,7 @@ private fun StampDefaultSnackbar(
         ) {
             Row(
                 modifier = Modifier
-                    .padding(vertical = 12.dp)
+                    .padding(vertical = 10.dp)
                     .then(
                         if (actionLabel == null) {
                             Modifier
@@ -199,7 +200,6 @@ private fun StampDefaultSnackbar(
                     Text(
                         text = title,
                         color = Gray800,
-                        lineHeight = 1.em,
                         style = MaterialTheme.typography.labelSmall,
                     )
 
@@ -207,7 +207,7 @@ private fun StampDefaultSnackbar(
                         Text(
                             text = description,
                             color = Gray600,
-                            lineHeight = 1.em,
+                            fontSize = 13.sp,
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }

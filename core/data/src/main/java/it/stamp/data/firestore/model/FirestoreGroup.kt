@@ -11,4 +11,8 @@ data class FirestoreGroup(
     val inviteCode: String = String(),
     val inviteCodeCreateAt: Timestamp = Timestamp.now(),
     val createdAt: Timestamp = Timestamp.now(),
-)
+) {
+    companion object {
+        const val FIELD_LEADER_ID = "leaderId"
+    }
+}

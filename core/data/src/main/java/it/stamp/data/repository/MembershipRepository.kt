@@ -1,6 +1,6 @@
 package it.stamp.data.repository
 
-import it.stamp.data.firestore.mapper.MembershipMapper
+import it.stamp.data.firestore.mapper.toDomainModel
 import it.stamp.data.firestore.source.MembershipFirestoreDataSource
 import it.stamp.domain.repository.MembershipRepository
 import it.stamp.model.ids.GroupId
@@ -11,33 +11,32 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class MembershipDataRepository @Inject constructor(
-    private val firestoreDataSource: MembershipFirestoreDataSource,
+    private val dataSource: MembershipFirestoreDataSource,
 ) : MembershipRepository {
 
     override suspend fun findUserMembership(userId: UserId): Membership? =
-        firestoreDataSource.findUserMembership(userId)
-            ?.let(MembershipMapper::toDomainModel)
+        dataSource.findUserMembership(userId)?.toDomainModel()
 
     override fun observeUserMembership(userId: UserId): Flow<Membership?> =
-        firestoreDataSource.observeUserMembership(userId)
+        dataSource.observeUserMembership(userId)
             .map { membership ->
-                membership?.let(MembershipMapper::toDomainModel)
+                membership?.toDomainModel()
             }
 
     override suspend fun getGroupMemberships(groupId: GroupId): List<Membership> =
-        firestoreDataSource.getGroupMemberships(groupId)
-            .map(MembershipMapper::toDomainModel)
+        dataSource.getGroupMemberships(groupId)
+            .map { membership ->
+                membership.toDomainModel()
+            }
 
     override fun observeGroupMemberships(groupId: GroupId): Flow<List<Membership>> =
-        firestoreDataSource.observeGroupMemberships(groupId)
+        dataSource.observeGroupMemberships(groupId)
             .map { memberships ->
-                memberships.map(MembershipMapper::toDomainModel)
+                memberships.map { membership ->
+                    membership.toDomainModel()
+                }
             }
 
     override suspend fun getGroupMemberCount(groupId: GroupId): Int =
-        firestoreDataSource.getGroupMemberCount(groupId)
-
-    override suspend fun updateMembership(membership: Membership) {
-        TODO("Not yet implemented")
-    }
+        dataSource.getGroupMemberCount(groupId)
 }

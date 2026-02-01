@@ -1,17 +1,15 @@
 package it.stamp.domain.service
 
-import it.stamp.domain.exception.NotAuthenticatedException
 import it.stamp.model.authentication.AuthenticationState
 import it.stamp.model.authentication.IdentityProvider
 import it.stamp.model.user.User
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationService {
-    val state: StateFlow<AuthenticationState>
 
-    val currentUser: StateFlow<User?>
+    fun observeAuthenticationState(): Flow<AuthenticationState>
 
-    fun requireUser(): User = currentUser.value ?: throw NotAuthenticatedException()
+    suspend fun requireAuthenticated(): AuthenticationState.Authenticated
 
     suspend fun signInWith(
         identityProvider: IdentityProvider,

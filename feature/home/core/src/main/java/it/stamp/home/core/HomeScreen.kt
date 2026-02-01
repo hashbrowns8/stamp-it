@@ -47,6 +47,8 @@ import it.stamp.model.mission.Mission
 import it.stamp.model.user.User
 import it.stamp.ui.MemberMissionUiModel
 import it.stamp.ui.PreviewSamples
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import timber.log.Timber
 import kotlin.random.Random
 
@@ -291,6 +293,10 @@ private fun GroupHomePreview() {
                     .map { mission ->
                         with(mission) {
                             val assigner = members.first { it.id == assigner }
+
+                            val dueDate = dueDate
+                                .toLocalDateTime(TimeZone.currentSystemDefault())
+                                .date
 
                             MyMissionUiModel(
                                 id,

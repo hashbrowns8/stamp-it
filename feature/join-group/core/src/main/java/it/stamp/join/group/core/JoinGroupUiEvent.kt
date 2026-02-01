@@ -1,18 +1,11 @@
 package it.stamp.join.group.core
 
-import it.stamp.model.membership.Group
+import it.stamp.model.ids.GroupId
 
 sealed interface JoinGroupUiEvent {
-    data object InvalidCode : JoinGroupUiEvent
-
-    data object AlreadyInGroup : JoinGroupUiEvent
-
-    data class DataLossConsentRequired(
-        val leavingGroup: Group,
-        val joiningGroup: Group,
-    ) : JoinGroupUiEvent
-
-    data class JoinGroupSucceeded(val group: Group) : JoinGroupUiEvent
-
-    data class JoinGroupFailed(val throwable: Throwable) : JoinGroupUiEvent
+    data object InvalidInviteCode : JoinGroupUiEvent
+    data object AlreadyMember : JoinGroupUiEvent
+    data class DataLossWarning(val targetGroupId: GroupId) : JoinGroupUiEvent
+    data object JoinSuccess : JoinGroupUiEvent
+    data class JoinFailed(val throwable: Throwable) : JoinGroupUiEvent
 }

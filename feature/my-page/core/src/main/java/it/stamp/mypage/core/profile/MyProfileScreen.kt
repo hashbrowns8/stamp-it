@@ -28,6 +28,7 @@ import it.stamp.model.user.User
 import it.stamp.mypage.core.MyProfileUiAction
 import it.stamp.mypage.core.R
 import it.stamp.mypage.core.profile.ui.DeleteAccountAlertDialog
+import it.stamp.mypage.core.profile.ui.LeaveGroupAlertDialog
 import it.stamp.mypage.core.profile.ui.MenuItem
 import it.stamp.mypage.core.profile.ui.MenuSection
 import it.stamp.mypage.core.profile.ui.SignOutAlertDialog
@@ -35,7 +36,7 @@ import it.stamp.mypage.core.profile.ui.UserProfile
 import it.stamp.ui.PreviewSamples
 
 @Composable
-fun MyProfileScreen(
+internal fun MyProfileScreen(
     navigateToEditProfile: () -> Unit,
     navigateToManageMembers: () -> Unit,
     navigateToInviteMember: () -> Unit,
@@ -49,44 +50,61 @@ fun MyProfileScreen(
         mutableStateOf<MyProfileUiAction?>(null)
     }
 
-    val onUiAction: (MyProfileUiAction) -> Unit = { action ->
-        when (action) {
-            MyProfileUiAction.EditProfile -> navigateToEditProfile()
-            MyProfileUiAction.ManageMembers -> navigateToManageMembers()
-            MyProfileUiAction.InviteMember -> navigateToInviteMember()
-            MyProfileUiAction.JoinGroup -> navigateToJoinGroup()
-            MyProfileUiAction.LeaveGroup -> viewModel.leaveGroup()
-            MyProfileUiAction.SignOut -> pendingAction = action
-            MyProfileUiAction.DeleteAccount -> pendingAction = action
-        }
-    }
-
     MyProfileScreen(
         uiState,
         modifier,
-        onUiAction
+        onUiAction = { action ->
+            when (action) {
+                MyProfileUiAction.OnEditProfileClick -> navigateToEditProfile()
+                MyProfileUiAction.OnManageMembersClick -> navigateToManageMembers()
+                MyProfileUiAction.OnInviteMemberClick -> navigateToInviteMember()
+                MyProfileUiAction.OnJoinGroupClick -> navigateToJoinGroup()
+                is MyProfileUiAction.OnLeaveGroupClick -> pendingAction = action
+                MyProfileUiAction.OnSignOutClick -> pendingAction = action
+                MyProfileUiAction.OnDeleteAccountClick -> pendingAction = action
+            }
+        },
     )
 
-    pendingAction?.run {
-        if (pendingAction == MyProfileUiAction.SignOut) {
+    when (val action = pendingAction) {
+        is MyProfileUiAction.OnLeaveGroupClick -> {
+            LeaveGroupAlertDialog(
+                onDismissRequest = {
+                    pendingAction = null
+                },
+                groupName = action.groupName,
+                onConfirm = {
+                    pendingAction = null
+
+                    viewModel.leaveGroup()
+                }
+            )
+        }
+        MyProfileUiAction.OnSignOutClick -> {
             SignOutAlertDialog(
                 onDismissRequest = {
                     pendingAction = null
                 },
                 onConfirm = {
+                    pendingAction = null
+
                     viewModel.signOut()
                 },
             )
-        } else if (pendingAction == MyProfileUiAction.DeleteAccount) {
+        }
+        MyProfileUiAction.OnDeleteAccountClick -> {
             DeleteAccountAlertDialog(
                 onDismissRequest = {
                     pendingAction = null
                 },
                 onConfirm = {
+                    pendingAction = null
+
                     viewModel.deleteAccount()
                 },
             )
         }
+        else -> {}
     }
 }
 
@@ -98,6 +116,7 @@ private fun MyProfileScreen(
 ) {
     when (uiState) {
         MyProfileUiState.Loading -> {}
+
         is MyProfileUiState.Success -> with(uiState) {
             MyProfileScreen(
                 user,
@@ -107,7 +126,7 @@ private fun MyProfileScreen(
             )
         }
 
-        MyProfileUiState.SignOut -> {}
+        is MyProfileUiState.Failure -> {}
     }
 }
 
@@ -127,11 +146,11 @@ private fun MyProfileScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 UserProfile(
-                    user.avatar,
-                    group.name,
-                    user.displayName.value,
+                    avatar = user.avatar,
+                    groupName = group.name,
+                    displayName = user.displayName.value,
                     onEditClick = {
-                        onUiAction(MyProfileUiAction.EditProfile)
+                        onUiAction(MyProfileUiAction.OnEditProfileClick)
                     },
                 )
             }
@@ -148,19 +167,19 @@ private fun MyProfileScreen(
                             stringResource(R.string.member_management_title),
                             stringResource(R.string.member_management_description),
                         ) {
-                            onUiAction(MyProfileUiAction.ManageMembers)
+                            onUiAction(MyProfileUiAction.OnManageMembersClick)
                         },
                         Triple(
                             stringResource(R.string.invite_member_title),
                             stringResource(R.string.invite_member_description),
                         ) {
-                            onUiAction(MyProfileUiAction.InviteMember)
+                            onUiAction(MyProfileUiAction.OnInviteMemberClick)
                         },
                         Triple(
                             stringResource(R.string.join_group_title),
                             stringResource(R.string.join_group_description),
                         ) {
-                            onUiAction(MyProfileUiAction.JoinGroup)
+                            onUiAction(MyProfileUiAction.OnJoinGroupClick)
                         },
                     ).forEach { (label, description, onClick) ->
                         MenuItem(
@@ -179,19 +198,19 @@ private fun MyProfileScreen(
                             stringResource(R.string.leave_group_title),
                             stringResource(R.string.leave_group_description),
                         ) {
-                            onUiAction(MyProfileUiAction.LeaveGroup)
+                            onUiAction(MyProfileUiAction.OnLeaveGroupClick(group.name))
                         },
                         Triple(
                             stringResource(R.string.sign_out_title),
                             stringResource(R.string.sign_out_description),
                         ) {
-                            onUiAction(MyProfileUiAction.SignOut)
+                            onUiAction(MyProfileUiAction.OnSignOutClick)
                         },
                         Triple(
                             stringResource(R.string.delete_account_title),
                             stringResource(R.string.delete_account_description),
                         ) {
-                            onUiAction(MyProfileUiAction.DeleteAccount)
+                            onUiAction(MyProfileUiAction.OnDeleteAccountClick)
                         },
                     ).forEach { (label, description, onClick) ->
                         MenuItem(
@@ -217,10 +236,5 @@ private fun MyProfileScreenPreview() {
                 onUiAction = {}
             )
         }
-
-        SignOutAlertDialog(
-            onDismissRequest = {},
-            onConfirm = {},
-        )
     }
 }

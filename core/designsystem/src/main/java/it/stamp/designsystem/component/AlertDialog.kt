@@ -25,10 +25,10 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import it.stamp.designsystem.theme.Gray50
+import it.stamp.designsystem.theme.Gray600
 import it.stamp.designsystem.theme.Gray800
 import it.stamp.designsystem.theme.Red400
 import it.stamp.designsystem.theme.StampTheme
@@ -44,12 +44,12 @@ fun StampAlertDialog(
     title: String? = null,
     dismiss: String? = null,
     onDismissClick: (() -> Unit)? = null,
-    shape: Shape = RoundedCornerShape(32.dp),
+    shape: Shape = RoundedCornerShape(28.dp),
     containerColor: Color = White,
     dismissContentColor: Color = Gray800,
     confirmContentColor: Color = Red400,
     titleContentColor: Color = Gray800,
-    textContentColor: Color = Gray800,
+    textContentColor: Color = Gray600,
     properties: DialogProperties = DialogProperties(),
 ) {
     BasicAlertDialog(
@@ -61,22 +61,21 @@ fun StampAlertDialog(
             shape = shape,
             color = containerColor,
         ) {
-            val textStyle = MaterialTheme.typography.labelLarge.merge(fontSize = 17.sp)
+            val textStyle = MaterialTheme.typography.bodyMedium
 
             ProvideTextStyle(textStyle) {
                 Column(
                     modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     Column(
-                        modifier = Modifier.padding(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         if (title != null) {
                             Text(
                                 text = title,
                                 color = titleContentColor,
-                                fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold,
                             )
                         }
@@ -84,8 +83,8 @@ fun StampAlertDialog(
                         Text(
                             text,
                             color = textContentColor,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Normal,
-                            lineHeight = 1.4.em,
                         )
                     }
 

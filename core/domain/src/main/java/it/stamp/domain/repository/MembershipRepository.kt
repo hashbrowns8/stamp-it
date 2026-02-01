@@ -20,6 +20,4 @@ interface MembershipRepository {
     fun observeGroupMemberships(groupId: GroupId): Flow<List<Membership>>
 
     suspend fun getGroupMemberCount(groupId: GroupId): Int
-
-    suspend fun updateMembership(membership: Membership)
 }

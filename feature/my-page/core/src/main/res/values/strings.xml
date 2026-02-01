@@ -22,4 +22,6 @@
     <string name="user_membership_account_management">그룹 및 서비스 관리</string>
     <string name="profile">프로필</string>
     <string name="stampboard">스탬프판</string>
+    <string name="leave_group_alert_title">\'%1$s\' 그룹에서 탈퇴하시겠어요?</string>
+    <string name="leave_group_alert_text">탈퇴 후 복구는 불가능하며 그룹에서 생성된 스티커와 미션이 모두 삭제됩니다</string>
 </resources>

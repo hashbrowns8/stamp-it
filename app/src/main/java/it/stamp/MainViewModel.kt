@@ -16,5 +16,5 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     val authenticationState: StateFlow<AuthenticationState> = observeAuthenticationState()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, AuthenticationState.Unknown)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AuthenticationState.Initializing)
 }

@@ -7,6 +7,24 @@ import it.stamp.designsystem.component.StampAlertDialog
 import it.stamp.mypage.core.R
 
 @Composable
+internal fun LeaveGroupAlertDialog(
+    onDismissRequest: () -> Unit,
+    groupName: String,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit = onDismissRequest,
+) {
+    AlertDialog(
+        onDismissRequest,
+        title = stringResource(R.string.leave_group_alert_title, groupName),
+        text = stringResource(R.string.leave_group_alert_text),
+        onDismiss,
+        onConfirm,
+        modifier,
+    )
+}
+
+@Composable
 internal fun SignOutAlertDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,

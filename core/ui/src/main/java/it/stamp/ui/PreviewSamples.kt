@@ -13,12 +13,9 @@ import it.stamp.model.mission.MissionStatus
 import it.stamp.model.user.Avatar
 import it.stamp.model.user.DisplayName
 import it.stamp.model.user.User
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.plus
-import kotlinx.datetime.todayIn
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 import kotlin.uuid.Uuid
 
 data object PreviewSamples {
@@ -78,7 +75,7 @@ data object PreviewSamples {
             title = "할머니께 연락하기",
             assignee = me.id,
             assigner = UserId("2"),
-            dueDate = LocalDate(2025, 12, 22),
+            dueDate = Clock.System.now(),
             status = MissionStatus.ASSIGNED,
             createdAt = Clock.System.now(),
         ),
@@ -90,8 +87,8 @@ data object PreviewSamples {
             assignee = me.id,
             assigner = UserId("4"),
             dueDate = Clock.System
-                .todayIn(TimeZone.currentSystemDefault())
-                .plus(5, DateTimeUnit.DAY),
+                .now()
+                .plus(5.days),
             status = MissionStatus.ASSIGNED,
             createdAt = Clock.System.now(),
         ),
@@ -103,8 +100,8 @@ data object PreviewSamples {
             assignee = me.id,
             assigner = UserId("4"),
             dueDate = Clock.System
-                .todayIn(TimeZone.currentSystemDefault())
-                .plus(7, DateTimeUnit.DAY),
+                .now()
+                .plus(7.days),
             status = MissionStatus.ASSIGNED,
             createdAt = Clock.System.now(),
         ),

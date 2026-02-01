@@ -6,7 +6,7 @@ import kotlin.time.Instant
 
 data class User(
     val id: UserId,
-    val displayName: DisplayName,
+    val displayName: DisplayName = DisplayName(),
     val avatar: Avatar = Avatar.CHARACTER_1,
     val createdAt: Instant = Clock.System.now(),
 )

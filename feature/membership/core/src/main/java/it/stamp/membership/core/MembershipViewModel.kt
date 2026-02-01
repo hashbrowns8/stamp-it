@@ -3,11 +3,11 @@ package it.stamp.membership.core
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.stamp.domain.exception.MemberAlreadyRemovedException
+import it.stamp.domain.exception.MemberRemovalException
+import it.stamp.domain.usecase.leadership.RemoveMemberFromGroupUseCase
+import it.stamp.domain.usecase.leadership.TransferLeadershipUseCase
 import it.stamp.domain.usecase.membership.ObserveMyGroupMembers
-import it.stamp.domain.usecase.membership.RemoveMemberFromGroupUseCase
-import it.stamp.domain.usecase.membership.TransferLeadershipUseCase
-import it.stamp.domain.usecase.user.ObserveCurrentUser
+import it.stamp.domain.usecase.user.ObserveCurrentUserUseCase
 import it.stamp.model.ids.UserId
 import it.stamp.model.membership.Member
 import it.stamp.model.user.User
@@ -25,13 +25,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MembershipViewModel @Inject constructor(
-    observeCurrentUser: ObserveCurrentUser,
+    observeCurrentUserUseCase: ObserveCurrentUserUseCase,
     observeMyGroupMembers: ObserveMyGroupMembers,
     private val transferLeadershipUseCase: TransferLeadershipUseCase,
     private val removeMemberFromGroupUseCase: RemoveMemberFromGroupUseCase,
 ) : ViewModel() {
 
-    val uiState: StateFlow<MembershipUiState> = observeCurrentUser().filterNotNull()
+    val uiState: StateFlow<MembershipUiState> = observeCurrentUserUseCase().filterNotNull()
         .combine(observeMyGroupMembers()) { user, members ->
             val canManageMember = members
                 .first { it.id == user.id }
@@ -54,7 +54,7 @@ class MembershipViewModel @Inject constructor(
                     _uiEvent.emit(MembershipUiEvent.LeadershipTransferred)
                 }
                 .onFailure { throwable ->
-                    _uiEvent.emit(MembershipUiEvent.OperationFailed(throwable))
+                    _uiEvent.emit(MembershipUiEvent.MemberRemovalFailed(throwable))
                 }
         }
     }
@@ -62,17 +62,21 @@ class MembershipViewModel @Inject constructor(
     fun removeMember(memberId: UserId) {
         viewModelScope.launch {
             removeMemberFromGroupUseCase(memberId)
-                .onSuccess {
-                    _uiEvent.emit(MembershipUiEvent.MemberRemoved(memberId))
+                .map {
+                    MembershipUiEvent.MemberRemoved(memberId)
                 }
-                .onFailure { throwable ->
-                    if (throwable is MemberAlreadyRemovedException) {
-                        _uiEvent.emit(MembershipUiEvent.MemberRemoved(memberId))
+                .getOrElse { throwable ->
+                    if (throwable is MemberRemovalException) {
+                        when (throwable) {
+                            is MemberRemovalException.MemberNotFound -> MembershipUiEvent.MemberRemoved(memberId)
+                        }
                     } else {
-                        _uiEvent.emit(MembershipUiEvent.OperationFailed(throwable))
+                        MembershipUiEvent.MemberRemovalFailed(throwable)
                     }
                 }
-
+                .let { event ->
+                    _uiEvent.emit(event)
+                }
         }
     }
 }

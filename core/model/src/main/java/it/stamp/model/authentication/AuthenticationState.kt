@@ -4,7 +4,7 @@ import it.stamp.model.ids.UserId
 
 sealed interface AuthenticationState {
 
-    data object Unknown : AuthenticationState
+    data object Initializing : AuthenticationState
 
     data class Authenticated(val userId: UserId) : AuthenticationState
 

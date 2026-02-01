@@ -6,14 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import it.stamp.domain.exception.MissionException
-import it.stamp.domain.usecase.group.ObserveMyGroup
-import it.stamp.domain.usecase.group.ObserveStampCountByMemberForMonth
+import it.stamp.domain.usecase.group.ObserveMyGroupUseCase
 import it.stamp.domain.usecase.membership.ObserveMyGroupMembers
 import it.stamp.domain.usecase.mission.CompleteMission
-import it.stamp.domain.usecase.mission.ObserveMissionsAssignedByMe
-import it.stamp.domain.usecase.mission.ObserveMyMissionsForThisWeek
+import it.stamp.domain.usecase.mission.ObserveMissionsAssignedByUser
+import it.stamp.domain.usecase.mission.ObserveMissionsAssignedToMeForThisWeek
 import it.stamp.domain.usecase.mission.UndoMissionCompletion
-import it.stamp.domain.usecase.user.ObserveCurrentUser
+import it.stamp.domain.usecase.stamp.ObserveGroupStampCountsForMonthUseCase
+import it.stamp.domain.usecase.user.ObserveCurrentUserUseCase
 import it.stamp.home.core.ui.LeaderboardEntryUiModel
 import it.stamp.home.core.ui.MemberUiModel
 import it.stamp.home.core.ui.MyMissionUiModel
@@ -37,21 +37,24 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    observeCurrentUser: ObserveCurrentUser,
-    observeMyGroup: ObserveMyGroup,
+    observeCurrentUserUseCase: ObserveCurrentUserUseCase,
+    observeMyGroupUseCase: ObserveMyGroupUseCase,
     observeMyGroupMembers: ObserveMyGroupMembers,
-    observeStampCountByMemberForMonth: ObserveStampCountByMemberForMonth,
-    observeMyMissionsForThisWeek: ObserveMyMissionsForThisWeek,
-    observeMissionsAssignedByMe: ObserveMissionsAssignedByMe,
+    observeGroupStampCountsForMonthUseCase: ObserveGroupStampCountsForMonthUseCase,
+    observeMissionsAssignedToMeForThisWeek: ObserveMissionsAssignedToMeForThisWeek,
+    observeMissionsAssignedByUser: ObserveMissionsAssignedByUser,
     private val completeMissionUseCase: CompleteMission,
     private val undoMissionCompletionUseCase: UndoMissionCompletion,
+    private val timeZone: TimeZone,
 ) : ViewModel() {
 
-    private val user: StateFlow<User?> = observeCurrentUser()
+    private val user: StateFlow<User?> = observeCurrentUserUseCase()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val members: StateFlow<List<Member>> = observeMyGroupMembers()
@@ -60,7 +63,7 @@ class HomeViewModel @Inject constructor(
     private val rankings = user.filterNotNull()
         .flatMapLatest { user ->
             members.filterNot(List<Member>::isEmpty)
-                .combine(observeStampCountByMemberForMonth()) { members, stampCountByMemberId ->
+                .combine(observeGroupStampCountsForMonthUseCase()) { members, stampCountByMemberId ->
                     members.map { member ->
                         with(member) {
                             LeaderboardEntryUiModel(
@@ -84,11 +87,15 @@ class HomeViewModel @Inject constructor(
         }
 
     private val myMissions = members.filterNot(List<Member>::isEmpty)
-        .combine(observeMyMissionsForThisWeek()) { members, missions ->
+        .combine(observeMissionsAssignedToMeForThisWeek()) { members, missions ->
             missions.filterNot(Mission::isDone)
                 .map { mission ->
                     with(mission) {
                         val assigner = members.first { it.id == assigner }
+
+                        val dueDate = dueDate
+                            .toLocalDateTime(timeZone)
+                            .date
 
                         MyMissionUiModel(
                             id,
@@ -102,7 +109,7 @@ class HomeViewModel @Inject constructor(
         }
 
     private val memberMissions = members.filterNot(List<Member>::isEmpty)
-        .combine(observeMissionsAssignedByMe()) { members, missions ->
+        .combine(observeMissionsAssignedByUser()) { members, missions ->
             missions.map { mission ->
                 with(mission) {
                     val daysAgo = when (val daysUntilDue = daysUntilDue()) {
@@ -112,6 +119,10 @@ class HomeViewModel @Inject constructor(
                     }
 
                     val assignee = members.first { it.id == assignee }
+
+                    val dueDate = dueDate
+                        .toLocalDateTime(timeZone)
+                        .date
 
                     MemberMissionUiModel(
                         id,
@@ -131,7 +142,7 @@ class HomeViewModel @Inject constructor(
 
     val uiState: StateFlow<HomeUiState> = user.filterNotNull().flatMapLatest { user ->
         combine(
-            observeMyGroup().filterNotNull(),
+            observeMyGroupUseCase().filterNotNull(),
             members,
             rankings,
             myMissions,

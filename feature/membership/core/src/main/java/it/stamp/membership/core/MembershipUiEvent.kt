@@ -10,7 +10,7 @@ import it.stamp.ui.LocalSnackbarHostState
 sealed interface MembershipUiEvent {
     data object LeadershipTransferred : MembershipUiEvent
     data class MemberRemoved(val memberId: UserId) : MembershipUiEvent
-    data class OperationFailed(val throwable: Throwable) : MembershipUiEvent
+    data class MemberRemovalFailed(val throwable: Throwable) : MembershipUiEvent
 }
 
 @Composable
@@ -25,7 +25,7 @@ fun MembershipEventHandler(
                     snackbarHostState.showStampSnackbar("리더 위임이 완료되었습니다")
                 }
 
-                is MembershipUiEvent.OperationFailed -> {
+                is MembershipUiEvent.MemberRemovalFailed -> {
                     snackbarHostState.showStampSnackbar("문제가 발생했어요. 다시 시도해 주세요.")
                 }
 

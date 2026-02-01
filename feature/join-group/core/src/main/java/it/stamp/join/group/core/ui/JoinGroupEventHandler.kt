@@ -31,17 +31,17 @@ fun JoinGroupEventHandler(
     }
 
     var pendingDataLossConsent by remember {
-        mutableStateOf<JoinGroupUiEvent.DataLossConsentRequired?>(null)
+        mutableStateOf<JoinGroupUiEvent.DataLossWarning?>(null)
     }
 
     LaunchedEffect(viewModel) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                JoinGroupUiEvent.AlreadyInGroup -> snackbarHostState.showStampSnackbar("이미 그룹에 속해있습니다")
+                JoinGroupUiEvent.AlreadyMember -> snackbarHostState.showStampSnackbar("이미 그룹에 속해있습니다")
 
-                JoinGroupUiEvent.InvalidCode -> snackbarHostState.showStampSnackbar("유효하지 않은 초대 코드입니다")
+                JoinGroupUiEvent.InvalidInviteCode -> snackbarHostState.showStampSnackbar("유효하지 않은 초대 코드입니다")
 
-                is JoinGroupUiEvent.JoinGroupSucceeded -> {
+                is JoinGroupUiEvent.JoinSuccess -> {
                     snackbarHostState.showStampSnackbar("새로운 그룹에 참여했어요!")
 
                     delay(250L)
@@ -49,13 +49,13 @@ fun JoinGroupEventHandler(
                     onJoinGroupSuccess() // TODO : 홈 화면으로 이동
                 }
 
-                is JoinGroupUiEvent.JoinGroupFailed ->
+                is JoinGroupUiEvent.JoinFailed ->
                     displaySnackbar(
                         event.throwable.message
                             ?: "알 수 없는 오류가 발생했습니다"
                     )
 
-                is JoinGroupUiEvent.DataLossConsentRequired -> pendingDataLossConsent = event
+                is JoinGroupUiEvent.DataLossWarning -> pendingDataLossConsent = event
             }
         }
     }
@@ -66,7 +66,7 @@ fun JoinGroupEventHandler(
                 pendingDataLossConsent = null
             },
             onAccept = {
-                viewModel.acceptDataLoss(leavingGroup, joiningGroup)
+                viewModel.acceptDataLoss(targetGroupId)
             },
             onDecline = {
                 pendingDataLossConsent = null

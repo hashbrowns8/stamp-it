@@ -3,7 +3,7 @@ package it.stamp.invite.member.core
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.stamp.domain.usecase.group.GetInviteCode
+import it.stamp.domain.usecase.group.GetMyGroupInviteCodeUseCase
 import it.stamp.model.membership.InviteCode
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,10 +13,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InviteMemberViewModel @Inject constructor(
-    private val getInviteCode: GetInviteCode,
+    private val getMyGroupInviteCodeUseCase: GetMyGroupInviteCodeUseCase,
 ) : ViewModel() {
     val inviteCode: StateFlow<InviteCode?> = flow {
-        getInviteCode()
+        getMyGroupInviteCodeUseCase()
             .onSuccess { inviteCode ->
                 emit(inviteCode)
             }

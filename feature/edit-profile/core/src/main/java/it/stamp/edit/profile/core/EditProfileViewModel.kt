@@ -3,144 +3,161 @@ package it.stamp.edit.profile.core
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.stamp.domain.usecase.group.ObserveMyGroup
+import it.stamp.domain.usecase.group.ObserveMyGroupUseCase
+import it.stamp.domain.usecase.leadership.RenameGroupUseCase
 import it.stamp.domain.usecase.membership.ObserveMyMembershipUseCase
-import it.stamp.domain.usecase.user.EditProfileCommand
-import it.stamp.domain.usecase.user.EditProfileUseCase
-import it.stamp.domain.usecase.user.ObserveCurrentUser
-import it.stamp.model.membership.Group
-import it.stamp.model.membership.Membership
+import it.stamp.domain.usecase.user.ObserveCurrentUserUseCase
+import it.stamp.domain.usecase.user.UpdateUserProfileUseCase
 import it.stamp.model.user.Avatar
 import it.stamp.model.user.DisplayName
-import it.stamp.model.user.User
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
-    observeCurrentUser: ObserveCurrentUser,
+    observeCurrentUserUseCase: ObserveCurrentUserUseCase,
+    observeMyGroupUseCase: ObserveMyGroupUseCase,
     observeMyMembershipUseCase: ObserveMyMembershipUseCase,
-    observeMyGroup: ObserveMyGroup,
-    private val editProfileUseCase: EditProfileUseCase,
+    private val updateUserProfileUseCase: UpdateUserProfileUseCase,
+    private val renameGroupUseCase: RenameGroupUseCase,
 ) : ViewModel() {
 
-    private val user = observeCurrentUser()
+    private val original = observeCurrentUserUseCase()
+        .filterNotNull()
+        .combine(observeMyGroupUseCase().filterNotNull()) { user, group ->
+            Profile(
+                avatar = user.avatar,
+                displayName = user.displayName.value,
+                groupName = group.name,
+            )
+        }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    private val membership = observeMyMembershipUseCase()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    private val canRenameGroup = observeMyMembershipUseCase()
+        .filterNotNull()
+        .map { membership -> membership.isLeader }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    private val group = observeMyGroup()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    private val draft = MutableStateFlow<Profile?>(null)
 
-    private val _uiState = MutableStateFlow<EditProfileUiState>(EditProfileUiState.Loading)
-    val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<EditProfileUiState> = combine(
+        original,
+        draft,
+        canRenameGroup,
+    ) { original, draft, canRenameGroup ->
+        if (original == null) return@combine EditProfileUiState.Loading
 
-    init {
-        viewModelScope.launch {
-            combine(
-                user.filterNotNull(),
-                membership.filterNotNull(),
-                group.filterNotNull(),
-            ) { user, membership, group ->
-                EditProfileUiState.Success(user, membership, group) as EditProfileUiState
-            }.catch { throwable ->
-                emit(EditProfileUiState.Failure(throwable))
-            }.collect(_uiState)
+        EditProfileUiState.Success(
+            original,
+            draft = draft ?: original,
+            canRenameGroup,
+        )
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, EditProfileUiState.Loading)
+
+    fun updateAvatar(avatar: Avatar) {
+        draft.update { draft ->
+            (draft ?: original.value)?.copy(avatar = avatar)
         }
     }
 
-    private inline fun update(block: (EditProfileUiState.Success) -> EditProfileUiState.Success) {
-        _uiState.update { uiState ->
-            if (uiState is EditProfileUiState.Success) {
-                block(uiState)
-            } else {
-                uiState
-            }
+    fun updateDisplayName(displayName: String) {
+        draft.update { draft ->
+            (draft ?: original.value)?.copy(displayName = displayName)
         }
     }
 
-    fun updateAvatar(avatar: Avatar) = update { uiState ->
-        uiState.copy(avatar = avatar)
+    fun updateGroupName(groupName: String) {
+        draft.update { draft ->
+            (draft ?: original.value)?.copy(groupName = groupName)
+        }
     }
 
-    fun updateDisplayName(displayName: String) = update { uiState ->
-        uiState.copy(displayName = displayName)
-    }
-
-    fun updateGroupName(groupName: String) = update { uiState ->
-        uiState.copy(groupName = groupName)
-    }
+    private val _uiEvent = MutableSharedFlow<EditProfileUiEvent>()
+    val uiEvent: SharedFlow<EditProfileUiEvent> = _uiEvent.asSharedFlow()
 
     fun complete() {
         viewModelScope.launch {
-            val uiState = uiState.value
+            val state = uiState.value as? EditProfileUiState.Success ?: return@launch
 
-            if (uiState !is EditProfileUiState.Success || !uiState.isModified) return@launch
+            if (!state.canComplete) return@launch
 
-            val (user, group) = with(uiState) {
-                Pair(
-                    if (isUserProfileModified) {
-                        user.copy(
-                            avatar = avatar,
-                            displayName = DisplayName(displayName)
-                        )
+            awaitAll(
+                async {
+                    if (state.isUserProfileChanged) {
+                        updateUserProfileUseCase(state.avatar, DisplayName(state.displayName))
                     } else {
-                        null
-                    },
-                    if (isGroupNameModified) {
-                        group.copy(name = groupName)
-                    } else {
-                        null
+                        Result.success(Unit)
                     }
-                )
-            }
-
-            editProfileUseCase(EditProfileCommand(user, group))
-                .onFailure {
-                    Timber.d(it)
+                },
+                async {
+                    if (state.canRenameGroup && state.isGroupNameChanged) {
+                        renameGroupUseCase(state.groupName)
+                    } else {
+                        Result.success(Unit)
+                    }
                 }
+            ).firstOrNull { result -> result.isFailure }
+                ?.exceptionOrNull()
+                ?.let { throwable ->
+                    _uiEvent.emit(EditProfileUiEvent.UpdateFailure(throwable))
+                }
+                ?: _uiEvent.emit(EditProfileUiEvent.UpdateSuccess)
         }
     }
 }
 
-sealed interface EditProfileUiState {
-    data object Loading : EditProfileUiState
+data class Profile(
+    val avatar: Avatar,
+    val displayName: String,
+    val groupName: String,
+) {
+    val isValid: Boolean
+        get() = displayName.isNotBlank() && groupName.isNotBlank()
+}
+
+sealed class EditProfileUiState {
+    data object Loading : EditProfileUiState()
 
     data class Success(
-        val user: User,
-        val membership: Membership,
-        val group: Group,
-        val avatar: Avatar = user.avatar,
-        val displayName: String = user.displayName.value,
-        val groupName: String = group.name,
-    ) : EditProfileUiState {
-        val canEditGroupName: Boolean
-            get() = membership.isLeader
+        private val original: Profile,
+        val draft: Profile,
+        val canRenameGroup: Boolean,
+    ) : EditProfileUiState() {
+        val avatar: Avatar
+            get() = draft.avatar
 
-        val isUserProfileModified: Boolean
-            get() = user.avatar != avatar
-                    || user.displayName.value != displayName
+        val displayName: String
+            get() = draft.displayName
 
-        val isGroupNameModified: Boolean
-            get() = group.name != groupName
+        val groupName: String
+            get() = draft.groupName
 
-        val isModified: Boolean
-            get() = isUserProfileModified || isGroupNameModified
+        val isUserProfileChanged: Boolean
+            get() = original.avatar != draft.avatar ||
+                    original.displayName != draft.displayName
+
+        val isGroupNameChanged: Boolean
+            get() = original.groupName != draft.groupName
+
+        val hasChanges: Boolean
+            get() = isUserProfileChanged || isGroupNameChanged
 
         val canComplete: Boolean
-            get() = isModified // TODO : check displayName, groupName isValid
+            get() = hasChanges && draft.isValid
     }
 
-    data class Failure(val throwable: Throwable) : EditProfileUiState
+    data class Failure(val error: Throwable) : EditProfileUiState()
 }

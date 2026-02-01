@@ -1,10 +1,11 @@
 package it.stamp.domain.service
 
+import it.stamp.model.ids.GroupId
 import it.stamp.model.membership.Membership
 
 interface MembershipService {
 
-    suspend fun transferLeadership(from: Membership, to: Membership)
+    suspend fun joinGroup(currentMembership: Membership, targetGroupId: GroupId)
 
-    suspend fun removeMember(membership: Membership)
+    suspend fun leaveGroup(currentMembership: Membership)
 }

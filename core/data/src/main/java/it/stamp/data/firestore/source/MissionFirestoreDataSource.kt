@@ -5,9 +5,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query.Direction
 import com.google.firebase.firestore.snapshots
 import it.stamp.common.di.IODispatcher
+import it.stamp.data.firestore.mapper.toTimestamp
 import it.stamp.data.firestore.model.FirestoreMission
 import it.stamp.data.firestore.util.missionsCollection
-import it.stamp.data.firestore.util.toTimestamp
 import it.stamp.domain.exception.MissionNotFoundException
 import it.stamp.model.ids.GroupId
 import it.stamp.model.ids.MissionId
@@ -19,13 +19,13 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.plus
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.todayIn
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 
 @Singleton
 class MissionFirestoreDataSource @Inject constructor(
@@ -53,19 +53,25 @@ class MissionFirestoreDataSource @Inject constructor(
             }
             .flowOn(coroutineDispatcher)
 
-    fun observeMissionsByAssigneeThisWeek(
+    fun observeMissionsByAssignee(
         groupId: GroupId,
-        assigneeId: UserId
+        assigneeId: UserId,
+        dueWithinDays: Int?,
     ): Flow<List<FirestoreMission>> {
-        val today = clock.todayIn(timeZone)
-
-        val after7Days = today.plus(7, DateTimeUnit.DAY)
-
         return collection
             .whereEqualTo("groupId", groupId.value)
             .whereEqualTo("assignedTo", assigneeId.value)
-            .whereLessThanOrEqualTo("dueDate", after7Days.toTimestamp())
-            .whereGreaterThanOrEqualTo("dueDate", today.toTimestamp())
+            .run {
+                if (dueWithinDays != null) {
+                    val today = clock.todayIn(timeZone).atStartOfDayIn(timeZone)
+                    val maxDueDate = today.plus(dueWithinDays.days)
+
+                    whereGreaterThanOrEqualTo("dueDate", today.toTimestamp())
+                        .whereLessThanOrEqualTo("dueDate", maxDueDate.toTimestamp())
+                } else {
+                    this
+                }
+            }
             .orderBy("dueDate")
             .snapshots()
             .map { snapshot ->

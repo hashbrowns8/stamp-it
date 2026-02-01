@@ -31,7 +31,7 @@ class StampFirestoreDataSource @Inject constructor(
 
     override val valueType: Class<FirestoreStamp> = FirestoreStamp::class.java
 
-    suspend fun getMonthlyGroupStamps(
+    suspend fun getStampsByGroupAndMonth(
         groupId: GroupId,
         yearMonth: YearMonth,
     ): List<FirestoreStamp> = withContext(coroutineDispatcher) {

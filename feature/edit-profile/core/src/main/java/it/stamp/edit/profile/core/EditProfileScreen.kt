@@ -1,6 +1,7 @@
 package it.stamp.edit.profile.core
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,10 +44,10 @@ internal fun EditProfileScreen(
         onUiAction = { action ->
             when (action) {
                 OnBackClick -> onBack()
-                OnCompleteClick -> viewModel.complete()
                 is OnAvatarChange -> viewModel.updateAvatar(action.avatar)
                 is OnDisplayNameChange -> viewModel.updateDisplayName(action.displayName)
                 is OnGroupNameChange -> viewModel.updateGroupName(action.groupName)
+                OnCompleteClick -> viewModel.complete()
             }
         },
     )
@@ -58,16 +59,9 @@ private fun EditProfileScreen(
     modifier: Modifier = Modifier,
     onUiAction: OnUiAction,
 ) {
-    Surface(modifier, color = White) {
-        val focusManager = LocalFocusManager.current
-
-        Column(
-            modifier = Modifier
-                .clickable {
-                    focusManager.clearFocus()
-                }
-                .imePadding(),
-        ) {
+    Scaffold(
+        modifier,
+        topBar = {
             StampTopAppBar(
                 title = {
                     Text(stringResource(R.string.edit_profile_title))
@@ -80,7 +74,19 @@ private fun EditProfileScreen(
                     )
                 },
             )
+        },
+        containerColor = White,
+    ) { innerPadding ->
+        val focusManager = LocalFocusManager.current
 
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .clickable {
+                    focusManager.clearFocus()
+                }
+                .imePadding(),
+        ) {
             when (uiState) {
                 EditProfileUiState.Loading -> {}
                 is EditProfileUiState.Success -> with(uiState) {
@@ -88,7 +94,7 @@ private fun EditProfileScreen(
                         avatar,
                         displayName,
                         groupName,
-                        canEditGroupName,
+                        canRenameGroup,
                         canComplete,
                         onUiAction = { action ->
                             if (action is OnAvatarChange || action == OnCompleteClick) {
@@ -110,7 +116,7 @@ private fun EditProfileScreen(
     avatar: Avatar,
     displayName: String,
     groupName: String,
-    canEditGroupName: Boolean,
+    canRenameGroup: Boolean,
     canComplete: Boolean,
     modifier: Modifier = Modifier,
     onUiAction: OnUiAction,
@@ -156,7 +162,7 @@ private fun EditProfileScreen(
                     onUiAction(OnGroupNameChange(groupName))
                 },
                 modifier = Modifier.padding(horizontal = 16.dp),
-                enabled = canEditGroupName,
+                enabled = canRenameGroup,
             )
         }
 

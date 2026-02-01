@@ -3,10 +3,11 @@ package it.stamp.join.group.core
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import it.stamp.domain.usecase.membership.JoinGroup
+import it.stamp.domain.exception.GroupJoinException
+import it.stamp.domain.usecase.membership.JoinGroupUseCase
 import it.stamp.domain.usecase.membership.JoinGroupWithInviteCodeUseCase
-import it.stamp.domain.usecase.membership.TransferGroupUseCase
-import it.stamp.model.membership.Group
+import it.stamp.join.group.core.JoinGroupUiEvent.DataLossWarning
+import it.stamp.model.ids.GroupId
 import it.stamp.model.membership.InviteCode
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,13 +17,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class JoinGroupViewModel @Inject constructor(
-    private val joinGroupWithInviteCode: JoinGroupWithInviteCodeUseCase,
-    private val transferGroup: TransferGroupUseCase,
+    private val joinGroupWithInviteCodeUseCase: JoinGroupWithInviteCodeUseCase,
+    private val joinGroupUseCase: JoinGroupUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(JoinGroupUiState())
@@ -41,26 +41,21 @@ class JoinGroupViewModel @Inject constructor(
                 uiState.copy(inProgress = true)
             }
 
-            joinGroupWithInviteCode(inviteCode)
-                .fold(
-                    onSuccess = { result ->
-                        when (result) {
-                            JoinGroup.InvalidCode -> JoinGroupUiEvent.InvalidCode
-                            JoinGroup.AlreadyInGroup -> JoinGroupUiEvent.AlreadyInGroup
-
-                            is JoinGroup.RequiresDataLossConsent -> with(result) {
-                                JoinGroupUiEvent.DataLossConsentRequired(leavingGroup, joiningGroup)
-                            }
-
-                            is JoinGroup.Success -> JoinGroupUiEvent.JoinGroupSucceeded(result.group)
+            joinGroupWithInviteCodeUseCase(inviteCode)
+                .map {
+                    JoinGroupUiEvent.JoinSuccess
+                }
+                .getOrElse { throwable ->
+                    if (throwable is GroupJoinException) {
+                        when (throwable) {
+                            is GroupJoinException.AlreadyMember -> JoinGroupUiEvent.AlreadyMember
+                            is GroupJoinException.InvalidInviteCode -> JoinGroupUiEvent.InvalidInviteCode
+                            is GroupJoinException.RequiresDataLossConsent -> DataLossWarning(throwable.targetGroupId)
                         }
-                    },
-                    onFailure = { throwable ->
-                        Timber.d(throwable)
-
-                        JoinGroupUiEvent.JoinGroupFailed(throwable)
+                    } else {
+                        JoinGroupUiEvent.JoinFailed(throwable)
                     }
-                )
+                }
                 .let { event ->
                     _uiEvent.emit(event)
                 }
@@ -71,17 +66,15 @@ class JoinGroupViewModel @Inject constructor(
         }
     }
 
-    fun acceptDataLoss(leavingGroup: Group, joiningGroup: Group) {
+    fun acceptDataLoss(targetGroupId: GroupId) {
         viewModelScope.launch {
-            transferGroup(leavingGroup, joiningGroup)
-                .map { group ->
-                    JoinGroupUiEvent.JoinGroupSucceeded(group)
-                }
+            joinGroupUseCase(targetGroupId)
+                .map { JoinGroupUiEvent.JoinSuccess }
                 .getOrElse { throwable ->
-                    JoinGroupUiEvent.JoinGroupFailed(throwable)
+                    JoinGroupUiEvent.JoinFailed(throwable)
                 }
-                .let {
-                    _uiEvent.emit(it)
+                .let { event ->
+                    _uiEvent.emit(event)
                 }
         }
     }

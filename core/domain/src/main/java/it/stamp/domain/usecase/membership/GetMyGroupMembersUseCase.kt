@@ -1,16 +1,20 @@
 package it.stamp.domain.usecase.membership
 
-import it.stamp.domain.service.GroupMemberService
+import it.stamp.domain.service.MemberService
+import it.stamp.domain.usecase.group.GetMyGroupUseCase
 import it.stamp.model.membership.Member
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class GetMyGroupMembersUseCase @Inject constructor(
-    private val memberService: GroupMemberService,
+    private val getMyGroupUseCase: GetMyGroupUseCase,
+    private val memberService: MemberService,
 ) {
     suspend operator fun invoke(): Result<List<Member>> =
         runCatching {
-            memberService.getMyGroupMembers()
+            getMyGroupUseCase()
+                .getOrThrow()
+                .let { group ->
+                    memberService.getMembers(group.id)
+                }
         }
 }
